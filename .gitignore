@@ -1,3 +1,12 @@
+local.properties
+cache.properties
+
+.gradle/
+proguard/
+out/
+build/
+
 *.iml
 .idea/
-out/
+
+.DS_Store
