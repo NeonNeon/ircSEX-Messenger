@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:gravity="center_vertical">
+    <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="You're not connected to any servers yet :("
+            android:id="@+id/textView"
+            android:gravity="center"
+            android:textSize="35dp"
+            android:padding="25dp"/>
+    <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Connect to a server"
+            android:id="@+id/button"
+            android:layout_gravity="center"
+            android:singleLine="false"
+            android:onClick="popupServerConnect"/>
+</LinearLayout>
