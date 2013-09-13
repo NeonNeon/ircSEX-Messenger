@@ -1,8 +1,10 @@
-package se.chalmers.dat255.ircsex;
+package se.chalmers.dat255.ircsex.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+
+import se.chalmers.dat255.ircsex.R;
 
 
 /**

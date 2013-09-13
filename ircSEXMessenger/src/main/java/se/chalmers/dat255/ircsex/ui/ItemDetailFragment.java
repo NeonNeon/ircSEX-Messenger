@@ -1,4 +1,4 @@
-package se.chalmers.dat255.ircsex;
+package se.chalmers.dat255.ircsex.ui;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import se.chalmers.dat255.ircsex.R;
 import se.chalmers.dat255.ircsex.dummy.DummyContent;
 
 /**

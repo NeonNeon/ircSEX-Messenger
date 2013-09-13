@@ -1,4 +1,4 @@
-package se.chalmers.dat255.ircsex;
+package se.chalmers.dat255.ircsex.ui;
 
 import android.app.Activity;
 import android.os.Bundle;

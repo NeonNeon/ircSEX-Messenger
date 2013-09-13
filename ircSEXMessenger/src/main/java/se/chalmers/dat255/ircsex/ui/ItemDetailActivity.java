@@ -1,10 +1,12 @@
-package se.chalmers.dat255.ircsex;
+package se.chalmers.dat255.ircsex.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
+
+import se.chalmers.dat255.ircsex.R;
 
 /**
  * An activity representing a single Item detail screen. This
