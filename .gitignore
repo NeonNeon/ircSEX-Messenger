@@ -4,6 +4,7 @@ cache.properties
 .gradle/
 proguard/
 out/
+gen/
 build/
 
 *.iml
