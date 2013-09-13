@@ -21,14 +21,9 @@ public class ServerListActivity extends Activity {
 
     public void popupServerConnect(View view) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        // Get the layout inflater
         LayoutInflater inflater = getLayoutInflater();
-
-        // Inflate and set the layout for the dialog
-        // Pass null as the parent view because its going in the dialog layout
         builder.setView(inflater.inflate(R.layout.dialog_serverconnect, null))
                 .setTitle("Connect to server")
-                // Add action buttons
                 .setPositiveButton(R.string.connect, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
