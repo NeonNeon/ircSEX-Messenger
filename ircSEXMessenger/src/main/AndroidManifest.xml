@@ -23,13 +23,8 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.autogen.ItemDetailActivity"
-            android:label="@string/title_item_detail"
-            android:parentActivityName=".ItemListActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ItemListActivity" />
-        </activity>
+            android:name=".ui.ChannelActivity"
+            android:label="@string/app_name"/>
     </application>
 
 </manifest>

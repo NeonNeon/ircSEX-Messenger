@@ -1,10 +1,10 @@
 package se.chalmers.dat255.ircsex.ui;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -32,6 +32,8 @@ public class ServerListActivity extends FragmentActivity implements ServerConnec
         String port = ((TextView)dialog.findViewById(R.id.dialog_serverconnect_port)).getText().toString();
         String nickname = ((TextView)dialog.findViewById(R.id.dialog_serverconnect_nickname)).getText().toString();
         // TODO: Do fun stuff with this data
+        startActivity(new Intent(this, ChannelActivity.class));
+        finish();
     }
 
     @Override
