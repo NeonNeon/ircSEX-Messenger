@@ -59,7 +59,7 @@ public class ChannelActivity extends Activity {
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
-        // set a custom shadow that overlays the channel_drawer content when the drawer opens
+        // set a custom shadow that overlays the channel_main content when the drawer opens
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow_right, GravityCompat.END);
         // set up the drawer's list view with items and click listener
@@ -100,7 +100,7 @@ public class ChannelActivity extends Activity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.channel_drawer, menu);
+        inflater.inflate(R.menu.channel_main, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -148,7 +148,7 @@ public class ChannelActivity extends Activity {
     }
 
     private void selectItem(int position) {
-        // update the channel_drawer content by replacing fragments
+        // update the channel_main content by replacing fragments
         Fragment fragment = new PlanetFragment();
         Bundle args = new Bundle();
         args.putInt(PlanetFragment.ARG_PLANET_NUMBER, position);
