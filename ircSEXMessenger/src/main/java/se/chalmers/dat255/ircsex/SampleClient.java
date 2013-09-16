@@ -32,7 +32,7 @@ public class SampleClient {
         }
 
         write("JOIN " + channel);
-        write("PRIVMSG " + channel + " :push it to the limit!");
+        write("PRIVMSG " + channel + " :Test fan..");
         writer.flush();
 
         writer.close();
@@ -43,5 +43,6 @@ public class SampleClient {
     private static void write(String string) throws IOException {
         System.out.println(string);
         writer.write(string + "\r\n");
+        writer.flush();
     }
 }
