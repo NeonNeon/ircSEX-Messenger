@@ -85,6 +85,7 @@ public class ChannelActivity extends Activity {
             }
 
             public void onDrawerOpened(View drawerView) {
+                mDrawerLayout.closeDrawer(drawerView == rightDrawer ? leftDrawer : rightDrawer);
                 getActionBar().setTitle(mDrawerTitle);
                 getActionBar().setSubtitle(null);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
@@ -108,7 +109,7 @@ public class ChannelActivity extends Activity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         // If the nav drawer is open, hide action items related to the content view
-        drawerOpen = mDrawerLayout.isDrawerOpen(leftDrawer ||);
+        drawerOpen = (mDrawerLayout.isDrawerOpen(leftDrawer) || mDrawerLayout.isDrawerOpen(rightDrawer));
         return super.onPrepareOptionsMenu(menu);
     }
 
