@@ -38,6 +38,7 @@ import se.chalmers.dat255.ircsex.R;
 public class ChannelActivity extends Activity {
     private DrawerLayout mDrawerLayout;
     private ListView leftDrawer;
+    private ListView rightDrawer;
     private ActionBarDrawerToggle mDrawerToggle;
 
     private CharSequence mDrawerTitle;
@@ -53,6 +54,7 @@ public class ChannelActivity extends Activity {
         mPlanetTitles = getResources().getStringArray(R.array.planets_array);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         leftDrawer = (ListView) findViewById(R.id.left_drawer);
+        rightDrawer = (ListView) findViewById(R.id.right_drawer);
 
         // set a custom shadow that overlays the channel_main content when the drawer opens
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
