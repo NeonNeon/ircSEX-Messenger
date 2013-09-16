@@ -43,6 +43,7 @@ public class ChannelActivity extends Activity {
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
     private String[] mPlanetTitles;
+    private boolean drawerOpen;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,7 +106,7 @@ public class ChannelActivity extends Activity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         // If the nav drawer is open, hide action items related to the content view
-        boolean drawerOpen = mDrawerLayout.isDrawerOpen(leftDrawer);
+        drawerOpen = mDrawerLayout.isDrawerOpen(leftDrawer ||);
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -120,6 +121,7 @@ public class ChannelActivity extends Activity {
         switch(item.getItemId()) {
             case R.id.action_userlist:
                 mDrawerLayout.openDrawer(Gravity.END);
+                drawerOpen = true;
             return true;
         default:
             return super.onOptionsItemSelected(item);
