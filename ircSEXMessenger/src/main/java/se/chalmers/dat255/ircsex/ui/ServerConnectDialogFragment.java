@@ -7,7 +7,6 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
-import android.widget.TextView;
 
 import se.chalmers.dat255.ircsex.R;
 
@@ -33,13 +32,13 @@ public class ServerConnectDialogFragment extends DialogFragment {
         LayoutInflater inflater = getActivity().getLayoutInflater();
         builder.setView(inflater.inflate(R.layout.dialog_serverconnect, null))
                 .setTitle("Connect to server")
-                .setPositiveButton(R.string.connect, new DialogInterface.OnClickListener() {
+                .setPositiveButton(R.string.hint_connect, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
                         dialogListener.onDialogAccept(ServerConnectDialogFragment.this);
                     }
                 })
-                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                .setNegativeButton(R.string.hint_cancel, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         dialogListener.onDialogCancel(ServerConnectDialogFragment.this);
                     }

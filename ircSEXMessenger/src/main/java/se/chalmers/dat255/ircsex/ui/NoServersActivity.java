@@ -14,7 +14,13 @@ import se.chalmers.dat255.ircsex.R;
  * @author Wilhelm Hedman
  * @date 13-09-13
  */
-public class ServerListActivity extends FragmentActivity implements ServerConnectDialogFragment.DialogListener {
+public class NoServersActivity extends FragmentActivity implements ServerConnectDialogFragment.DialogListener {
+    public static final int REQUEST_SERVER = 10;
+    public static final int RESULT_RETURN_DATA = 20;
+    public static final String EXTRA_SERVER = "server";
+    public static final String EXTRA_PORT = "port";
+    public static final String EXTRA_NICKNAME = "nickname";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,9 +38,11 @@ public class ServerListActivity extends FragmentActivity implements ServerConnec
         String server = ((TextView)dialog.findViewById(R.id.dialog_serverconnect_server)).getText().toString();
         String port = ((TextView)dialog.findViewById(R.id.dialog_serverconnect_port)).getText().toString();
         String nickname = ((TextView)dialog.findViewById(R.id.dialog_serverconnect_nickname)).getText().toString();
-        // TODO: Do fun stuff with this data
-        // TODO: Freeze input and add waitfeedback while opening socket
-        startActivity(new Intent(this, ChannelActivity.class));
+        Intent data = new Intent();
+        data.putExtra(EXTRA_SERVER, server);
+        data.putExtra(EXTRA_PORT, port);
+        data.putExtra(EXTRA_NICKNAME, nickname);
+        setResult(RESULT_RETURN_DATA, data);
         finish();
     }
 

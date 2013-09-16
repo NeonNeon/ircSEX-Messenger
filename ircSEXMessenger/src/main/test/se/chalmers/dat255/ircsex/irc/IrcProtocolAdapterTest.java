@@ -22,10 +22,16 @@ public class IrcProtocolAdapterTest {
     }
 
     @Test
-    public void connectScenarioTest() {
+    public void connectDisconnectScenarioTest() throws InterruptedException {
         ipa.connect("tord", "tord", "asdgrew haha");
+
+        // This test dosen't really do anything.
+        Thread.sleep(9999);
+
+        ipa.disconnect("ircSEX FTW");
         while (true) {
 
         }
     }
+
 }

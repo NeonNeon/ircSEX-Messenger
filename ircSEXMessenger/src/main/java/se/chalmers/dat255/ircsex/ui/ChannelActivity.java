@@ -19,6 +19,7 @@ package se.chalmers.dat255.ircsex.ui;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
@@ -97,6 +98,8 @@ public class ChannelActivity extends FragmentActivity implements ServerConnectDi
 
         if (savedInstanceState == null) {
             selectItem(0);
+            // Annan typ av check
+            startActivityForResult(new Intent(this, NoServersActivity.class), NoServersActivity.REQUEST_SERVER);
         }
     }
 
@@ -169,6 +172,28 @@ public class ChannelActivity extends FragmentActivity implements ServerConnectDi
         leftDrawer.setItemChecked(position, true);
         setTitle(mPlanetTitles[position]);
         mDrawerLayout.closeDrawer(leftDrawer);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (resultCode) {
+            case NoServersActivity.RESULT_RETURN_DATA:
+                String server = data.getStringExtra(NoServersActivity.EXTRA_SERVER);
+                String port = data.getStringExtra(NoServersActivity.EXTRA_PORT);
+                String nickname = data.getStringExtra(NoServersActivity.EXTRA_NICKNAME);
+                // Maybe validate here, or maybe somewhere else? Should we even validate?
+                startServer(server, port, nickname);
+                break;
+            case Activity.RESULT_CANCELED:
+                finish();
+                break;
+        }
+    }
+
+    private void startServer(String server, String port, String nickname) {
+        // TODO: Do stuff.
+        getActionBar().setSubtitle(nickname + "@" + server + ":" + port);
     }
 
     @Override
