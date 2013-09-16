@@ -34,7 +34,6 @@ public class ServerListActivity extends FragmentActivity implements ServerConnec
         String nickname = ((TextView)dialog.findViewById(R.id.dialog_serverconnect_nickname)).getText().toString();
         // TODO: Do fun stuff with this data
         // TODO: Freeze input and add waitfeedback while opening socket
-        // TODO: Validate data and provide feedback
         startActivity(new Intent(this, ChannelActivity.class));
         finish();
     }

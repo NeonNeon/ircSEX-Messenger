@@ -21,4 +21,5 @@
     <string name="app_not_available">Sorry, there\'s no web browser available</string>
     <string name="no_servers_connected">You\'re not connected to any servers yet :(</string>
     <string name="action_userlist">View users</string>
+    <string name="add_server">Add server</string>
 </resources>

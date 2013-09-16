@@ -22,6 +22,8 @@ import android.app.FragmentManager;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Gravity;
@@ -35,7 +37,7 @@ import android.widget.ListView;
 
 import se.chalmers.dat255.ircsex.R;
 
-public class ChannelActivity extends Activity {
+public class ChannelActivity extends FragmentActivity implements ServerConnectDialogFragment.DialogListener {
     private DrawerLayout mDrawerLayout;
     private ListView leftDrawer;
     private ListView rightDrawer;
@@ -77,7 +79,7 @@ public class ChannelActivity extends Activity {
                 R.drawable.ic_drawer,  /* nav drawer image to replace 'Up' caret */
                 R.string.drawer_open,  /* "open drawer" description for accessibility */
                 R.string.drawer_close  /* "close drawer" description for accessibility */
-                ) {
+        ) {
             public void onDrawerClosed(View view) {
                 getActionBar().setTitle(mTitle);
                 getActionBar().setSubtitle("irc." + mTitle.toString().toLowerCase() + ".com");
@@ -115,20 +117,34 @@ public class ChannelActivity extends Activity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-         // The action bar home/up action should open or close the drawer.
-         // ActionBarDrawerToggle will take care of this.
+        // The action bar home/up action should open or close the drawer.
+        // ActionBarDrawerToggle will take care of this.
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
         // Handle action buttons
         switch(item.getItemId()) {
-            case R.id.action_userlist:
+            case R.id.action_add_server:
+                DialogFragment fragment = new ServerConnectDialogFragment();
+                fragment.show(getSupportFragmentManager(), "serverconnect");
+                return true;
+            case R.id.action_user_list:
                 mDrawerLayout.openDrawer(Gravity.END);
                 drawerOpen = true;
-            return true;
-        default:
-            return super.onOptionsItemSelected(item);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void onDialogAccept(DialogFragment dialog) {
+
+    }
+
+    @Override
+    public void onDialogCancel(DialogFragment dialog) {
+
     }
 
     /* The click listner for ListView in the navigation drawer */
