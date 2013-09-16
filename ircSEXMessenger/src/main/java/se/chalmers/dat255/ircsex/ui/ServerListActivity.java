@@ -11,7 +11,8 @@ import android.widget.TextView;
 import se.chalmers.dat255.ircsex.R;
 
 /**
- * Created by wilhelm on 9/13/13.
+ * @author Wilhelm Hedman
+ * @date 13-09-13
  */
 public class ServerListActivity extends FragmentActivity implements ServerConnectDialogFragment.DialogListener {
     @Override
@@ -32,6 +33,8 @@ public class ServerListActivity extends FragmentActivity implements ServerConnec
         String port = ((TextView)dialog.findViewById(R.id.dialog_serverconnect_port)).getText().toString();
         String nickname = ((TextView)dialog.findViewById(R.id.dialog_serverconnect_nickname)).getText().toString();
         // TODO: Do fun stuff with this data
+        // TODO: Freeze input and add waitfeedback while opening socket
+        // TODO: Validate data and provide feedback
         startActivity(new Intent(this, ChannelActivity.class));
         finish();
     }
