@@ -25,24 +25,28 @@ public class IrcProtocolAdapter implements Runnable {
     }
 
     public void run() {
-        String line = null;
+        String line = "";
         do {
-            try {
-                line = input.readLine();
-            } catch (IOException e) {
-                e.printStackTrace();
-                propogateIOError();
-            }
             System.out.println(line);
             if (line.startsWith("PING ")) {
                 write("PONG " + line.substring(5));
             }
-        } while(true);
+            try {
+                line = input.readLine();
+            } catch (IOException e) {
+                e.printStackTrace();
+                propagateIOError();
+            }
+        } while(line != null);
     }
 
     public void  connect(String nick, String login, String realName) {
         write("NICK " + nick);
         write("USER " + login + " 8 * : " + realName);
+    }
+
+    public void disconnect(String message) {
+        write("QUIT :" + message);
     }
 
     private void createBuffers(String server, int port) throws IOException {
@@ -58,11 +62,11 @@ public class IrcProtocolAdapter implements Runnable {
             output.flush();
         } catch (IOException e) {
             e.printStackTrace();
-            propogateIOError();
+            propagateIOError();
         }
     }
 
-    private void propogateIOError() {
+    private void propagateIOError() {
         for (IrcProtocolServerListener listener : ircProtocolServerListeners) {
             listener.fireEvent(MessageType.ERROR, "Server disconnected");
         }
