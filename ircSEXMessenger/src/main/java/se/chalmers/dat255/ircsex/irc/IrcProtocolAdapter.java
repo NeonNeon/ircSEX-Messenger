@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by oed on 9/16/13.
@@ -15,8 +17,11 @@ public class IrcProtocolAdapter implements Runnable {
     private BufferedReader input;
     private BufferedWriter output;
 
+    private List<IrcProtocolServerListener> ircProtocolServerListeners;
+
     public IrcProtocolAdapter(String server, int port) throws IOException {
         createBuffers(server, port);
+        ircProtocolServerListeners = new ArrayList<IrcProtocolServerListener>();
     }
 
     public void run() {
@@ -26,7 +31,7 @@ public class IrcProtocolAdapter implements Runnable {
                 line = input.readLine();
             } catch (IOException e) {
                 e.printStackTrace();
-                // TODO - send event
+                propogateIOError();
             }
             System.out.println(line);
             if (line.startsWith("PING ")) {
@@ -53,7 +58,28 @@ public class IrcProtocolAdapter implements Runnable {
             output.flush();
         } catch (IOException e) {
             e.printStackTrace();
-            //TODO - send event
+            propogateIOError();
         }
     }
+
+    private void propogateIOError() {
+        for (IrcProtocolServerListener listener : ircProtocolServerListeners) {
+            listener.fireEvent(MessageType.ERROR, "Server disconnected");
+        }
+    }
+
+    public void addIrcProtocolServerListener(IrcProtocolServerListener listener) {
+        ircProtocolServerListeners.add(listener);
+    }
+
+    public void removeIrcProtocolServerListener(IrcProtocolServerListener listener) {
+        ircProtocolServerListeners.remove(listener);
+    }
+
+    public enum MessageType {NORMAL, ERROR}
+
+    public interface IrcProtocolServerListener {
+        public void fireEvent(MessageType type, String message);
+    }
+
 }

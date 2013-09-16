@@ -24,6 +24,8 @@ public class IrcProtocolAdapterTest {
     @Test
     public void connectScenarioTest() {
         ipa.connect("tord", "tord", "asdgrew haha");
+
+        // This test dosen't really do anything.
         while (true) {
 
         }
