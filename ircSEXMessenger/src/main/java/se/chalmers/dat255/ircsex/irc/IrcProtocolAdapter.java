@@ -19,6 +19,9 @@ public class IrcProtocolAdapter implements Runnable {
     private BufferedReader input;
     private BufferedWriter output;
 
+    private String host;
+    private int port;
+
     private List<IrcProtocolServerListener> ircProtocolServerListeners;
 
     /**
@@ -28,11 +31,13 @@ public class IrcProtocolAdapter implements Runnable {
      * @param port - the port to use
      */
     public IrcProtocolAdapter(String host, int port) {
-        createBuffers(host, port);
+        this.host = host;
+        this.port = port;
         ircProtocolServerListeners = new ArrayList<IrcProtocolServerListener>();
     }
 
     public void run() {
+        createBuffers(host, port);
         String line = "";
         do {
             System.out.println(line);
