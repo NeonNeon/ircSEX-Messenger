@@ -43,7 +43,7 @@ public class IrcProtocolAdapter implements Runnable {
                 line = input.readLine();
             } catch (IOException e) {
                 e.printStackTrace();
-                propagateIOError();
+                propagateError(ErrorMessages.IOError);
             }
         } while(line != null);
     }
@@ -55,7 +55,7 @@ public class IrcProtocolAdapter implements Runnable {
      * @param login - the login to use
      * @param realName - the users realname
      */
-    public void  connect(String nick, String login, String realName) {
+    public void connect(String nick, String login, String realName) {
         write("NICK " + nick);
         write("USER " + login + " 8 * : " + realName);
     }
@@ -82,13 +82,13 @@ public class IrcProtocolAdapter implements Runnable {
             output.flush();
         } catch (IOException e) {
             e.printStackTrace();
-            propagateIOError();
+            propagateError(ErrorMessages.IOError);
         }
     }
 
-    private void propagateIOError() {
+    private void propagateError(String errorMessage) {
         for (IrcProtocolServerListener listener : ircProtocolServerListeners) {
-            listener.fireEvent(MessageType.ERROR, "Server disconnected");
+            listener.fireEvent(MessageType.ERROR, errorMessage);
         }
     }
 
@@ -101,6 +101,10 @@ public class IrcProtocolAdapter implements Runnable {
     }
 
     public enum MessageType {NORMAL, ERROR}
+
+    public static class ErrorMessages {
+        public static String IOError = "Socket disconnected";
+    }
 
     /**
      * An interface that listens to events that are relevant to the IRC Server.
