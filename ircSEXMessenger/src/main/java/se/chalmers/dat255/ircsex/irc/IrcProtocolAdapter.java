@@ -27,7 +27,7 @@ public class IrcProtocolAdapter implements Runnable {
      * @param host - the server to connect to
      * @param port - the port to use
      */
-    public IrcProtocolAdapter(String host, int port) throws IOException {
+    public IrcProtocolAdapter(String host, int port) {
         createBuffers(host, port);
         ircProtocolServerListeners = new ArrayList<IrcProtocolServerListener>();
     }
@@ -41,6 +41,7 @@ public class IrcProtocolAdapter implements Runnable {
             }
             try {
                 line = input.readLine();
+                // TODO: Resolve nullpointerexception
             } catch (IOException e) {
                 e.printStackTrace();
                 propagateError(ErrorMessages.IOError);
@@ -69,10 +70,16 @@ public class IrcProtocolAdapter implements Runnable {
         write("QUIT :" + message);
     }
 
-    private void createBuffers(String server, int port) throws IOException {
-        Socket socket = new Socket(server, port);
-        input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        output = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+    private void createBuffers(String host, int port) {
+        Socket socket;
+        try {
+            socket = new Socket(host, port);
+            input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            output = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+        } catch (IOException e) {
+            e.printStackTrace();
+            propagateError(ErrorMessages.IOError);
+        }
     }
 
     private synchronized void write(String string) {
