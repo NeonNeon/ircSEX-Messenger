@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * This class is used to easily communicate with the IRC protocol.
+ *
  * Created by oed on 9/16/13.
  */
 public class IrcProtocolAdapter implements Runnable {
@@ -19,6 +21,12 @@ public class IrcProtocolAdapter implements Runnable {
 
     private List<IrcProtocolServerListener> ircProtocolServerListeners;
 
+    /**
+     * Creates a socket connection to the specified server.
+     *
+     * @param server - the server to connect to
+     * @param port - the port to use
+     */
     public IrcProtocolAdapter(String server, int port) throws IOException {
         createBuffers(server, port);
         ircProtocolServerListeners = new ArrayList<IrcProtocolServerListener>();
@@ -40,11 +48,23 @@ public class IrcProtocolAdapter implements Runnable {
         } while(line != null);
     }
 
+    /**
+     * Connect to the specified server with this identity.
+     *
+     * @param nick - the nick to use
+     * @param login - the login to use
+     * @param realName - the users realname
+     */
     public void  connect(String nick, String login, String realName) {
         write("NICK " + nick);
         write("USER " + login + " 8 * : " + realName);
     }
 
+    /**
+     * Disconnect from the current server.
+     *
+     * @param message - the message to be displayed when quiting
+     */
     public void disconnect(String message) {
         write("QUIT :" + message);
     }
@@ -82,6 +102,9 @@ public class IrcProtocolAdapter implements Runnable {
 
     public enum MessageType {NORMAL, ERROR}
 
+    /**
+     * An interface that listens to events that are relevant to the IRC Server.
+     */
     public interface IrcProtocolServerListener {
         public void fireEvent(MessageType type, String message);
     }
