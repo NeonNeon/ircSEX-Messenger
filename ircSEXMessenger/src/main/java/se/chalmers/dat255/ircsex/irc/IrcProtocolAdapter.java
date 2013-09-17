@@ -69,14 +69,27 @@ public class IrcProtocolAdapter implements Runnable {
         write("QUIT :" + message);
     }
 
+    /**
+     * Join a channel.
+     * @param channel - the channel to join
+     */
     public void joinChannel(String channel) {
         write("JOIN " + channel);
     }
 
+    /**
+     * Join a channel that requires a key.
+     * @param channel - the channel to join
+     * @param key - the key to use
+     */
     public void joinChannel(String channel, String key) {
         write("JOIN " + channel + " " + key);
     }
 
+    /**
+     * Part from a channel.
+     * @param channel - the channel to part
+     */
     public void partChannel(String channel) {
         write("PART " + channel);
     }
