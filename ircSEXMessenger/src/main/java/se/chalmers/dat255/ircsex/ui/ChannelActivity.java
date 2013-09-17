@@ -34,11 +34,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 
 import se.chalmers.dat255.ircsex.R;
 
-public class ChannelActivity extends FragmentActivity implements ServerConnectDialogFragment.DialogListener {
+public class ChannelActivity extends FragmentActivity implements ServerConnectDialogFragment.DialogListener, JoinChannelDialogFragment.DialogListener {
     private DrawerLayout mDrawerLayout;
     private ListView leftDrawer;
     private ListView rightDrawer;
@@ -127,17 +128,22 @@ public class ChannelActivity extends FragmentActivity implements ServerConnectDi
         }
         // Handle action buttons
         switch(item.getItemId()) {
+            case R.id.action_join_channel:
+                DialogFragment joinChannelDialogFragment = new JoinChannelDialogFragment();
+                joinChannelDialogFragment.show(getSupportFragmentManager(), "joinchannel");
+                break;
             case R.id.action_add_server:
-                DialogFragment fragment = new ServerConnectDialogFragment();
-                fragment.show(getSupportFragmentManager(), "serverconnect");
-                return true;
+                DialogFragment serverConnectDialogFragment = new ServerConnectDialogFragment();
+                serverConnectDialogFragment.show(getSupportFragmentManager(), "serverconnect");
+                break;
             case R.id.action_user_list:
                 mDrawerLayout.openDrawer(Gravity.END);
                 drawerOpen = true;
-                return true;
+                break;
             default:
                 return super.onOptionsItemSelected(item);
         }
+        return true;
     }
 
     @Override
