@@ -85,6 +85,7 @@ public class IrcProtocolAdapter implements Runnable {
             e.printStackTrace();
             propagateError(ErrorMessages.IOError);
         }
+        propagateMessage(MessageType.NORMAL, Messages.IOConnected);
     }
 
     private synchronized void write(String string) {
@@ -104,6 +105,11 @@ public class IrcProtocolAdapter implements Runnable {
         }
     }
 
+    private void propagateMessage(MessageType type, String message) {
+        for (IrcProtocolServerListener listener : ircProtocolServerListeners) {
+            listener.fireEvent(type, message);
+        }
+    }
     public void addIrcProtocolServerListener(IrcProtocolServerListener listener) {
         ircProtocolServerListeners.add(listener);
     }
@@ -116,6 +122,10 @@ public class IrcProtocolAdapter implements Runnable {
 
     public static class ErrorMessages {
         public static String IOError = "Socket disconnected";
+    }
+
+    public static class Messages {
+        public static String IOConnected = "Socket created";
     }
 
     /**
