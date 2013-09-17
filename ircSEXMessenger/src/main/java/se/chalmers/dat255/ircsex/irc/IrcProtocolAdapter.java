@@ -19,20 +19,25 @@ public class IrcProtocolAdapter implements Runnable {
     private BufferedReader input;
     private BufferedWriter output;
 
+    private String host;
+    private int port;
+
     private List<IrcProtocolServerListener> ircProtocolServerListeners;
 
     /**
      * Creates a socket connection to the specified server.
      *
-     * @param server - the server to connect to
+     * @param host - the server to connect to
      * @param port - the port to use
      */
-    public IrcProtocolAdapter(String server, int port) throws IOException {
-        createBuffers(server, port);
+    public IrcProtocolAdapter(String host, int port) {
+        this.host = host;
+        this.port = port;
         ircProtocolServerListeners = new ArrayList<IrcProtocolServerListener>();
     }
 
     public void run() {
+        createBuffers(host, port);
         String line = "";
         do {
             System.out.println(line);
@@ -41,6 +46,7 @@ public class IrcProtocolAdapter implements Runnable {
             }
             try {
                 line = input.readLine();
+                // TODO: Resolve nullpointerexception
             } catch (IOException e) {
                 e.printStackTrace();
                 propagateError(ErrorMessages.IOError);
@@ -69,10 +75,17 @@ public class IrcProtocolAdapter implements Runnable {
         write("QUIT :" + message);
     }
 
-    private void createBuffers(String server, int port) throws IOException {
-        Socket socket = new Socket(server, port);
-        input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        output = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+    private void createBuffers(String host, int port) {
+        Socket socket;
+        try {
+            socket = new Socket(host, port);
+            input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            output = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+        } catch (IOException e) {
+            e.printStackTrace();
+            propagateError(ErrorMessages.IOError);
+        }
+        propagateMessage(MessageType.NORMAL, Messages.IOConnected);
     }
 
     private synchronized void write(String string) {
@@ -92,6 +105,11 @@ public class IrcProtocolAdapter implements Runnable {
         }
     }
 
+    private void propagateMessage(MessageType type, String message) {
+        for (IrcProtocolServerListener listener : ircProtocolServerListeners) {
+            listener.fireEvent(type, message);
+        }
+    }
     public void addIrcProtocolServerListener(IrcProtocolServerListener listener) {
         ircProtocolServerListeners.add(listener);
     }
@@ -104,6 +122,10 @@ public class IrcProtocolAdapter implements Runnable {
 
     public static class ErrorMessages {
         public static String IOError = "Socket disconnected";
+    }
+
+    public static class Messages {
+        public static String IOConnected = "Socket created";
     }
 
     /**
