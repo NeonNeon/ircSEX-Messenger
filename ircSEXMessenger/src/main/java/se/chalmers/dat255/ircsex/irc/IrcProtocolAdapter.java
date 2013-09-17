@@ -69,6 +69,18 @@ public class IrcProtocolAdapter implements Runnable {
         write("QUIT :" + message);
     }
 
+    public void joinChannel(String channel) {
+        write("JOIN " + channel);
+    }
+
+    public void joinChannel(String channel, String key) {
+        write("JOIN " + channel + " " + key);
+    }
+
+    public void partChannel(String channel) {
+        write("PART " + channel);
+    }
+
     private void createBuffers(String server, int port) throws IOException {
         Socket socket = new Socket(server, port);
         input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
