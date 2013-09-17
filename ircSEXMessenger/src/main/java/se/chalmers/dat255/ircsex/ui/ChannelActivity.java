@@ -1,19 +1,3 @@
-/*
- * Copyright 2013 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package se.chalmers.dat255.ircsex.ui;
 
 import android.app.Activity;
@@ -36,7 +20,11 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import se.chalmers.dat255.ircsex.R;
+import se.chalmers.dat255.ircsex.model.Session;
 
 public class ChannelActivity extends FragmentActivity implements ServerConnectDialogFragment.DialogListener {
     private DrawerLayout mDrawerLayout;
@@ -46,8 +34,10 @@ public class ChannelActivity extends FragmentActivity implements ServerConnectDi
 
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
-    private String[] mPlanetTitles;
+    private List<String> connectedChannels;
     private boolean drawerOpen;
+
+    private Session session;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +45,7 @@ public class ChannelActivity extends FragmentActivity implements ServerConnectDi
         setContentView(R.layout.activity_channel_main);
 
         mTitle = mDrawerTitle = getTitle();
-        mPlanetTitles = getResources().getStringArray(R.array.planets_array);
+        connectedChannels = new ArrayList<String>();
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         leftDrawer = (ListView) findViewById(R.id.left_drawer);
         rightDrawer = (ListView) findViewById(R.id.right_drawer);
@@ -65,7 +55,7 @@ public class ChannelActivity extends FragmentActivity implements ServerConnectDi
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow_right, GravityCompat.END);
         // set up the drawer's list view with items and click listener
         leftDrawer.setAdapter(new ArrayAdapter<String>(this,
-                R.layout.drawer_list_item, mPlanetTitles));
+                R.layout.drawer_list_item, connectedChannels));
         leftDrawer.setOnItemClickListener(new DrawerItemClickListener());
 
         // enable ActionBar app icon to behave as action to toggle nav drawer
@@ -98,8 +88,9 @@ public class ChannelActivity extends FragmentActivity implements ServerConnectDi
 
         if (savedInstanceState == null) {
             selectItem(0);
-            // Annan typ av check
+            // Annan typ av check för persistence
             startActivityForResult(new Intent(this, NoServersActivity.class), NoServersActivity.REQUEST_SERVER);
+            session = new Session();
         }
     }
 
@@ -170,7 +161,7 @@ public class ChannelActivity extends FragmentActivity implements ServerConnectDi
 
         // update selected item and title, then close the drawer
         leftDrawer.setItemChecked(position, true);
-        setTitle(mPlanetTitles[position]);
+//        setTitle(connectedChannels.get(position)); TODO
         mDrawerLayout.closeDrawer(leftDrawer);
     }
 
@@ -183,7 +174,7 @@ public class ChannelActivity extends FragmentActivity implements ServerConnectDi
                 String port = data.getStringExtra(NoServersActivity.EXTRA_PORT);
                 String nickname = data.getStringExtra(NoServersActivity.EXTRA_NICKNAME);
                 // Maybe validate here, or maybe somewhere else? Should we even validate?
-                startServer(server, port, nickname);
+                startServer(server, Integer.parseInt(port), nickname);
                 break;
             case Activity.RESULT_CANCELED:
                 finish();
@@ -191,9 +182,9 @@ public class ChannelActivity extends FragmentActivity implements ServerConnectDi
         }
     }
 
-    private void startServer(String server, String port, String nickname) {
-        // TODO: Do stuff.
-        getActionBar().setSubtitle(nickname + "@" + server + ":" + port);
+    private void startServer(String server, int port, String nickname) {
+        session.addServer(server, port, nickname);
+//        connectedChannels.add();
     }
 
     @Override
