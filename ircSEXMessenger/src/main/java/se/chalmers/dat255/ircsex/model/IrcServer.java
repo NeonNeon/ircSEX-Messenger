@@ -14,21 +14,48 @@ public class IrcServer {
 
     private final String host;
     private final int port;
+    private final String login;
+    private final String nick;
+    private final String realName;
 
-    private final IrcProtocolAdapter protocol;
+    private IrcProtocolAdapter protocol;
+
     private final List<IrcChannel> channels;
+    private final List<IrcChannel> connectedChannels;
 
-    /**
-     * Initializes variables and creates a IrcProtocolAdapter.
-     *
-     * @param host - the server to connect to
-     * @param port - the port to use
-     */
-    public IrcServer(String host, int port) {
+    public IrcServer(String host, int port, String nick) {
+        this(host, port, nick, nick);
+    }
+
+    public IrcServer(String host, int port, String login, String nick) {
+        this(host, port, login, nick, "");
+    }
+
+    public IrcServer(String host, int port, String login, String nick, String realName) {
         this.host = host;
         this.port = port;
+        this.login = login;
+        this.nick = nick;
+        this.realName = realName;
 
         channels = new ArrayList<IrcChannel>();
+        connectedChannels = new ArrayList<IrcChannel>();
+
+        startProtocolAdapter(host, port, nick, login, realName);
+    }
+
+    public void startProtocolAdapter(String host, int port, String nick, String login, String realName) {
         protocol = new IrcProtocolAdapter(host, port);
+        protocol.addIrcProtocolServerListener(new ProtocolListener());
+        new Thread(protocol).start();
+        protocol.connect(nick, login, realName);
+    }
+
+    private class ProtocolListener implements IrcProtocolAdapter.IrcProtocolServerListener {
+
+        @Override
+        public void fireEvent(IrcProtocolAdapter.MessageType type, String message) {
+            // TODO: Implement
+        }
     }
 }
