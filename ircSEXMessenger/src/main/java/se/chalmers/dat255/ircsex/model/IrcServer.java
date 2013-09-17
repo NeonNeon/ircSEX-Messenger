@@ -25,14 +25,38 @@ public class IrcServer implements IrcProtocolAdapter.IrcProtocolServerListener {
     private final Map<String, IrcChannel> channels;
     private final Map<String, IrcChannel> connectedChannels;
 
+    /**
+     * Creates an IrcServer.
+     *
+     * @param host - Server address
+     * @param port - Server port
+     * @param nick - Nickname
+     */
     public IrcServer(String host, int port, String nick) {
         this(host, port, nick, nick);
     }
 
+    /**
+     * Creates an IrcServer.
+     *
+     * @param host - Server address
+     * @param port - Server port
+     * @param login - Server username
+     * @param nick - Nickname
+     */
     public IrcServer(String host, int port, String login, String nick) {
         this(host, port, login, nick, "");
     }
 
+    /**
+     * Creates an IrcServer.
+     *
+     * @param host - Server address
+     * @param port - Server port
+     * @param login - Server username
+     * @param nick - Nickname
+     * @param realName - IRL name
+     */
     public IrcServer(String host, int port, String login, String nick, String realName) {
         this.host = host;
         this.port = port;
@@ -46,20 +70,46 @@ public class IrcServer implements IrcProtocolAdapter.IrcProtocolServerListener {
         startProtocolAdapter(host, port, nick, login, realName);
     }
 
+    /**
+     * Start the protocol adapter.
+     * This includes making a connection in a new thread and logging in with the specified login/nick.
+     *
+     * @param host - Server address
+     * @param port - Server port
+     * @param login - Server username
+     * @param nick - Nickname
+     * @param realName - IRL name
+     */
     public void startProtocolAdapter(String host, int port, String nick, String login, String realName) {
         protocol = new IrcProtocolAdapter(host, port);
         protocol.addIrcProtocolServerListener(this);
         new Thread(protocol).start();
     }
 
+    /**
+     * Joins a channel on the specified server.
+     *
+     * @param channel - Name of channel to join
+     */
     public void joinChannel(String channel) {
         protocol.joinChannel(channel);
     }
 
+    /**
+     * Joins a channel with password on the specified server.
+     *
+     * @param channel - Name of channel to join
+     * @param key - Channel password
+     */
     public void joinChannel(String channel, String key) {
         protocol.joinChannel(channel, key);
     }
 
+    /**
+     * Leaves a channel
+     *
+     * @param channel - Name of channel to leave
+     */
     public void partChannel(String channel) {
         protocol.partChannel(channel);
     }
