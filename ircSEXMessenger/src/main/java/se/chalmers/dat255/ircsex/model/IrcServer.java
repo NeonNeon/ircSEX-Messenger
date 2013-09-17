@@ -1,7 +1,9 @@
 package se.chalmers.dat255.ircsex.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import se.chalmers.dat255.ircsex.irc.IrcProtocolAdapter;
 
@@ -20,8 +22,8 @@ public class IrcServer implements IrcProtocolAdapter.IrcProtocolServerListener {
 
     private IrcProtocolAdapter protocol;
 
-    private final List<IrcChannel> channels;
-    private final List<IrcChannel> connectedChannels;
+    private final Map<String, IrcChannel> channels;
+    private final Map<String, IrcChannel> connectedChannels;
 
     public IrcServer(String host, int port, String nick) {
         this(host, port, nick, nick);
@@ -38,8 +40,8 @@ public class IrcServer implements IrcProtocolAdapter.IrcProtocolServerListener {
         this.nick = nick;
         this.realName = realName;
 
-        channels = new ArrayList<IrcChannel>();
-        connectedChannels = new ArrayList<IrcChannel>();
+        channels = new HashMap<String, IrcChannel>();
+        connectedChannels = new HashMap<String, IrcChannel>();
 
         startProtocolAdapter(host, port, nick, login, realName);
     }
@@ -56,6 +58,10 @@ public class IrcServer implements IrcProtocolAdapter.IrcProtocolServerListener {
 
     public void joinChannel(String channel, String key) {
         protocol.joinChannel(channel, key);
+    }
+
+    public void partChannel(String channel) {
+        protocol.partChannel(channel);
     }
 
     @Override

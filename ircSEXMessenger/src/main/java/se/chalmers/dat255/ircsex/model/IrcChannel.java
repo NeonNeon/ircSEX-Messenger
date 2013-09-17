@@ -13,7 +13,7 @@ public class IrcChannel {
     private final String channelName;
     private final List<String> users;
 
-    public IrcChannel(String channelName, IrcProtocolAdapter protocol) {
+    public IrcChannel(String channelName) {
         this.channelName = channelName;
         users = new ArrayList<String>();
     }

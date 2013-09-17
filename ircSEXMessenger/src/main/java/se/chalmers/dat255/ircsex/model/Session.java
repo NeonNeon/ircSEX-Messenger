@@ -28,4 +28,8 @@ public class Session {
     public void joinChannel(String host, String channel, String key) {
         servers.get(host).joinChannel(channel, key);
     }
+
+    public void partChannel(String host, String channel) {
+        servers.get(host).partChannel(channel);
+    }
 }
