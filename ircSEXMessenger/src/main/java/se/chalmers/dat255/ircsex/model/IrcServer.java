@@ -10,7 +10,7 @@ import se.chalmers.dat255.ircsex.irc.IrcProtocolAdapter;
  *
  * Created by Oskar on 2013-09-17.
  */
-public class IrcServer {
+public class IrcServer implements IrcProtocolAdapter.IrcProtocolServerListener {
 
     private final String host;
     private final int port;
@@ -46,16 +46,14 @@ public class IrcServer {
 
     public void startProtocolAdapter(String host, int port, String nick, String login, String realName) {
         protocol = new IrcProtocolAdapter(host, port);
-        protocol.addIrcProtocolServerListener(new ProtocolListener());
+        protocol.addIrcProtocolServerListener(this);
         new Thread(protocol).start();
-        protocol.connect(nick, login, realName);
     }
 
-    private class ProtocolListener implements IrcProtocolAdapter.IrcProtocolServerListener {
-
-        @Override
-        public void fireEvent(IrcProtocolAdapter.MessageType type, String message) {
-            // TODO: Implement
+    @Override
+    public void fireEvent(IrcProtocolAdapter.MessageType type, String message) {
+        if (message == IrcProtocolAdapter.Messages.IOConnected) {
+            protocol.connect(nick, login, realName);
         }
     }
 }
