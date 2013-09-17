@@ -1,10 +1,16 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/action_join_channel"
+          android:title="@string/join_channel"
+            />
     <item android:id="@+id/action_add_server"
         android:title="@string/add_server"
         />
     <item android:id="@+id/action_user_list"
           android:title="@string/action_userlist"
           />
+    <item android:id="@+id/action_leave_channel"
+          android:title="@string/action_leave_channel"
+            />
     <item android:id="@+id/action_settings"
         android:title="@string/action_settings"
         />
