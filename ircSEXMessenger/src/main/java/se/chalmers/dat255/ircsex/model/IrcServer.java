@@ -50,6 +50,14 @@ public class IrcServer implements IrcProtocolAdapter.IrcProtocolServerListener {
         new Thread(protocol).start();
     }
 
+    public void joinChannel(String channel) {
+        protocol.joinChannel(channel);
+    }
+
+    public void joinChannel(String channel, String key) {
+        protocol.joinChannel(channel, key);
+    }
+
     @Override
     public void fireEvent(IrcProtocolAdapter.MessageType type, String message) {
         if (message == IrcProtocolAdapter.Messages.IOConnected) {

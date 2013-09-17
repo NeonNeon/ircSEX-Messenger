@@ -20,4 +20,12 @@ public class Session {
     public void removeServer(String host) {
         servers.remove(host);
     }
+
+    public void joinChannel(String host, String channel) {
+        servers.get(host).joinChannel(channel);
+    }
+
+    public void joinChannel(String host, String channel, String key) {
+        servers.get(host).joinChannel(channel, key);
+    }
 }
