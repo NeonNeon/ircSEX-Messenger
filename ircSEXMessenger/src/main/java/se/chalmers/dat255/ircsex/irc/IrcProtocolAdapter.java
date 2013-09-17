@@ -24,11 +24,11 @@ public class IrcProtocolAdapter implements Runnable {
     /**
      * Creates a socket connection to the specified server.
      *
-     * @param server - the server to connect to
+     * @param host - the server to connect to
      * @param port - the port to use
      */
-    public IrcProtocolAdapter(String server, int port) throws IOException {
-        createBuffers(server, port);
+    public IrcProtocolAdapter(String host, int port) throws IOException {
+        createBuffers(host, port);
         ircProtocolServerListeners = new ArrayList<IrcProtocolServerListener>();
     }
 
