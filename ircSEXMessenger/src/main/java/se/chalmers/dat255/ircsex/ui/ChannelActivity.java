@@ -91,7 +91,7 @@ public class ChannelActivity extends FragmentActivity implements ServerConnectDi
             selectItem(0);
             // Annan typ av check för persistence
             startActivityForResult(new Intent(this, NoServersActivity.class), NoServersActivity.REQUEST_SERVER);
-            session = new Session();
+            session = new Session(this);
         }
     }
 
