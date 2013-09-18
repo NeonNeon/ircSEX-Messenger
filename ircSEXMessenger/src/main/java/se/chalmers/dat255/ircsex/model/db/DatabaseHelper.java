@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  *
  * Created by Oskar on 2013-09-18.
  */
-public class MySQLiteHelper extends SQLiteOpenHelper {
+public class DatabaseHelper extends SQLiteOpenHelper {
 
     public static final String TABLE_SERVERS = "servers";
     public static final String SERVER_ID = "id";
@@ -40,7 +40,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
             + CHANNEL_SERVER + " text, "
             + CHANNEL_NAME + " integer);";
 
-    public MySQLiteHelper(Context context) {
+    public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 

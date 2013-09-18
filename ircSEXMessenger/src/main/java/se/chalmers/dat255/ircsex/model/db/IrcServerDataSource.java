@@ -18,19 +18,19 @@ import se.chalmers.dat255.ircsex.model.IrcServer;
 public class IrcServerDataSource {
 
     private SQLiteDatabase database;
-    private final MySQLiteHelper dbHelper;
-    private final String[] allColumns = { MySQLiteHelper.SERVER_ID,
-            MySQLiteHelper.SERVER_HOST,
-            MySQLiteHelper.SERVER_PORT,
-            MySQLiteHelper.SERVER_LOGIN,
-            MySQLiteHelper.SERVER_NICK,
-            MySQLiteHelper.SERVER_REALNAME};
+    private final DatabaseHelper dbHelper;
+    private final String[] allColumns = { DatabaseHelper.SERVER_ID,
+            DatabaseHelper.SERVER_HOST,
+            DatabaseHelper.SERVER_PORT,
+            DatabaseHelper.SERVER_LOGIN,
+            DatabaseHelper.SERVER_NICK,
+            DatabaseHelper.SERVER_REALNAME};
 
     /**
      * Creates an object of IrcServerDataSource.
      */
     public IrcServerDataSource() {
-        dbHelper = new MySQLiteHelper(ContextManager.SERVER_CONTEXT);
+        dbHelper = new DatabaseHelper(ContextManager.SERVER_CONTEXT);
     }
 
     /**
@@ -60,14 +60,14 @@ public class IrcServerDataSource {
      */
     public void addServer(String host, int port, String login, String nick, String realname) {
         ContentValues values = new ContentValues();
-        values.put(MySQLiteHelper.SERVER_HOST, host);
-        values.put(MySQLiteHelper.SERVER_PORT, port);
-        values.put(MySQLiteHelper.SERVER_LOGIN, login);
-        values.put(MySQLiteHelper.SERVER_NICK, nick);
-        values.put(MySQLiteHelper.SERVER_REALNAME, realname);
-        long insertId = database.insert(MySQLiteHelper.TABLE_SERVERS, null, values);
-        Cursor cursor = database.query(MySQLiteHelper.TABLE_SERVERS,
-                allColumns, MySQLiteHelper.SERVER_ID + " = " + insertId, null,
+        values.put(DatabaseHelper.SERVER_HOST, host);
+        values.put(DatabaseHelper.SERVER_PORT, port);
+        values.put(DatabaseHelper.SERVER_LOGIN, login);
+        values.put(DatabaseHelper.SERVER_NICK, nick);
+        values.put(DatabaseHelper.SERVER_REALNAME, realname);
+        long insertId = database.insert(DatabaseHelper.TABLE_SERVERS, null, values);
+        Cursor cursor = database.query(DatabaseHelper.TABLE_SERVERS,
+                allColumns, DatabaseHelper.SERVER_ID + " = " + insertId, null,
                 null, null, null);
         cursor.moveToFirst();
         cursor.close();
@@ -79,7 +79,7 @@ public class IrcServerDataSource {
      * @param host - Address to the server to remove
      */
     public void removeServer(String host) {
-        database.delete(MySQLiteHelper.TABLE_SERVERS, MySQLiteHelper.SERVER_HOST
+        database.delete(DatabaseHelper.TABLE_SERVERS, DatabaseHelper.SERVER_HOST
                 + " = " + host, null);
     }
 
@@ -91,7 +91,7 @@ public class IrcServerDataSource {
     public Map<String, IrcServer> getAllIrcServers() {
         Map<String, IrcServer> servers = new HashMap<String, IrcServer>();
 
-        Cursor cursor = database.query(MySQLiteHelper.TABLE_SERVERS,
+        Cursor cursor = database.query(DatabaseHelper.TABLE_SERVERS,
                 allColumns, null, null, null, null, null);
 
         cursor.moveToFirst();

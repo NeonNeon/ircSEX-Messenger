@@ -18,16 +18,16 @@ import se.chalmers.dat255.ircsex.model.IrcChannel;
 public class IrcChannelDataSource {
 
     private SQLiteDatabase database;
-    private final MySQLiteHelper dbHelper;
-    private final String[] allColumns = { MySQLiteHelper.CHANNEL_ID,
-            MySQLiteHelper.CHANNEL_SERVER,
-            MySQLiteHelper.CHANNEL_NAME};
+    private final DatabaseHelper dbHelper;
+    private final String[] allColumns = { DatabaseHelper.CHANNEL_ID,
+            DatabaseHelper.CHANNEL_SERVER,
+            DatabaseHelper.CHANNEL_NAME};
 
     /**
      * Creates an object of IrcChannelDataSource.
      */
     public IrcChannelDataSource() {
-        dbHelper = new MySQLiteHelper(ContextManager.CHANNEL_CONTEXT);
+        dbHelper = new DatabaseHelper(ContextManager.CHANNEL_CONTEXT);
     }
 
     /**
@@ -54,11 +54,11 @@ public class IrcChannelDataSource {
      */
     public void addChannel(String server, String name) {
         ContentValues values = new ContentValues();
-        values.put(MySQLiteHelper.CHANNEL_SERVER, server);
-        values.put(MySQLiteHelper.CHANNEL_NAME, name);
-        long insertId = database.insert(MySQLiteHelper.TABLE_CHANNELS, null, values);
-        Cursor cursor = database.query(MySQLiteHelper.TABLE_CHANNELS,
-                allColumns, MySQLiteHelper.CHANNEL_ID + " = " + insertId, null,
+        values.put(DatabaseHelper.CHANNEL_SERVER, server);
+        values.put(DatabaseHelper.CHANNEL_NAME, name);
+        long insertId = database.insert(DatabaseHelper.TABLE_CHANNELS, null, values);
+        Cursor cursor = database.query(DatabaseHelper.TABLE_CHANNELS,
+                allColumns, DatabaseHelper.CHANNEL_ID + " = " + insertId, null,
                 null, null, null);
         cursor.moveToFirst();
         cursor.close();
@@ -70,7 +70,7 @@ public class IrcChannelDataSource {
      * @param channelName - Name of the channel to remove
      */
     public void removeChannel(String channelName) {
-        database.delete(MySQLiteHelper.TABLE_CHANNELS, MySQLiteHelper.CHANNEL_NAME
+        database.delete(DatabaseHelper.TABLE_CHANNELS, DatabaseHelper.CHANNEL_NAME
                 + " = " + channelName, null);
     }
 
@@ -82,7 +82,7 @@ public class IrcChannelDataSource {
     public Map<String, IrcChannel> getAllIrcChannels() {
         Map<String, IrcChannel> channels = new HashMap<String, IrcChannel>();
 
-        Cursor cursor = database.query(MySQLiteHelper.TABLE_CHANNELS,
+        Cursor cursor = database.query(DatabaseHelper.TABLE_CHANNELS,
                 allColumns, null, null, null, null, null);
 
         cursor.moveToFirst();
