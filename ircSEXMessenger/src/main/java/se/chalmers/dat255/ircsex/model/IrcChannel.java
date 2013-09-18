@@ -24,4 +24,8 @@ public class IrcChannel {
         this.channelName = channelName;
         users = new ArrayList<String>();
     }
+
+    public String getChannelName() {
+        return channelName;
+    }
 }
