@@ -1,5 +1,7 @@
 package se.chalmers.dat255.ircsex.model;
 
+import android.util.Log;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -50,9 +52,6 @@ public class IrcServer implements IrcProtocolAdapter.IrcProtocolServerListener {
         datasource.open();
 
         connectedChannels = new HashMap<String, IrcChannel>();
-        for (String channel : datasource.getAllIrcChannels().keySet()) {
-            joinChannel(channel);
-        }
     }
 
     /**
@@ -113,7 +112,7 @@ public class IrcServer implements IrcProtocolAdapter.IrcProtocolServerListener {
         switch (type) {
             case NORMAL:
                 if (message == IrcProtocolAdapter.Messages.IOConnected) {
-                   protocol.connect(nick, login, realName);
+                    protocol.connect(nick, login, realName);
                 }
                 break;
             case ERROR:
