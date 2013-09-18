@@ -10,6 +10,11 @@ import android.database.sqlite.SQLiteDatabase;
 
 import se.chalmers.dat255.ircsex.model.IrcChannel;
 
+/**
+ * Database adapter for channels table.
+ *
+ * Created by Oskar on 2013-09-18.
+ */
 public class IrcChannelDataSource {
 
     private SQLiteDatabase database;
@@ -18,18 +23,35 @@ public class IrcChannelDataSource {
             MySQLiteHelper.CHANNEL_SERVER,
             MySQLiteHelper.CHANNEL_NAME};
 
+    /**
+     * Creates an object of IrcChannelDataSource.
+     */
     public IrcChannelDataSource() {
         dbHelper = new MySQLiteHelper(ContextManager.CHANNEL_CONTEXT);
     }
 
+    /**
+     * Opens an SQL connection.
+     *
+     * @throws SQLException
+     */
     public void open() throws SQLException {
         database = dbHelper.getWritableDatabase();
     }
 
+    /**
+     * Closes an SQL connection.
+     */
     public void close() {
         dbHelper.close();
     }
 
+    /**
+     * Adds a channel to the channel table.
+     *
+     * @param server - Server which the channel is on
+     * @param name - Name of the channel
+     */
     public void addChannel(String server, String name) {
         ContentValues values = new ContentValues();
         values.put(MySQLiteHelper.CHANNEL_SERVER, server);
@@ -42,11 +64,21 @@ public class IrcChannelDataSource {
         cursor.close();
     }
 
+    /**
+     * Removes a channel from the channel table.
+     *
+     * @param channelName - Name of the channel to remove
+     */
     public void removeChannel(String channelName) {
         database.delete(MySQLiteHelper.TABLE_CHANNELS, MySQLiteHelper.CHANNEL_NAME
                 + " = " + channelName, null);
     }
 
+    /**
+     * Returns all connected channels on the current server.
+     *
+     * @return Channels as a Map with name as key and channel as value
+     */
     public Map<String, IrcChannel> getAllIrcChannels() {
         Map<String, IrcChannel> channels = new HashMap<String, IrcChannel>();
 
