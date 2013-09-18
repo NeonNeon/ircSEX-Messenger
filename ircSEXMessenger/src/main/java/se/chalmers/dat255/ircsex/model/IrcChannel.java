@@ -25,6 +25,11 @@ public class IrcChannel {
         users = new ArrayList<String>();
     }
 
+    /**
+     * Returns the name of the channel.
+     *
+     * @return - Name of the channel
+     */
     public String getChannelName() {
         return channelName;
     }
