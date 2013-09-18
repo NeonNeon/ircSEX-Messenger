@@ -49,7 +49,10 @@ public class IrcServer implements IrcProtocolAdapter.IrcProtocolServerListener {
         datasource = new ChannelDatabaseAdapter();
         datasource.open();
 
-        connectedChannels = datasource.getAllIrcChannels();
+        connectedChannels = new HashMap<String, IrcChannel>();
+        for (String channel : datasource.getAllIrcChannels().keySet()) {
+            joinChannel(channel);
+        }
     }
 
     /**
@@ -107,8 +110,18 @@ public class IrcServer implements IrcProtocolAdapter.IrcProtocolServerListener {
 
     @Override
     public void fireEvent(IrcProtocolAdapter.MessageType type, String message) {
-        if (message == IrcProtocolAdapter.Messages.IOConnected) {
-            protocol.connect(nick, login, realName);
+        switch (type) {
+            case NORMAL:
+                if (message == IrcProtocolAdapter.Messages.IOConnected) {
+                   protocol.connect(nick, login, realName);
+                }
+                break;
+            case ERROR:
+                break;
+            case JOIN:
+                IrcChannel channel = new IrcChannel(message);
+                connectedChannels.put(message, channel);
+                datasource.addChannel(host, message);
         }
     }
 
