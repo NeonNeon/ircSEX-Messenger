@@ -58,9 +58,15 @@ public class IrcProtocolAdapter implements Runnable {
     private void handleReply(String reply) {
         //TODO - handle more cases
         System.out.println(reply);
+        int index;
         if (reply.startsWith("PING ")) {
             write("PONG " + reply.substring(5));
+        } else if ((index = reply.indexOf("JOIN")) != -1) {
+            propagateMessage(MessageType.JOIN, reply.substring(index + 6));
+        } else if ((index = reply.indexOf("PART")) != -1) {
+            propagateMessage(MessageType.PART, reply.substring(index + 5));
         }
+
 
     }
 
@@ -153,7 +159,7 @@ public class IrcProtocolAdapter implements Runnable {
         ircProtocolServerListeners.remove(listener);
     }
 
-    public enum MessageType {NORMAL, ERROR}
+    public enum MessageType {NORMAL, ERROR, JOIN, PART}
 
     public static class ErrorMessages {
         public static String IOError = "Socket disconnected";

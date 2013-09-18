@@ -13,25 +13,38 @@ public class IrcProtocolAdapterTest {
     public static void setup() {
         String server = "irc.chalmers.it";
         int port = 6667;
-        try {
-            ipa = new IrcProtocolAdapter(server, port);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        ipa = new IrcProtocolAdapter(server, port);
         new Thread(ipa).start();
     }
 
     @Test
     public void connectDisconnectScenarioTest() throws InterruptedException {
-        ipa.connect("tord", "tord", "asdgrew haha");
+        ipa.addIrcProtocolServerListener(new IrcProtocolAdapter.IrcProtocolServerListener() {
+            @Override
+            public void fireEvent(IrcProtocolAdapter.MessageType type, String message) {
+                if (message == IrcProtocolAdapter.Messages.IOConnected) {
+                    ipa.connect("tord", "tord", "asdgrew haha");
+                    // This test dosen't really do anything.
 
-        // This test dosen't really do anything.
-        Thread.sleep(9999);
+                    //ipa.disconnect("ircSEX FTW");
+                }
 
-        ipa.disconnect("ircSEX FTW");
-        while (true) {
+            }
 
+            @Override
+            public void fireChannelEvent(IrcProtocolAdapter.MessageType type, String channel, String message) {
+
+            }
+        });
+        try {
+            Thread.sleep(9999);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
+        ipa.partChannel("#itstud");
+        while (true) {
+        }
+
     }
 
 }
