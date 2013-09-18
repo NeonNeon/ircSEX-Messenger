@@ -27,7 +27,8 @@ public class Session {
         datasource = new IrcServerDataSource(context);
         datasource.open();
 
-        servers = datasource.getAllIrcServers();
+        //disabled due to no ui support
+        //servers = datasource.getAllIrcServers();
     }
 
     /**
