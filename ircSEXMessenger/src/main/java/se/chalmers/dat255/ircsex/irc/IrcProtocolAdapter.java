@@ -40,18 +40,28 @@ public class IrcProtocolAdapter implements Runnable {
         createBuffers(host, port);
         String line = "";
         do {
-            System.out.println(line);
-            if (line.startsWith("PING ")) {
-                write("PONG " + line.substring(5));
-            }
+            handleReply(line);
             try {
                 line = input.readLine();
                 // TODO: Resolve nullpointerexception
             } catch (IOException e) {
                 e.printStackTrace();
-                propagateError(ErrorMessages.IOError);
+                propagateMessage(MessageType.ERROR, ErrorMessages.IOError);
             }
         } while(line != null);
+    }
+
+    /**
+     * This method parses a reply and propagates either
+     * a message or a channel message.
+     */
+    private void handleReply(String reply) {
+        //TODO - handle more cases
+        System.out.println(reply);
+        if (reply.startsWith("PING ")) {
+            write("PONG " + reply.substring(5));
+        }
+
     }
 
     /**
@@ -108,7 +118,7 @@ public class IrcProtocolAdapter implements Runnable {
             output = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
         } catch (IOException e) {
             e.printStackTrace();
-            propagateError(ErrorMessages.IOError);
+            propagateMessage(MessageType.ERROR, ErrorMessages.IOError);
         }
         propagateMessage(MessageType.NORMAL, Messages.IOConnected);
     }
@@ -120,13 +130,13 @@ public class IrcProtocolAdapter implements Runnable {
             output.flush();
         } catch (IOException e) {
             e.printStackTrace();
-            propagateError(ErrorMessages.IOError);
+            propagateMessage(MessageType.ERROR, ErrorMessages.IOError);
         }
     }
 
-    private void propagateError(String errorMessage) {
+    private void propagateChannelMessage(MessageType type, String channel, String message) {
         for (IrcProtocolServerListener listener : ircProtocolServerListeners) {
-            listener.fireEvent(MessageType.ERROR, errorMessage);
+            listener.fireChannelEvent(type, channel, message);
         }
     }
 
@@ -158,6 +168,7 @@ public class IrcProtocolAdapter implements Runnable {
      */
     public interface IrcProtocolServerListener {
         public void fireEvent(MessageType type, String message);
+        public void fireChannelEvent(MessageType type, String channel, String message);
     }
 
 }
