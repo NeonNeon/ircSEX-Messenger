@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#EEE">
+    <se.chalmers.dat255.ircsex.view.CollapsibleListHeader
+        style="@style/headingText"
+        android:text="very professional heading"
+        android:textColor="#58585B"/>
+    <View
+        style="@style/headingDivider"
+        android:background="#BEBEBE"/>
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/channel_list"
+        android:choiceMode="singleChoice"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="0dp"/>
+</LinearLayout>

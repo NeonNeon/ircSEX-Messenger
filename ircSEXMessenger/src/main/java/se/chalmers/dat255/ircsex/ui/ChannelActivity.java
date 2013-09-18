@@ -11,11 +11,14 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -29,7 +32,8 @@ import se.chalmers.dat255.ircsex.model.Session;
 
 public class ChannelActivity extends FragmentActivity implements ServerConnectDialogFragment.DialogListener, JoinChannelDialogFragment.DialogListener {
     private DrawerLayout mDrawerLayout;
-    private ListView leftDrawer;
+    private ViewGroup leftDrawer;
+    private ListView channelList;
     private ListView rightDrawer;
     private ActionBarDrawerToggle mDrawerToggle;
 
@@ -48,16 +52,18 @@ public class ChannelActivity extends FragmentActivity implements ServerConnectDi
         mTitle = mDrawerTitle = getTitle();
         connectedChannels = new ArrayList<String>();
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        leftDrawer = (ListView) findViewById(R.id.left_drawer);
+        leftDrawer = (ViewGroup) findViewById(R.id.left_drawer);
         rightDrawer = (ListView) findViewById(R.id.right_drawer);
+        View.inflate(this, R.layout.drawer_left, leftDrawer);
 
+
+        channelList = (ListView) leftDrawer.findViewById(R.id.channel_list);
         // set a custom shadow that overlays the channel_main content when the drawer opens
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow_right, GravityCompat.END);
         // set up the drawer's list view with items and click listener
-        leftDrawer.setAdapter(new ArrayAdapter<String>(this,
-                R.layout.drawer_list_item, connectedChannels));
-        leftDrawer.setOnItemClickListener(new DrawerItemClickListener());
+        channelList.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_list_item, connectedChannels));
+        channelList.setOnItemClickListener(new DrawerItemClickListener());
 
         // enable ActionBar app icon to behave as action to toggle nav drawer
         getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -166,7 +172,7 @@ public class ChannelActivity extends FragmentActivity implements ServerConnectDi
         fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
 
         // update selected item and title, then close the drawer
-        leftDrawer.setItemChecked(position, true);
+        channelList.setItemChecked(position, true);
 //        setTitle(connectedChannels.get(position)); TODO
         mDrawerLayout.closeDrawer(leftDrawer);
     }
@@ -190,7 +196,7 @@ public class ChannelActivity extends FragmentActivity implements ServerConnectDi
 
     private void startServer(String server, int port, String nickname) {
         session.addServer(server, port, nickname);
-//        connectedChannels.add();
+        connectedChannels.add(server+":"+port);
     }
 
     @Override
