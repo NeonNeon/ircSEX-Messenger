@@ -14,6 +14,7 @@ public class IrcChannel {
 
     private final String channelName;
     private final List<String> users;
+    private boolean unread = false;
 
     /**
      * Creates an IrcChannel object.
