@@ -122,6 +122,11 @@ public class IrcServer implements IrcProtocolAdapter.IrcProtocolServerListener {
                 IrcChannel channel = new IrcChannel(message);
                 connectedChannels.put(message, channel);
                 datasource.addChannel(host, message);
+                break;
+            case PART:
+                connectedChannels.remove(message);
+                datasource.removeChannel(message);
+                break;
         }
     }
 
