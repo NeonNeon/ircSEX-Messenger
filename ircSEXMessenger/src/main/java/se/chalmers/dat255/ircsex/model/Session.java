@@ -1,7 +1,11 @@
 package se.chalmers.dat255.ircsex.model;
 
+import android.content.Context;
+
 import java.util.HashMap;
 import java.util.Map;
+
+import se.chalmers.dat255.ircsex.model.db.IrcServerDataSource;
 
 /**
  * This class represents an IRC session. It lists and handles servers.
@@ -9,49 +13,58 @@ import java.util.Map;
  * Created by Oskar on 2013-09-17.
  */
 public class Session {
+
     private Map<String, IrcServer> servers;
+
+    private IrcServerDataSource datasource;
 
     /**
      * Creates an Session object.
      */
-    public Session() {
+    public Session(Context context) {
         servers = new HashMap<String, IrcServer>();
+
+        datasource = new IrcServerDataSource(context);
+        datasource.open();
+
+        servers = datasource.getAllIrcServers();
     }
 
     /**
      * Adds a server and connects to it.
      *
-     * @param server - Server address
+     * @param host - Server address
      * @param port - Server port
      * @param nick - Nickname
      */
-    public void addServer(String server, int port, String nick) {
-        servers.put(server, new IrcServer(server, port, nick));
+    public void addServer(String host, int port, String nick) {
+        addServer(host, port, nick, nick);
     }
 
     /**
      * Adds a server and connects to it.
      *
-     * @param server - Server address
+     * @param host - Server address
      * @param port - Server port
      * @param login - Server login username
      * @param nick - Nickname
      */
-    public void addServer(String server, int port, String login, String nick) {
-        servers.put(server, new IrcServer(server, port, login, nick));
+    public void addServer(String host, int port, String login, String nick) {
+        addServer(host, port, login, nick, "");
     }
 
     /**
      * Adds a server and connects to it.
      *
-     * @param server - Server address
+     * @param host - Server address
      * @param port - Server port
      * @param login - Server login username
      * @param nick - Nickname
      * @param realName - IRL name
      */
-    public void addServer(String server, int port, String login, String nick, String realName) {
-        servers.put(server, new IrcServer(server, port, login, nick, realName));
+    public void addServer(String host, int port, String login, String nick, String realName) {
+        servers.put(host, new IrcServer(host, port, login, nick, realName));
+        datasource.addServer(host, port, login, nick, realName);
     }
 
     /**
