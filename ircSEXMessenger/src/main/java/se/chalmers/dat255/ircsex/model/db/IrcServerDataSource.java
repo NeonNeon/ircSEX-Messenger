@@ -14,16 +14,16 @@ import se.chalmers.dat255.ircsex.model.IrcServer;
 public class IrcServerDataSource {
 
     private SQLiteDatabase database;
-    private MySQLiteHelper dbHelper;
-    private String[] allColumns = { MySQLiteHelper.SERVER_ID,
+    private final MySQLiteHelper dbHelper;
+    private final String[] allColumns = { MySQLiteHelper.SERVER_ID,
             MySQLiteHelper.SERVER_HOST,
             MySQLiteHelper.SERVER_PORT,
             MySQLiteHelper.SERVER_LOGIN,
             MySQLiteHelper.SERVER_NICK,
             MySQLiteHelper.SERVER_REALNAME};
 
-    public IrcServerDataSource(Context context) {
-        dbHelper = new MySQLiteHelper(context);
+    public IrcServerDataSource() {
+        dbHelper = new MySQLiteHelper(ContextManager.SERVER_CONTEXT);
     }
 
     public void open() throws SQLException {

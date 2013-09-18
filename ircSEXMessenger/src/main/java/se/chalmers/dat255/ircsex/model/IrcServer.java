@@ -1,13 +1,13 @@
 package se.chalmers.dat255.ircsex.model;
 
-import android.util.Log;
+import android.content.Context;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import se.chalmers.dat255.ircsex.irc.IrcProtocolAdapter;
+import se.chalmers.dat255.ircsex.model.db.IrcChannelDataSource;
+import se.chalmers.dat255.ircsex.model.db.IrcServerDataSource;
 
 /**
  * This class lists and handles a server, including the protocol adapter and channels.
@@ -23,6 +23,8 @@ public class IrcServer implements IrcProtocolAdapter.IrcProtocolServerListener {
     private final String realName;
 
     private IrcProtocolAdapter protocol;
+
+    private final IrcChannelDataSource datasource;
 
     private final Map<String, IrcChannel> channels;
     private final Map<String, IrcChannel> connectedChannels;
@@ -44,9 +46,13 @@ public class IrcServer implements IrcProtocolAdapter.IrcProtocolServerListener {
         this.realName = realName;
 
         channels = new HashMap<String, IrcChannel>();
-        connectedChannels = new HashMap<String, IrcChannel>();
 
         startProtocolAdapter(host, port, nick, login, realName);
+
+        datasource = new IrcChannelDataSource();
+        datasource.open();
+
+        connectedChannels = datasource.getAllIrcChannels();
     }
 
     /**

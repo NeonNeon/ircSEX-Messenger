@@ -5,6 +5,7 @@ import android.content.Context;
 import java.util.HashMap;
 import java.util.Map;
 
+import se.chalmers.dat255.ircsex.model.db.ContextManager;
 import se.chalmers.dat255.ircsex.model.db.IrcServerDataSource;
 
 /**
@@ -14,21 +15,24 @@ import se.chalmers.dat255.ircsex.model.db.IrcServerDataSource;
  */
 public class Session {
 
-    private Map<String, IrcServer> servers;
+    private final Map<String, IrcServer> servers;
 
-    private IrcServerDataSource datasource;
+    private final IrcServerDataSource datasource;
 
     /**
      * Creates an Session object.
      */
     public Session(Context context) {
-        servers = new HashMap<String, IrcServer>();
+        ContextManager.CHANNEL_CONTEXT = context;
+        ContextManager.SERVER_CONTEXT = context;
 
-        datasource = new IrcServerDataSource(context);
+        datasource = new IrcServerDataSource();
         datasource.open();
 
         //disabled due to no ui support
         //servers = datasource.getAllIrcServers();
+        //Initialize map when above code is commented
+        servers = new HashMap<String, IrcServer>();
     }
 
     /**

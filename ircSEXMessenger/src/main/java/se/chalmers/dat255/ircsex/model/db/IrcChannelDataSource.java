@@ -14,13 +14,13 @@ import se.chalmers.dat255.ircsex.model.IrcChannel;
 public class IrcChannelDataSource {
 
     private SQLiteDatabase database;
-    private MySQLiteHelper dbHelper;
-    private String[] allColumns = { MySQLiteHelper.CHANNEL_ID,
+    private final MySQLiteHelper dbHelper;
+    private final String[] allColumns = { MySQLiteHelper.CHANNEL_ID,
             MySQLiteHelper.CHANNEL_SERVER,
             MySQLiteHelper.CHANNEL_NAME};
 
-    public IrcChannelDataSource(Context context) {
-        dbHelper = new MySQLiteHelper(context);
+    public IrcChannelDataSource() {
+        dbHelper = new MySQLiteHelper(ContextManager.CHANNEL_CONTEXT);
     }
 
     public void open() throws SQLException {
