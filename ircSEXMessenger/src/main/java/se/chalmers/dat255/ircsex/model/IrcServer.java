@@ -1,5 +1,7 @@
 package se.chalmers.dat255.ircsex.model;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,29 +26,6 @@ public class IrcServer implements IrcProtocolAdapter.IrcProtocolServerListener {
 
     private final Map<String, IrcChannel> channels;
     private final Map<String, IrcChannel> connectedChannels;
-
-    /**
-     * Creates an IrcServer.
-     *
-     * @param host - Server address
-     * @param port - Server port
-     * @param nick - Nickname
-     */
-    public IrcServer(String host, int port, String nick) {
-        this(host, port, nick, nick);
-    }
-
-    /**
-     * Creates an IrcServer.
-     *
-     * @param host - Server address
-     * @param port - Server port
-     * @param login - Server username
-     * @param nick - Nickname
-     */
-    public IrcServer(String host, int port, String login, String nick) {
-        this(host, port, login, nick, "");
-    }
 
     /**
      * Creates an IrcServer.
@@ -84,6 +63,15 @@ public class IrcServer implements IrcProtocolAdapter.IrcProtocolServerListener {
         protocol = new IrcProtocolAdapter(host, port);
         protocol.addIrcProtocolServerListener(this);
         new Thread(protocol).start();
+    }
+
+    /**
+     * Returns the serveraddress.
+     *
+     * @return Address to the server
+     */
+    public String getHost() {
+        return host;
     }
 
     /**
