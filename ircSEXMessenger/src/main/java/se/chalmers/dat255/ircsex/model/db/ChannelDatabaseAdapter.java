@@ -15,7 +15,7 @@ import se.chalmers.dat255.ircsex.model.IrcChannel;
  *
  * Created by Oskar on 2013-09-18.
  */
-public class IrcChannelDataSource {
+public class ChannelDatabaseAdapter {
 
     private SQLiteDatabase database;
     private final DatabaseHelper dbHelper;
@@ -24,9 +24,9 @@ public class IrcChannelDataSource {
             DatabaseHelper.CHANNEL_NAME};
 
     /**
-     * Creates an object of IrcChannelDataSource.
+     * Creates an object of ChannelDatabaseAdapter.
      */
-    public IrcChannelDataSource() {
+    public ChannelDatabaseAdapter() {
         dbHelper = new DatabaseHelper(ContextManager.CHANNEL_CONTEXT);
     }
 

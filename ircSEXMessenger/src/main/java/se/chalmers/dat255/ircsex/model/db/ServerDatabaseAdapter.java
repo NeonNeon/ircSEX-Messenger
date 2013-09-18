@@ -15,7 +15,7 @@ import se.chalmers.dat255.ircsex.model.IrcServer;
  *
  * Created by Oskar on 2013-09-18.
  */
-public class IrcServerDataSource {
+public class ServerDatabaseAdapter {
 
     private SQLiteDatabase database;
     private final DatabaseHelper dbHelper;
@@ -27,9 +27,9 @@ public class IrcServerDataSource {
             DatabaseHelper.SERVER_REALNAME};
 
     /**
-     * Creates an object of IrcServerDataSource.
+     * Creates an object of ServerDatabaseAdapter.
      */
-    public IrcServerDataSource() {
+    public ServerDatabaseAdapter() {
         dbHelper = new DatabaseHelper(ContextManager.SERVER_CONTEXT);
     }
 

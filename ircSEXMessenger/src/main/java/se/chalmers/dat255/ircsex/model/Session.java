@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import se.chalmers.dat255.ircsex.model.db.ContextManager;
-import se.chalmers.dat255.ircsex.model.db.IrcServerDataSource;
+import se.chalmers.dat255.ircsex.model.db.ServerDatabaseAdapter;
 
 /**
  * This class represents an IRC session. It lists and handles servers.
@@ -17,7 +17,7 @@ public class Session {
 
     private final Map<String, IrcServer> servers;
 
-    private final IrcServerDataSource datasource;
+    private final ServerDatabaseAdapter datasource;
 
     /**
      * Creates an Session object.
@@ -26,7 +26,7 @@ public class Session {
         ContextManager.CHANNEL_CONTEXT = context;
         ContextManager.SERVER_CONTEXT = context;
 
-        datasource = new IrcServerDataSource();
+        datasource = new ServerDatabaseAdapter();
         datasource.open();
 
         //disabled due to no ui support
