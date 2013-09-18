@@ -1,4 +1,4 @@
-package se.chalmers.dat255.ircsex.model.db;
+package se.chalmers.dat255.ircsex.model.database;
 
 import java.util.HashMap;
 import java.util.Map;

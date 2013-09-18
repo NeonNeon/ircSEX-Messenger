@@ -5,8 +5,8 @@ import android.content.Context;
 import java.util.HashMap;
 import java.util.Map;
 
-import se.chalmers.dat255.ircsex.model.db.ContextManager;
-import se.chalmers.dat255.ircsex.model.db.ServerDatabaseAdapter;
+import se.chalmers.dat255.ircsex.model.database.ContextManager;
+import se.chalmers.dat255.ircsex.model.database.ServerDatabaseAdapter;
 
 /**
  * This class represents an IRC session. It lists and handles servers.

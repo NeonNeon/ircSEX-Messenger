@@ -1,4 +1,4 @@
-package se.chalmers.dat255.ircsex.model.db;
+package se.chalmers.dat255.ircsex.model.database;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -24,7 +24,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String CHANNEL_SERVER = "server";
     public static final String CHANNEL_NAME = "name";
 
-    private static final String DATABASE_NAME = "ircSEX.db";
+    private static final String DATABASE_NAME = "ircSEX.database";
     private static final int DATABASE_VERSION = 1;
 
     // Database creation sql statement

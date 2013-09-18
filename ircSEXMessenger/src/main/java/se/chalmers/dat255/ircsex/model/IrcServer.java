@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import se.chalmers.dat255.ircsex.irc.IrcProtocolAdapter;
-import se.chalmers.dat255.ircsex.model.db.ChannelDatabaseAdapter;
+import se.chalmers.dat255.ircsex.model.database.ChannelDatabaseAdapter;
 
 /**
  * This class lists and handles a server, including the protocol adapter and channels.
@@ -110,5 +110,10 @@ public class IrcServer implements IrcProtocolAdapter.IrcProtocolServerListener {
         if (message == IrcProtocolAdapter.Messages.IOConnected) {
             protocol.connect(nick, login, realName);
         }
+    }
+
+    @Override
+    public void fireChannelEvent(IrcProtocolAdapter.MessageType type, String channel, String message) {
+
     }
 }
