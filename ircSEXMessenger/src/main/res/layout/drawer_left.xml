@@ -16,6 +16,6 @@
         android:layout_height="match_parent"
         android:id="@+id/channel_list"
         android:choiceMode="singleChoice"
-        android:divider="#BEBEBE"
-        android:dividerHeight="0dp"/>
+        android:divider="#DCDCDC"
+        android:dividerHeight="1dp"/>
 </LinearLayout>
