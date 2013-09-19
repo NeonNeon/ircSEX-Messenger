@@ -3,6 +3,7 @@ package se.chalmers.dat255.ircsex.model;
 import android.util.Log;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import se.chalmers.dat255.ircsex.irc.IrcProtocolAdapter;
@@ -27,6 +28,8 @@ public class IrcServer implements IrcProtocolAdapter.IrcProtocolServerListener {
 
     private final Map<String, IrcChannel> channels;
     private final Map<String, IrcChannel> connectedChannels;
+
+    private List<Session.SessionListener> sessionListeners;
 
     /**
      * Creates an IrcServer.
@@ -132,5 +135,13 @@ public class IrcServer implements IrcProtocolAdapter.IrcProtocolServerListener {
     @Override
     public void fireChannelEvent(IrcProtocolAdapter.MessageType type, String channel, String message) {
 
+    }
+
+    public void addSessionListener(Session.SessionListener listener) {
+        sessionListeners.add(listener);
+    }
+
+    public void removeSessionListener(Session.SessionListener listener) {
+        sessionListeners.remove(listener);
     }
 }

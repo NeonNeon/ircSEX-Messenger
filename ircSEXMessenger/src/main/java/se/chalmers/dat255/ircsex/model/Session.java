@@ -112,6 +112,18 @@ public class Session {
         servers.get(host).partChannel(channel);
     }
 
+    public void addListener(SessionListener listener) {
+        for (IrcServer server : servers.values()) {
+            server.addSessionListener(listener);
+        }
+    }
+
+    public void removeListener(SessionListener listener) {
+        for (IrcServer server : servers.values()) {
+            server.removeSessionListener(listener);
+        }
+    }
+
 
     /**
      * Enum to describe events in session.
