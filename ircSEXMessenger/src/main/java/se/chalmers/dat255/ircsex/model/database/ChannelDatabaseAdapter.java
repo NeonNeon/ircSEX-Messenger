@@ -71,7 +71,7 @@ public class ChannelDatabaseAdapter {
      */
     public void removeChannel(String channelName) {
         database.delete(DatabaseHelper.TABLE_CHANNELS, DatabaseHelper.CHANNEL_NAME
-                + " = " + channelName, null);
+                + " = '" + channelName + "'", null);
     }
 
     /**
