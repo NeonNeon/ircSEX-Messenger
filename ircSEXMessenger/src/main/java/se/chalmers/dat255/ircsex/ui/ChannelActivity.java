@@ -164,6 +164,7 @@ public class ChannelActivity extends FragmentActivity implements Session.Session
         session.partChannel(session.getActiveServer().getHost(), channelName);
         connectedChannels.remove(channelName);
         channelListArrayAdapter.notifyDataSetChanged();
+        selectItem(connectedChannels.size()-1);
     }
 
     /* The click listner for ListView in the navigation drawer */
@@ -186,8 +187,10 @@ public class ChannelActivity extends FragmentActivity implements Session.Session
 
         // update selected item and title, then close the drawer
         channelList.setItemChecked(position, true);
-        setTitle(connectedChannels.get(position));
+        String channelName = connectedChannels.get(position);
+        setTitle(channelName);
         getActionBar().setSubtitle(IRC_CHALMERS_IT);
+        session.setActiveChannel(channelName);
         mDrawerLayout.closeDrawer(leftDrawer);
     }
 
@@ -246,7 +249,6 @@ public class ChannelActivity extends FragmentActivity implements Session.Session
             case SERVER_JOIN:
                 Log.e("IRCDEBUG", "Joined channel " + message);
                 connectedChannels.add(message);
-                session.setActiveChannel(message);
                 ChannelActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
