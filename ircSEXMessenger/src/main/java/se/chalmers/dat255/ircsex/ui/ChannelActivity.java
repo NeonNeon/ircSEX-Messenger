@@ -13,7 +13,6 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -21,7 +20,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -83,22 +81,21 @@ public class ChannelActivity extends FragmentActivity implements Session.Session
                 R.string.drawer_close  /* "close drawer" description for accessibility */
         ) {
             public void onDrawerClosed(View view) {
-                getActionBar().setTitle(mTitle);
-                getActionBar().setSubtitle("irc." + mTitle.toString().toLowerCase() + ".com");
+//                getActionBar().setTitle(mTitle);
+//                getActionBar().setSubtitle("irc." + mTitle.toString().toLowerCase() + ".com");
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
 
             public void onDrawerOpened(View drawerView) {
                 mDrawerLayout.closeDrawer(drawerView == rightDrawer ? leftDrawer : rightDrawer);
-                getActionBar().setTitle(mDrawerTitle);
-                getActionBar().setSubtitle(null);
+//                getActionBar().setTitle(mDrawerTitle);
+//                getActionBar().setSubtitle(null);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
         };
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
         if (savedInstanceState == null) {
-            selectItem(0);
             // Annan typ av check för persistence
             startActivityForResult(new Intent(this, NoServersActivity.class), NoServersActivity.REQUEST_SERVER);
             session = new Session(this);
@@ -159,11 +156,14 @@ public class ChannelActivity extends FragmentActivity implements Session.Session
     @Override
     public void onJoinDialogAccept(DialogFragment dialog) {
         String channelName = ((TextView) dialog.getDialog().findViewById(R.id.dialog_join_channel_channel_name)).getText().toString();
-        session.joinChannel(session.getActiveServer().getHost(), "#" + channelName); //TODO: mappa aktiv server korrekt
+        session.joinChannel(session.getActiveServer().getHost(), "#" + channelName);
     }
 
     private void leaveActiveChannel() {
-
+        String channelName = session.getActiveChannel().getChannelName();
+        session.partChannel(session.getActiveServer().getHost(), channelName);
+        connectedChannels.remove(channelName);
+        channelListArrayAdapter.notifyDataSetChanged();
     }
 
     /* The click listner for ListView in the navigation drawer */
@@ -178,7 +178,7 @@ public class ChannelActivity extends FragmentActivity implements Session.Session
         // update the channel_main content by replacing fragments
         Fragment fragment = new ChatFragment();
         Bundle args = new Bundle();
-        args.putInt(ChatFragment.ARG_PLANET_NUMBER, position);
+        args.putInt(ChatFragment.ARG_CHANNEL_INDEX, position);
         fragment.setArguments(args);
 
         FragmentManager fragmentManager = getFragmentManager();
@@ -186,7 +186,7 @@ public class ChannelActivity extends FragmentActivity implements Session.Session
 
         // update selected item and title, then close the drawer
         channelList.setItemChecked(position, true);
-//        setTitle(connectedChannels.get(position)); TODO
+        setTitle(connectedChannels.get(position));
         mDrawerLayout.closeDrawer(leftDrawer);
     }
 
@@ -209,6 +209,7 @@ public class ChannelActivity extends FragmentActivity implements Session.Session
 
     private void startServer(String server, int port, String nickname) {
         session.addServer(server, port, nickname, this);
+        session.setActiveServer(server); // Detta ska egentligen ske i callbacken från IPA
     }
 
     @Override
@@ -249,6 +250,7 @@ public class ChannelActivity extends FragmentActivity implements Session.Session
                     @Override
                     public void run() {
                         channelListArrayAdapter.notifyDataSetChanged();
+                        selectItem(connectedChannels.size()-1);
                     }
                 });
                 break;

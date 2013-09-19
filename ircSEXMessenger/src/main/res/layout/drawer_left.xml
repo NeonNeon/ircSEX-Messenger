@@ -6,7 +6,7 @@
     android:background="#EEE">
     <se.chalmers.dat255.ircsex.view.CollapsibleListHeader
         style="@style/headingText"
-        android:text="very professional heading"
+        android:text="irc.chalmers.it"
         android:textColor="#58585B"/>
     <View
         style="@style/headingDivider"
@@ -16,6 +16,6 @@
         android:layout_height="match_parent"
         android:id="@+id/channel_list"
         android:choiceMode="singleChoice"
-        android:divider="@android:color/transparent"
+        android:divider="#BEBEBE"
         android:dividerHeight="0dp"/>
 </LinearLayout>
