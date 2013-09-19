@@ -116,6 +116,7 @@ public class IrcServer implements IrcProtocolAdapter.IrcProtocolServerListener {
             case NORMAL:
                 if (message == IrcProtocolAdapter.Messages.IOConnected) {
                     protocol.connect(nick, login, realName);
+                    fireSessionEvent(Session.SessionEvent.SERVER_CONNECT, message);
                 }
                 break;
             case ERROR:
@@ -124,10 +125,12 @@ public class IrcServer implements IrcProtocolAdapter.IrcProtocolServerListener {
                 IrcChannel channel = new IrcChannel(message);
                 connectedChannels.put(message, channel);
                 datasource.addChannel(host, message);
+                fireSessionEvent(Session.SessionEvent.SERVER_JOIN, message);
                 break;
             case PART:
                 connectedChannels.remove(message);
                 datasource.removeChannel(message);
+                fireSessionEvent(Session.SessionEvent.SERVER_PART, message);
                 break;
         }
     }
@@ -153,5 +156,11 @@ public class IrcServer implements IrcProtocolAdapter.IrcProtocolServerListener {
      */
     public void removeSessionListener(Session.SessionListener listener) {
         sessionListeners.remove(listener);
+    }
+
+    private void fireSessionEvent(Session.SessionEvent event, String message) {
+        for (Session.SessionListener listener : sessionListeners) {
+            listener.fireSessionEvent(event, message);
+        }
     }
 }
