@@ -111,4 +111,33 @@ public class Session {
     public void partChannel(String host, String channel) {
         servers.get(host).partChannel(channel);
     }
+
+
+    /**
+     * Enum to describe events in session.
+     *
+     * SERVER_CONNECT - Connected to a server
+     * SERVER_DISCONNECT - Disconnected from a server
+     * SERVER_JOIN - Joined a channel
+     * SERVER_PART - Left a channel
+     * CHANNEL_JOIN - New user in a channel
+     * CHANNEL_PART - An user left the channel
+     * CHANNEL_MESSAGE - New message in a channel
+     */
+    public enum SessionEvent {
+        SERVER_CONNECT,
+        SERVER_DISCONNECT,
+        SERVER_JOIN,
+        SERVER_PART,
+        CHANNEL_JOIN,
+        CHANNEL_PART,
+        CHANNEL_MESSAGE
+    }
+
+    /**
+     * Interface for listeners of the Session object.
+     */
+    public interface SessionListener {
+        public void fireSessionEvent(SessionEvent event, String message);
+    }
 }
