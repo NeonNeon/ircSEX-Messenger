@@ -137,10 +137,20 @@ public class IrcServer implements IrcProtocolAdapter.IrcProtocolServerListener {
 
     }
 
+    /**
+     * Add a listener to everything that the session object handles.
+     *
+     * @param listener - Listener to add
+     */
     public void addSessionListener(Session.SessionListener listener) {
         sessionListeners.add(listener);
     }
 
+    /**
+     * Removes a SessionListener.
+     *
+     * @param listener - Listener to remove
+     */
     public void removeSessionListener(Session.SessionListener listener) {
         sessionListeners.remove(listener);
     }

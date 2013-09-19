@@ -112,12 +112,22 @@ public class Session {
         servers.get(host).partChannel(channel);
     }
 
+    /**
+     * Adds a listener.
+     *
+     * @param listener - Listener to add
+     */
     public void addListener(SessionListener listener) {
         for (IrcServer server : servers.values()) {
             server.addSessionListener(listener);
         }
     }
 
+    /**
+     * Removes a listener.
+     *
+     * @param listener - Listener to remove
+     */
     public void removeListener(SessionListener listener) {
         for (IrcServer server : servers.values()) {
             server.removeSessionListener(listener);
