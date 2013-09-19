@@ -8,9 +8,9 @@ import android.widget.TextView;
 /**
  * Created by Wilhelm on 2013-09-18.
  */
-public class CollapsibleListHeader extends TextView {
+public class CollapsableListHeader extends TextView {
 
-    public CollapsibleListHeader(Context context, AttributeSet attrs) {
+    public CollapsableListHeader(Context context, AttributeSet attrs) {
         super(context, attrs);
         setText(getText().toString().toUpperCase());
     }
