@@ -79,11 +79,11 @@ public class ChannelDatabaseAdapter {
      *
      * @return Channels as a Map with name as key and channel as value
      */
-    public Map<String, IrcChannel> getAllIrcChannels() {
+    public Map<String, IrcChannel> getIrcChannelsByServer(String server) {
         Map<String, IrcChannel> channels = new HashMap<String, IrcChannel>();
 
         Cursor cursor = database.query(DatabaseHelper.TABLE_CHANNELS,
-                allColumns, null, null, null, null, null);
+                allColumns, DatabaseHelper.CHANNEL_SERVER +"="+ server, null, null, null, null);
 
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
