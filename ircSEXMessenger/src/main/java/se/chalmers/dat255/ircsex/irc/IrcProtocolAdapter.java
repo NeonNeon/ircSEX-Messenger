@@ -1,5 +1,7 @@
 package se.chalmers.dat255.ircsex.irc;
 
+import android.util.Log;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -43,6 +45,7 @@ public class IrcProtocolAdapter implements Runnable {
             handleReply(line);
             try {
                 line = input.readLine();
+                Log.e("IRC", line);
                 // TODO: Resolve nullpointerexception
             } catch (IOException e) {
                 e.printStackTrace();
@@ -61,6 +64,7 @@ public class IrcProtocolAdapter implements Runnable {
         int index;
         if (reply.startsWith("PING ")) {
             write("PONG " + reply.substring(5));
+            Log.e("IRC", "PONG SENT");
         } else if ((index = reply.indexOf("JOIN")) != -1) {
             propagateMessage(MessageType.JOIN, reply.substring(index + 6));
         } else if ((index = reply.indexOf("PART")) != -1) {

@@ -23,6 +23,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +31,7 @@ import java.util.List;
 import se.chalmers.dat255.ircsex.R;
 import se.chalmers.dat255.ircsex.model.Session;
 
-public class ChannelActivity extends FragmentActivity implements ServerConnectDialogFragment.DialogListener, JoinChannelDialogFragment.DialogListener {
+public class ChannelActivity extends FragmentActivity implements /*ServerConnectDialogFragment.DialogListener,*/ JoinChannelDialogFragment.DialogListener {
     private DrawerLayout mDrawerLayout;
     private ViewGroup leftDrawer;
     private ListView channelList;
@@ -125,13 +126,15 @@ public class ChannelActivity extends FragmentActivity implements ServerConnectDi
         }
         // Handle action buttons
         switch(item.getItemId()) {
+            case R.id.action_add_server:
+                DialogFragment serverConnectDialogFragment = new ServerConnectDialogFragment();
+                serverConnectDialogFragment.show(getSupportFragmentManager(), "serverconnect");
+                break;
             case R.id.action_join_channel:
                 DialogFragment joinChannelDialogFragment = new JoinChannelDialogFragment();
                 joinChannelDialogFragment.show(getSupportFragmentManager(), "joinchannel");
                 break;
-            case R.id.action_add_server:
-                DialogFragment serverConnectDialogFragment = new ServerConnectDialogFragment();
-                serverConnectDialogFragment.show(getSupportFragmentManager(), "serverconnect");
+            case R.id.action_leave_channel:
                 break;
             case R.id.action_user_list:
                 mDrawerLayout.openDrawer(Gravity.END);
@@ -144,13 +147,9 @@ public class ChannelActivity extends FragmentActivity implements ServerConnectDi
     }
 
     @Override
-    public void onDialogAccept(DialogFragment dialog) {
-
-    }
-
-    @Override
-    public void onDialogCancel(DialogFragment dialog) {
-
+    public void onJoinDialogAccept(DialogFragment dialog) {
+        String channelName = ((TextView) dialog.getDialog().findViewById(R.id.dialog_join_channel_channel_name)).getText().toString();
+        session.joinChannel("irc.chalmers.it", "# " + channelName); //TODO: mappa aktiv server korrekt
     }
 
     /* The click listner for ListView in the navigation drawer */

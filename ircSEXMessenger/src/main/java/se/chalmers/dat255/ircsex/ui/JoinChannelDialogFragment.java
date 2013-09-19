@@ -36,12 +36,11 @@ public class JoinChannelDialogFragment extends DialogFragment {
                 .setPositiveButton(R.string.hint_join, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
-                        dialogListener.onDialogAccept(JoinChannelDialogFragment.this);
+                        dialogListener.onJoinDialogAccept(JoinChannelDialogFragment.this);
                     }
                 })
                 .setNegativeButton(R.string.hint_cancel, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        dialogListener.onDialogCancel(JoinChannelDialogFragment.this);
                     }
                 });
         return builder.create();
@@ -53,7 +52,6 @@ public class JoinChannelDialogFragment extends DialogFragment {
     }
 
     public interface DialogListener {
-        public void onDialogAccept(DialogFragment dialog);
-        public void onDialogCancel(DialogFragment dialog);
+        public void onJoinDialogAccept(DialogFragment dialog);
     }
 }
