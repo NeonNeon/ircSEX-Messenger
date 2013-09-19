@@ -1,7 +1,5 @@
 package se.chalmers.dat255.ircsex.model;
 
-import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -128,7 +126,7 @@ public class IrcServer implements IrcProtocolAdapter.IrcProtocolServerListener {
             case NORMAL:
                 if (message == IrcProtocolAdapter.Messages.IOConnected) {
                     protocol.connect(nick, login, realName);
-                    fireSessionEvent(Session.SessionEvent.SERVER_CONNECT, message);
+                    fireSessionEvent(Session.SessionEvent.SERVER_CONNECTION_ESTABLISHED, message);
                 }
                 break;
             case ERROR:
@@ -144,6 +142,8 @@ public class IrcServer implements IrcProtocolAdapter.IrcProtocolServerListener {
                 datasource.removeChannel(message);
                 fireSessionEvent(Session.SessionEvent.SERVER_PART, message);
                 break;
+            case SERVER_REGISTERED:
+                fireSessionEvent(Session.SessionEvent.SERVER_REGISTRATION_COMPLETED, message);
         }
     }
 

@@ -156,7 +156,9 @@ public class Session {
     /**
      * Enum to describe events in session.
      *
-     * SERVER_CONNECT - Connected to a server
+     * SERVER_CONNECTION_ESTABLISHED - Socket opened
+     * SERVER_REGISTRATION_COMPLETED - Registration completed with the server,
+     *      other commands can be sent after this message has been received.
      * SERVER_DISCONNECT - Disconnected from a server
      * SERVER_JOIN - Joined a channel
      * SERVER_PART - Left a channel
@@ -165,7 +167,8 @@ public class Session {
      * CHANNEL_MESSAGE - New message in a channel
      */
     public enum SessionEvent {
-        SERVER_CONNECT,
+        SERVER_CONNECTION_ESTABLISHED,
+        SERVER_REGISTRATION_COMPLETED,
         SERVER_DISCONNECT,
         SERVER_JOIN,
         SERVER_PART,

@@ -3,6 +3,7 @@ package se.chalmers.dat255.ircsex.ui;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -44,6 +45,7 @@ public class ChannelActivity extends FragmentActivity implements Session.Session
 
     private Session session;
     private ArrayAdapter<String> channelListArrayAdapter;
+    private ProgressDialog serverConnectProgressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -222,7 +224,10 @@ public class ChannelActivity extends FragmentActivity implements Session.Session
 
     private void startServer(String server, int port, String nickname) {
         session.addServer(server, port, nickname, this);
-        session.setActiveServer(server); // TODO: Detta ska egentligen ske i callbacken från IPA
+        serverConnectProgressDialog = new ProgressDialog(this);
+        serverConnectProgressDialog.setIndeterminate(true);
+        serverConnectProgressDialog.setMessage("Connecting to " + server);
+        serverConnectProgressDialog.show();
     }
 
     @Override
@@ -252,7 +257,7 @@ public class ChannelActivity extends FragmentActivity implements Session.Session
     @Override
     public void fireSessionEvent(Session.SessionEvent event, String message) {
         switch (event) {
-            case SERVER_CONNECT:
+            case SERVER_CONNECTION_ESTABLISHED:
                 Log.e("IRCDEBUG", "Opened connection " + message);
                 break;
             case SERVER_JOIN:
@@ -266,7 +271,11 @@ public class ChannelActivity extends FragmentActivity implements Session.Session
                     }
                 });
                 break;
-
+            case SERVER_REGISTRATION_COMPLETED:
+                Log.e("IRCDEBUG", "Registration completed");
+                serverConnectProgressDialog.dismiss();
+                session.setActiveServer(IRC_CHALMERS_IT);
+                break;
         }
     }
 }
