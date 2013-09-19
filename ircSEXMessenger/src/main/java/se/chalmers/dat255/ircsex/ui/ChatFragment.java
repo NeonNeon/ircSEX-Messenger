@@ -10,7 +10,7 @@ import android.widget.TextView;
 import se.chalmers.dat255.ircsex.R;
 
 public class ChatFragment extends Fragment {
-    public static final String ARG_CHANNEL_INDEX = "planet_number";
+    public static final String ARG_CHANNEL_INDEX = "channelIndex";
 
     public ChatFragment() {
         // Empty constructor required for fragment subclasses
@@ -20,11 +20,8 @@ public class ChatFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_chat, container, false);
         int i = getArguments().getInt(ARG_CHANNEL_INDEX);
-//        String planet = getResources().getStringArray(R.array.planets_array)[i];
 
-        ((TextView) rootView.findViewById(R.id.textView)).setText("hest");
-        getActivity().setTitle("hest");
-        getActivity().getActionBar().setSubtitle("irc.hest" + ".com");
+        ((TextView) rootView.findViewById(R.id.textView)).setText(i);
         return rootView;
     }
 }
