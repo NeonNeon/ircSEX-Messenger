@@ -97,7 +97,7 @@ public class ChannelActivity extends FragmentActivity implements Session.Session
 
         if (savedInstanceState == null) {
             // Annan typ av check för persistence
-            startActivityForResult(new Intent(this, NoServersActivity.class), NoServersActivity.REQUEST_SERVER);
+            startNoServersActivity();
             session = new Session(this);
             session.setActiveServer(IRC_CHALMERS_IT);
         }
@@ -175,7 +175,16 @@ public class ChannelActivity extends FragmentActivity implements Session.Session
         }
     }
 
+    private void startNoServersActivity() {
+        startActivityForResult(new Intent(this, NoServersActivity.class), NoServersActivity.REQUEST_SERVER);
+    }
+
     private void selectItem(int position) {
+        if (position < 0) {
+            session.removeServer(IRC_CHALMERS_IT);
+            startNoServersActivity();
+            return;
+        }
         // update the channel_main content by replacing fragments
         Fragment fragment = new ChatFragment();
         Bundle args = new Bundle();
@@ -213,7 +222,7 @@ public class ChannelActivity extends FragmentActivity implements Session.Session
 
     private void startServer(String server, int port, String nickname) {
         session.addServer(server, port, nickname, this);
-        session.setActiveServer(server); // Detta ska egentligen ske i callbacken från IPA
+        session.setActiveServer(server); // TODO: Detta ska egentligen ske i callbacken från IPA
     }
 
     @Override
