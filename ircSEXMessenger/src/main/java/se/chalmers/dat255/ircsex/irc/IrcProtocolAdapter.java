@@ -166,11 +166,11 @@ public class IrcProtocolAdapter implements Runnable {
     public enum MessageType {NORMAL, ERROR, JOIN, PART}
 
     public static class ErrorMessages {
-        public static String IOError = "Socket disconnected";
+        public static final String IOError = "Socket disconnected";
     }
 
     public static class Messages {
-        public static String IOConnected = "Socket created";
+        public static final String IOConnected = "Socket created";
     }
 
     /**

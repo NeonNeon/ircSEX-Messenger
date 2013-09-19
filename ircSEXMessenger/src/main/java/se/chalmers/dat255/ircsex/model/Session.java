@@ -42,8 +42,8 @@ public class Session {
      * @param port - Server port
      * @param nick - Nickname
      */
-    public void addServer(String host, int port, String nick) {
-        addServer(host, port, nick, nick);
+    public void addServer(String host, int port, String nick, SessionListener sessionListener) {
+        addServer(host, port, "banned", nick, sessionListener); // TODO: Should not be banned before release.
     }
 
     /**
@@ -54,8 +54,8 @@ public class Session {
      * @param login - Server login username
      * @param nick - Nickname
      */
-    public void addServer(String host, int port, String login, String nick) {
-        addServer(host, port, login, nick, "");
+    public void addServer(String host, int port, String login, String nick, SessionListener sessionListener) {
+        addServer(host, port, login, nick, "", sessionListener);
     }
 
     /**
@@ -67,8 +67,10 @@ public class Session {
      * @param nick - Nickname
      * @param realName - IRL name
      */
-    public void addServer(String host, int port, String login, String nick, String realName) {
-        servers.put(host, new IrcServer(host, port, login, nick, realName));
+    public void addServer(String host, int port, String login, String nick, String realName, SessionListener sessionListener) {
+        IrcServer ircServer = new IrcServer(host, port, login, nick, realName);
+        servers.put(host, ircServer);
+        ircServer.addSessionListener(sessionListener);
         datasource.addServer(host, port, login, nick, realName);
     }
 
@@ -133,7 +135,6 @@ public class Session {
             server.removeSessionListener(listener);
         }
     }
-
 
     /**
      * Enum to describe events in session.

@@ -31,7 +31,7 @@ import java.util.List;
 import se.chalmers.dat255.ircsex.R;
 import se.chalmers.dat255.ircsex.model.Session;
 
-public class ChannelActivity extends FragmentActivity implements /*ServerConnectDialogFragment.DialogListener,*/ JoinChannelDialogFragment.DialogListener {
+public class ChannelActivity extends FragmentActivity implements Session.SessionListener, /*ServerConnectDialogFragment.DialogListener,*/ JoinChannelDialogFragment.DialogListener {
     private DrawerLayout mDrawerLayout;
     private ViewGroup leftDrawer;
     private ListView channelList;
@@ -44,6 +44,7 @@ public class ChannelActivity extends FragmentActivity implements /*ServerConnect
     private boolean drawerOpen;
 
     private Session session;
+    private ArrayAdapter<String> channelListArrayAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +53,7 @@ public class ChannelActivity extends FragmentActivity implements /*ServerConnect
 
         mTitle = mDrawerTitle = getTitle();
         connectedChannels = new ArrayList<String>();
+        channelListArrayAdapter = new ArrayAdapter<String>(this, R.layout.drawer_list_item, connectedChannels);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         leftDrawer = (ViewGroup) findViewById(R.id.left_drawer);
         rightDrawer = (ListView) findViewById(R.id.right_drawer);
@@ -63,7 +65,7 @@ public class ChannelActivity extends FragmentActivity implements /*ServerConnect
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow_right, GravityCompat.END);
         // set up the drawer's list view with items and click listener
-        channelList.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_list_item, connectedChannels));
+        channelList.setAdapter(channelListArrayAdapter);
         channelList.setOnItemClickListener(new DrawerItemClickListener());
 
         // enable ActionBar app icon to behave as action to toggle nav drawer
@@ -100,6 +102,11 @@ public class ChannelActivity extends FragmentActivity implements /*ServerConnect
             startActivityForResult(new Intent(this, NoServersActivity.class), NoServersActivity.REQUEST_SERVER);
             session = new Session(this);
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 
     @Override
@@ -149,7 +156,7 @@ public class ChannelActivity extends FragmentActivity implements /*ServerConnect
     @Override
     public void onJoinDialogAccept(DialogFragment dialog) {
         String channelName = ((TextView) dialog.getDialog().findViewById(R.id.dialog_join_channel_channel_name)).getText().toString();
-        session.joinChannel("irc.chalmers.it", "# " + channelName); //TODO: mappa aktiv server korrekt
+        session.joinChannel("irc.chalmers.it", "#" + channelName); //TODO: mappa aktiv server korrekt
     }
 
     /* The click listner for ListView in the navigation drawer */
@@ -194,8 +201,7 @@ public class ChannelActivity extends FragmentActivity implements /*ServerConnect
     }
 
     private void startServer(String server, int port, String nickname) {
-        session.addServer(server, port, nickname);
-        connectedChannels.add(server+":"+port);
+        session.addServer(server, port, nickname, this);
     }
 
     @Override
@@ -220,5 +226,25 @@ public class ChannelActivity extends FragmentActivity implements /*ServerConnect
         super.onConfigurationChanged(newConfig);
         // Pass any configuration change to the drawer toggles
         mDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    public void fireSessionEvent(Session.SessionEvent event, String message) {
+        switch (event) {
+            case SERVER_CONNECT:
+                Log.e("IRCDEBUG", "Opened connection " + message);
+                break;
+            case SERVER_JOIN:
+                Log.e("IRCDEBUG", "Joined channel " + message);
+                connectedChannels.add(message);
+                ChannelActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        channelListArrayAdapter.notifyDataSetChanged();
+                    }
+                });
+                break;
+
+        }
     }
 }
