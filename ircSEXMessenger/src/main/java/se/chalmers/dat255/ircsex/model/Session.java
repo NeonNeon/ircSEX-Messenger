@@ -43,7 +43,7 @@ public class Session {
      * @param port - Server port
      * @param nick - Nickname
      */
-    public void addServer(String host, int port, String nick, SessionListener sessionListener) {
+    public void addServer(String host, int port, String nick, se.chalmers.dat255.ircsex.model.SessionListener sessionListener) {
         addServer(host, port, "banned", nick, sessionListener); // TODO: Should not be banned before release.
     }
 
@@ -55,7 +55,7 @@ public class Session {
      * @param login - Server login username
      * @param nick - Nickname
      */
-    public void addServer(String host, int port, String login, String nick, SessionListener sessionListener) {
+    public void addServer(String host, int port, String login, String nick, se.chalmers.dat255.ircsex.model.SessionListener sessionListener) {
         addServer(host, port, login, nick, "", sessionListener);
     }
 
@@ -68,7 +68,7 @@ public class Session {
      * @param nick - Nickname
      * @param realName - IRL name
      */
-    public void addServer(String host, int port, String login, String nick, String realName, SessionListener sessionListener) {
+    public void addServer(String host, int port, String login, String nick, String realName, se.chalmers.dat255.ircsex.model.SessionListener sessionListener) {
         IrcServer ircServer = new IrcServer(host, port, login, nick, realName);
         servers.put(host, ircServer);
         ircServer.addSessionListener(sessionListener);
@@ -151,36 +151,5 @@ public class Session {
 
     public void setActiveChannel(String activeChannel) {
         this.activeChannel = activeServer.getConnectedChannel(activeChannel);
-    }
-
-    /**
-     * Enum to describe events in session.
-     *
-     * SERVER_CONNECTION_ESTABLISHED - Socket opened
-     * SERVER_REGISTRATION_COMPLETED - Registration completed with the server,
-     *      other commands can be sent after this message has been received.
-     * SERVER_DISCONNECT - Disconnected from a server
-     * SERVER_JOIN - Joined a channel
-     * SERVER_PART - Left a channel
-     * CHANNEL_JOIN - New user in a channel
-     * CHANNEL_PART - An user left the channel
-     * CHANNEL_MESSAGE - New message in a channel
-     */
-    public enum SessionEvent {
-        SERVER_CONNECTION_ESTABLISHED,
-        SERVER_REGISTRATION_COMPLETED,
-        SERVER_DISCONNECT,
-        SERVER_JOIN,
-        SERVER_PART,
-        CHANNEL_JOIN,
-        CHANNEL_PART,
-        CHANNEL_MESSAGE
-    }
-
-    /**
-     * Interface for listeners of the Session object.
-     */
-    public interface SessionListener {
-        public void fireSessionEvent(SessionEvent event, String message);
     }
 }

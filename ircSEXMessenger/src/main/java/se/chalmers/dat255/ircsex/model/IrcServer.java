@@ -28,7 +28,7 @@ public class IrcServer implements IrcProtocolAdapter.IrcProtocolServerListener {
     private final Map<String, IrcChannel> channels;
     private final Map<String, IrcChannel> connectedChannels;
 
-    private List<Session.SessionListener> sessionListeners;
+    private List<SessionListener> sessionListeners;
 
     /**
      * Creates an IrcServer.
@@ -48,7 +48,7 @@ public class IrcServer implements IrcProtocolAdapter.IrcProtocolServerListener {
 
         channels = new HashMap<String, IrcChannel>();
 
-        sessionListeners = new ArrayList<Session.SessionListener>();
+        sessionListeners = new ArrayList<SessionListener>();
 
         startProtocolAdapter(host, port, nick, login, realName);
 
@@ -126,8 +126,11 @@ public class IrcServer implements IrcProtocolAdapter.IrcProtocolServerListener {
             case NORMAL:
                 if (message == IrcProtocolAdapter.Messages.IOConnected) {
                     protocol.connect(nick, login, realName);
-                    fireSessionEvent(Session.SessionEvent.SERVER_CONNECTION_ESTABLISHED, message);
+                    onServerConnectionEstablished();
                 }
+                break;
+            case SERVER_REGISTERED:
+                onServerRegistrationCompleted();
                 break;
             case ERROR:
                 break;
@@ -135,15 +138,13 @@ public class IrcServer implements IrcProtocolAdapter.IrcProtocolServerListener {
                 IrcChannel channel = new IrcChannel(message);
                 connectedChannels.put(message, channel);
                 datasource.addChannel(host, message);
-                fireSessionEvent(Session.SessionEvent.SERVER_JOIN, message);
+                onServerJoin(message);
                 break;
             case PART:
                 connectedChannels.remove(message);
                 datasource.removeChannel(message);
-                fireSessionEvent(Session.SessionEvent.SERVER_PART, message);
+                onServerPart(message);
                 break;
-            case SERVER_REGISTERED:
-                fireSessionEvent(Session.SessionEvent.SERVER_REGISTRATION_COMPLETED, message);
         }
     }
 
@@ -157,7 +158,7 @@ public class IrcServer implements IrcProtocolAdapter.IrcProtocolServerListener {
      *
      * @param listener - Listener to add
      */
-    public void addSessionListener(Session.SessionListener listener) {
+    public void addSessionListener(SessionListener listener) {
         sessionListeners.add(listener);
     }
 
@@ -166,13 +167,31 @@ public class IrcServer implements IrcProtocolAdapter.IrcProtocolServerListener {
      *
      * @param listener - Listener to remove
      */
-    public void removeSessionListener(Session.SessionListener listener) {
+    public void removeSessionListener(SessionListener listener) {
         sessionListeners.remove(listener);
     }
 
-    private void fireSessionEvent(Session.SessionEvent event, String message) {
-        for (Session.SessionListener listener : sessionListeners) {
-            listener.fireSessionEvent(event, message);
+    private void onServerConnectionEstablished() {
+        for (SessionListener listener : sessionListeners) {
+            listener.onConnectionEstablished(host);
+        }
+    }
+
+    private void onServerRegistrationCompleted() {
+        for (SessionListener listener : sessionListeners) {
+            listener.onRegistrationCompleted(host);
+        }
+    }
+
+    private void onServerJoin(String channelName) {
+        for (SessionListener listener : sessionListeners) {
+            listener.onServerJoin(host, channelName);
+        }
+    }
+
+    private void onServerPart(String channelName) {
+        for (SessionListener listener : sessionListeners) {
+            listener.onServerPart(host, channelName);
         }
     }
 }

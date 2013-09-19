@@ -29,8 +29,9 @@ import java.util.List;
 
 import se.chalmers.dat255.ircsex.R;
 import se.chalmers.dat255.ircsex.model.Session;
+import se.chalmers.dat255.ircsex.model.SessionListener;
 
-public class ChannelActivity extends FragmentActivity implements Session.SessionListener, /*ServerConnectDialogFragment.DialogListener,*/ JoinChannelDialogFragment.DialogListener {
+public class ChannelActivity extends FragmentActivity implements SessionListener, /*ServerConnectDialogFragment.DialogListener,*/ JoinChannelDialogFragment.DialogListener {
     public static final String IRC_CHALMERS_IT = "irc.chalmers.it";
     private DrawerLayout mDrawerLayout;
     private ViewGroup leftDrawer;
@@ -255,27 +256,52 @@ public class ChannelActivity extends FragmentActivity implements Session.Session
     }
 
     @Override
-    public void fireSessionEvent(Session.SessionEvent event, String message) {
-        switch (event) {
-            case SERVER_CONNECTION_ESTABLISHED:
-                Log.e("IRCDEBUG", "Opened connection " + message);
-                break;
-            case SERVER_JOIN:
-                Log.e("IRCDEBUG", "Joined channel " + message);
-                connectedChannels.add(message);
-                ChannelActivity.this.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        channelListArrayAdapter.notifyDataSetChanged();
-                        selectItem(connectedChannels.size()-1);
-                    }
-                });
-                break;
-            case SERVER_REGISTRATION_COMPLETED:
-                Log.e("IRCDEBUG", "Registration completed");
-                serverConnectProgressDialog.dismiss();
-                session.setActiveServer(IRC_CHALMERS_IT);
-                break;
-        }
+    public void onConnectionEstablished(String host) {
+        Log.e("IRCDEBUG", "Opened connection " + host);
+    }
+
+    @Override
+    public void onRegistrationCompleted(String host) {
+        Log.e("IRCDEBUG", "Registration completed");
+        serverConnectProgressDialog.dismiss();
+        session.setActiveServer(IRC_CHALMERS_IT);
+    }
+
+    @Override
+    public void onServerDisconnect(String host, String message) {
+
+    }
+
+    @Override
+    public void onServerJoin(String host, String channelName) {
+        Log.e("IRCDEBUG", "Joined channel " + channelName);
+        connectedChannels.add(channelName);
+        ChannelActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                channelListArrayAdapter.notifyDataSetChanged();
+                selectItem(connectedChannels.size()-1);
+            }
+        });
+    }
+
+    @Override
+    public void onServerPart(String host, String channelName) {
+
+    }
+
+    @Override
+    public void onChannelJoin(String host, String channel, String message) {
+
+    }
+
+    @Override
+    public void onChannelPart(String host, String channel, String message) {
+
+    }
+
+    @Override
+    public void onChannelMessage(String host, String channel, String message) {
+
     }
 }
