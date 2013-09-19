@@ -14,7 +14,8 @@ import se.chalmers.dat255.ircsex.model.database.ServerDatabaseAdapter;
  * Created by Oskar on 2013-09-17.
  */
 public class Session {
-
+    private IrcServer activeServer;
+    private IrcChannel activeChannel;
     private final Map<String, IrcServer> servers;
 
     private final ServerDatabaseAdapter datasource;
@@ -134,6 +135,22 @@ public class Session {
         for (IrcServer server : servers.values()) {
             server.removeSessionListener(listener);
         }
+    }
+
+    public IrcServer getActiveServer() {
+        return activeServer;
+    }
+
+    public void setActiveServer(String activeServer) {
+        this.activeServer = servers.get(activeServer);
+    }
+
+    public IrcChannel getActiveChannel() {
+        return activeChannel;
+    }
+
+    public void setActiveChannel(String activeChannel) {
+        this.activeChannel = activeServer.getConnectedChannel(activeChannel);
     }
 
     /**

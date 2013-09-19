@@ -32,6 +32,7 @@ import se.chalmers.dat255.ircsex.R;
 import se.chalmers.dat255.ircsex.model.Session;
 
 public class ChannelActivity extends FragmentActivity implements Session.SessionListener, /*ServerConnectDialogFragment.DialogListener,*/ JoinChannelDialogFragment.DialogListener {
+    public static final String IRC_CHALMERS_IT = "irc.chalmers.it";
     private DrawerLayout mDrawerLayout;
     private ViewGroup leftDrawer;
     private ListView channelList;
@@ -101,6 +102,7 @@ public class ChannelActivity extends FragmentActivity implements Session.Session
             // Annan typ av check för persistence
             startActivityForResult(new Intent(this, NoServersActivity.class), NoServersActivity.REQUEST_SERVER);
             session = new Session(this);
+            session.setActiveServer(IRC_CHALMERS_IT);
         }
     }
 
@@ -142,6 +144,7 @@ public class ChannelActivity extends FragmentActivity implements Session.Session
                 joinChannelDialogFragment.show(getSupportFragmentManager(), "joinchannel");
                 break;
             case R.id.action_leave_channel:
+                leaveActiveChannel();
                 break;
             case R.id.action_user_list:
                 mDrawerLayout.openDrawer(Gravity.END);
@@ -156,7 +159,11 @@ public class ChannelActivity extends FragmentActivity implements Session.Session
     @Override
     public void onJoinDialogAccept(DialogFragment dialog) {
         String channelName = ((TextView) dialog.getDialog().findViewById(R.id.dialog_join_channel_channel_name)).getText().toString();
-        session.joinChannel("irc.chalmers.it", "#" + channelName); //TODO: mappa aktiv server korrekt
+        session.joinChannel(session.getActiveServer().getHost(), "#" + channelName); //TODO: mappa aktiv server korrekt
+    }
+
+    private void leaveActiveChannel() {
+
     }
 
     /* The click listner for ListView in the navigation drawer */
@@ -237,6 +244,7 @@ public class ChannelActivity extends FragmentActivity implements Session.Session
             case SERVER_JOIN:
                 Log.e("IRCDEBUG", "Joined channel " + message);
                 connectedChannels.add(message);
+                session.setActiveChannel(message);
                 ChannelActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {

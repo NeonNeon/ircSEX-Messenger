@@ -85,6 +85,10 @@ public class IrcServer implements IrcProtocolAdapter.IrcProtocolServerListener {
         return host;
     }
 
+    public IrcChannel getConnectedChannel(String string) {
+        return connectedChannels.get(string);
+    }
+
     /**
      * Joins a channel on the specified server.
      *
