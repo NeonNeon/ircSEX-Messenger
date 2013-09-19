@@ -81,7 +81,7 @@ public class Session {
      * @param host - Server address
      */
     public void removeServer(String host) {
-        servers.remove(host);
+        servers.remove(host).quitServer("Client exited.");
     }
 
     /**

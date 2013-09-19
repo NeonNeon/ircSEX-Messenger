@@ -117,6 +117,11 @@ public class IrcServer implements IrcProtocolAdapter.IrcProtocolServerListener {
         protocol.partChannel(channel);
     }
 
+    public void quitServer(String quitMessage) {
+        protocol.removeIrcProtocolServerListener(this);
+        protocol.disconnect(quitMessage);
+    }
+
     @Override
     public void fireEvent(IrcProtocolAdapter.MessageType type, String message) {
         switch (type) {

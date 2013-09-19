@@ -17,7 +17,8 @@ import java.util.List;
  * Created by oed on 9/16/13.
  */
 public class IrcProtocolAdapter implements Runnable {
-
+    private boolean running = true;
+    private Socket socket;
     private BufferedReader input;
     private BufferedWriter output;
 
@@ -43,15 +44,14 @@ public class IrcProtocolAdapter implements Runnable {
         String line = "";
         do {
             handleReply(line);
+            Log.e("IRC", line);
             try {
                 line = input.readLine();
-                Log.e("IRC", line);
-                // TODO: Resolve nullpointerexception
             } catch (IOException e) {
                 e.printStackTrace();
                 propagateMessage(MessageType.ERROR, ErrorMessages.IOError);
             }
-        } while(line != null);
+        } while(running && line != null);
     }
 
     /**
@@ -93,6 +93,16 @@ public class IrcProtocolAdapter implements Runnable {
      */
     public void disconnect(String message) {
         write("QUIT :" + message);
+        try {
+            input.close();
+            output.close();
+            socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            running = false;
+        }
+
     }
 
     /**
@@ -121,7 +131,6 @@ public class IrcProtocolAdapter implements Runnable {
     }
 
     private void createBuffers(String host, int port) {
-        Socket socket;
         try {
             socket = new Socket(host, port);
             input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
