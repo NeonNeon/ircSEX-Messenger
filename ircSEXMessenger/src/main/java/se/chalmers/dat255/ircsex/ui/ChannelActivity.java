@@ -81,15 +81,15 @@ public class ChannelActivity extends FragmentActivity implements Session.Session
                 R.string.drawer_close  /* "close drawer" description for accessibility */
         ) {
             public void onDrawerClosed(View view) {
-//                getActionBar().setTitle(mTitle);
-//                getActionBar().setSubtitle("irc." + mTitle.toString().toLowerCase() + ".com");
+                setTitle(mTitle);
+                getActionBar().setSubtitle(IRC_CHALMERS_IT);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
 
             public void onDrawerOpened(View drawerView) {
                 mDrawerLayout.closeDrawer(drawerView == rightDrawer ? leftDrawer : rightDrawer);
-//                getActionBar().setTitle(mDrawerTitle);
-//                getActionBar().setSubtitle(null);
+                getActionBar().setTitle(mDrawerTitle);
+                getActionBar().setSubtitle(null);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
         };
@@ -187,6 +187,7 @@ public class ChannelActivity extends FragmentActivity implements Session.Session
         // update selected item and title, then close the drawer
         channelList.setItemChecked(position, true);
         setTitle(connectedChannels.get(position));
+        getActionBar().setSubtitle(IRC_CHALMERS_IT);
         mDrawerLayout.closeDrawer(leftDrawer);
     }
 
