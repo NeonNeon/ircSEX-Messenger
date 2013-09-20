@@ -13,4 +13,8 @@
     <string name="hint_server">Server</string>
     <string name="hint_port">Port</string>
     <string name="hint_nickname">Nickname</string>
+    <string name="action_leave_channel">Leave channel</string>
+    <string name="join_channel">Join channel</string>
+    <string name="hint_channel_name">Channel name</string>
+    <string name="hint_join">Join</string>
 </resources>

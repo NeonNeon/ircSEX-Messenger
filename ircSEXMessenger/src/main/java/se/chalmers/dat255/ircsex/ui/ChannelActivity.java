@@ -3,6 +3,7 @@ package se.chalmers.dat255.ircsex.ui;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -11,24 +12,36 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import se.chalmers.dat255.ircsex.R;
 import se.chalmers.dat255.ircsex.model.Session;
+<<<<<<< HEAD
+=======
+import se.chalmers.dat255.ircsex.model.SessionListener;
+>>>>>>> feature/join-part-channels
 
-public class ChannelActivity extends FragmentActivity implements ServerConnectDialogFragment.DialogListener {
+public class ChannelActivity extends FragmentActivity implements SessionListener, /*ServerConnectDialogFragment.DialogListener,*/ JoinChannelDialogFragment.DialogListener {
+    public static final String IRC_CHALMERS_IT = "irc.chalmers.it";
     private DrawerLayout mDrawerLayout;
-    private ListView leftDrawer;
+    private ViewGroup leftDrawer;
+    private ListView channelList;
     private ListView rightDrawer;
     private ActionBarDrawerToggle mDrawerToggle;
 
@@ -38,6 +51,11 @@ public class ChannelActivity extends FragmentActivity implements ServerConnectDi
     private boolean drawerOpen;
 
     private Session session;
+<<<<<<< HEAD
+=======
+    private ArrayAdapter<String> channelListArrayAdapter;
+    private ProgressDialog serverConnectProgressDialog;
+>>>>>>> feature/join-part-channels
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,17 +64,29 @@ public class ChannelActivity extends FragmentActivity implements ServerConnectDi
 
         mTitle = mDrawerTitle = getTitle();
         connectedChannels = new ArrayList<String>();
+<<<<<<< HEAD
+=======
+        channelListArrayAdapter = new ArrayAdapter<String>(this, R.layout.drawer_list_item, connectedChannels);
+>>>>>>> feature/join-part-channels
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        leftDrawer = (ListView) findViewById(R.id.left_drawer);
+        leftDrawer = (ViewGroup) findViewById(R.id.left_drawer);
         rightDrawer = (ListView) findViewById(R.id.right_drawer);
+        View.inflate(this, R.layout.drawer_left, leftDrawer);
 
+
+        channelList = (ListView) leftDrawer.findViewById(R.id.channel_list);
         // set a custom shadow that overlays the channel_main content when the drawer opens
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow_right, GravityCompat.END);
         // set up the drawer's list view with items and click listener
+<<<<<<< HEAD
         leftDrawer.setAdapter(new ArrayAdapter<String>(this,
                 R.layout.drawer_list_item, connectedChannels));
         leftDrawer.setOnItemClickListener(new DrawerItemClickListener());
+=======
+        channelList.setAdapter(channelListArrayAdapter);
+        channelList.setOnItemClickListener(new DrawerItemClickListener());
+>>>>>>> feature/join-part-channels
 
         // enable ActionBar app icon to behave as action to toggle nav drawer
         getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -72,8 +102,8 @@ public class ChannelActivity extends FragmentActivity implements ServerConnectDi
                 R.string.drawer_close  /* "close drawer" description for accessibility */
         ) {
             public void onDrawerClosed(View view) {
-                getActionBar().setTitle(mTitle);
-                getActionBar().setSubtitle("irc." + mTitle.toString().toLowerCase() + ".com");
+                setTitle(mTitle);
+                getActionBar().setSubtitle(IRC_CHALMERS_IT);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
 
@@ -87,11 +117,23 @@ public class ChannelActivity extends FragmentActivity implements ServerConnectDi
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
         if (savedInstanceState == null) {
+<<<<<<< HEAD
             selectItem(0);
             // Annan typ av check för persistence
             startActivityForResult(new Intent(this, NoServersActivity.class), NoServersActivity.REQUEST_SERVER);
             session = new Session();
+=======
+            // Annan typ av check för persistence
+            startNoServersActivity();
+            session = new Session(this);
+            session.setActiveServer(IRC_CHALMERS_IT);
+>>>>>>> feature/join-part-channels
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 
     @Override
@@ -119,26 +161,38 @@ public class ChannelActivity extends FragmentActivity implements ServerConnectDi
         // Handle action buttons
         switch(item.getItemId()) {
             case R.id.action_add_server:
-                DialogFragment fragment = new ServerConnectDialogFragment();
-                fragment.show(getSupportFragmentManager(), "serverconnect");
-                return true;
+                DialogFragment serverConnectDialogFragment = new ServerConnectDialogFragment();
+                serverConnectDialogFragment.show(getSupportFragmentManager(), "serverconnect");
+                break;
+            case R.id.action_join_channel:
+                DialogFragment joinChannelDialogFragment = new JoinChannelDialogFragment();
+                joinChannelDialogFragment.show(getSupportFragmentManager(), "joinchannel");
+                break;
+            case R.id.action_leave_channel:
+                leaveActiveChannel();
+                break;
             case R.id.action_user_list:
                 mDrawerLayout.openDrawer(Gravity.END);
                 drawerOpen = true;
-                return true;
+                break;
             default:
                 return super.onOptionsItemSelected(item);
         }
+        return true;
     }
 
     @Override
-    public void onDialogAccept(DialogFragment dialog) {
-
+    public void onJoinDialogAccept(DialogFragment dialog) {
+        String channelName = ((TextView) dialog.getDialog().findViewById(R.id.dialog_join_channel_channel_name)).getText().toString();
+        session.joinChannel(session.getActiveServer().getHost(), "#" + channelName);
     }
 
-    @Override
-    public void onDialogCancel(DialogFragment dialog) {
-
+    private void leaveActiveChannel() {
+        String channelName = session.getActiveChannel().getChannelName();
+        session.partChannel(session.getActiveServer().getHost(), channelName);
+        connectedChannels.remove(channelName);
+        channelListArrayAdapter.notifyDataSetChanged();
+        selectItem(connectedChannels.size()-1);
     }
 
     /* The click listner for ListView in the navigation drawer */
@@ -149,19 +203,36 @@ public class ChannelActivity extends FragmentActivity implements ServerConnectDi
         }
     }
 
+    private void startNoServersActivity() {
+        startActivityForResult(new Intent(this, NoServersActivity.class), NoServersActivity.REQUEST_SERVER);
+    }
+
     private void selectItem(int position) {
+        if (position < 0) {
+            session.removeServer(IRC_CHALMERS_IT);
+            startNoServersActivity();
+            return;
+        }
         // update the channel_main content by replacing fragments
         Fragment fragment = new ChatFragment();
         Bundle args = new Bundle();
-        args.putInt(ChatFragment.ARG_PLANET_NUMBER, position);
+        args.putInt(ChatFragment.ARG_CHANNEL_INDEX, position);
         fragment.setArguments(args);
 
         FragmentManager fragmentManager = getFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
 
         // update selected item and title, then close the drawer
+<<<<<<< HEAD
         leftDrawer.setItemChecked(position, true);
 //        setTitle(connectedChannels.get(position)); TODO
+=======
+        channelList.setItemChecked(position, true);
+        String channelName = connectedChannels.get(position);
+        setTitle(channelName);
+        getActionBar().setSubtitle(IRC_CHALMERS_IT);
+        session.setActiveChannel(channelName);
+>>>>>>> feature/join-part-channels
         mDrawerLayout.closeDrawer(leftDrawer);
     }
 
@@ -183,8 +254,16 @@ public class ChannelActivity extends FragmentActivity implements ServerConnectDi
     }
 
     private void startServer(String server, int port, String nickname) {
+<<<<<<< HEAD
         session.addServer(server, port, nickname);
 //        connectedChannels.add();
+=======
+        session.addServer(server, port, nickname, this);
+        serverConnectProgressDialog = new ProgressDialog(this);
+        serverConnectProgressDialog.setIndeterminate(true);
+        serverConnectProgressDialog.setMessage("Connecting to " + server);
+        serverConnectProgressDialog.show();
+>>>>>>> feature/join-part-channels
     }
 
     @Override
@@ -209,5 +288,55 @@ public class ChannelActivity extends FragmentActivity implements ServerConnectDi
         super.onConfigurationChanged(newConfig);
         // Pass any configuration change to the drawer toggles
         mDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    public void onConnectionEstablished(String host) {
+        Log.e("IRCDEBUG", "Opened connection " + host);
+    }
+
+    @Override
+    public void onRegistrationCompleted(String host) {
+        Log.e("IRCDEBUG", "Registration completed");
+        serverConnectProgressDialog.dismiss();
+        session.setActiveServer(IRC_CHALMERS_IT);
+    }
+
+    @Override
+    public void onServerDisconnect(String host, String message) {
+
+    }
+
+    @Override
+    public void onServerJoin(String host, String channelName) {
+        Log.e("IRCDEBUG", "Joined channel " + channelName);
+        connectedChannels.add(channelName);
+        ChannelActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                channelListArrayAdapter.notifyDataSetChanged();
+                selectItem(connectedChannels.size()-1);
+            }
+        });
+    }
+
+    @Override
+    public void onServerPart(String host, String channelName) {
+
+    }
+
+    @Override
+    public void onChannelJoin(String host, String channel, String message) {
+
+    }
+
+    @Override
+    public void onChannelPart(String host, String channel, String message) {
+
+    }
+
+    @Override
+    public void onChannelMessage(String host, String channel, String message) {
+
     }
 }

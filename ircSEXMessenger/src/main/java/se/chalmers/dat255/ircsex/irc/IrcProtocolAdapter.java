@@ -1,5 +1,7 @@
 package se.chalmers.dat255.ircsex.irc;
 
+import android.util.Log;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -15,7 +17,8 @@ import java.util.List;
  * Created by oed on 9/16/13.
  */
 public class IrcProtocolAdapter implements Runnable {
-
+    private boolean running = true;
+    private Socket socket;
     private BufferedReader input;
     private BufferedWriter output;
 
@@ -40,18 +43,38 @@ public class IrcProtocolAdapter implements Runnable {
         createBuffers(host, port);
         String line = "";
         do {
-            System.out.println(line);
-            if (line.startsWith("PING ")) {
-                write("PONG " + line.substring(5));
-            }
+            handleReply(line);
+            Log.e("IRC", line);
             try {
                 line = input.readLine();
                 // TODO: Resolve nullpointerexception
             } catch (IOException e) {
                 e.printStackTrace();
-                propagateError(ErrorMessages.IOError);
+                propagateMessage(MessageType.ERROR, ErrorMessages.IOError);
             }
-        } while(line != null);
+        } while(running && line != null);
+    }
+
+    /**
+     * This method parses a reply and propagates either
+     * a message or a channel message.
+     */
+    private void handleReply(String reply) {
+        //TODO - handle more cases
+        System.out.println(reply);
+        int index;
+        if (reply.startsWith("PING ")) {
+            write("PONG " + reply.substring(5));
+        }
+        else if ((index = reply.indexOf("JOIN")) != -1) {
+            propagateMessage(MessageType.JOIN, reply.substring(index + 6));
+        }
+        else if ((index = reply.indexOf("PART")) != -1) {
+            propagateMessage(MessageType.PART, reply.substring(index + 5));
+        }
+        else if (reply.contains("MODE")) {
+            propagateMessage(MessageType.SERVER_REGISTERED, null);
+        }
     }
 
     /**
@@ -73,17 +96,51 @@ public class IrcProtocolAdapter implements Runnable {
      */
     public void disconnect(String message) {
         write("QUIT :" + message);
+        try {
+            input.close();
+            output.close();
+            socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            running = false;
+        }
+
+    }
+
+    /**
+     * Join a channel.
+     * @param channel - the channel to join
+     */
+    public void joinChannel(String channel) {
+        write("JOIN " + channel);
+    }
+
+    /**
+     * Join a channel that requires a key.
+     * @param channel - the channel to join
+     * @param key - the key to use
+     */
+    public void joinChannel(String channel, String key) {
+        write("JOIN " + channel + " " + key);
+    }
+
+    /**
+     * Part from a channel.
+     * @param channel - the channel to part
+     */
+    public void partChannel(String channel) {
+        write("PART " + channel);
     }
 
     private void createBuffers(String host, int port) {
-        Socket socket;
         try {
             socket = new Socket(host, port);
             input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             output = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
         } catch (IOException e) {
             e.printStackTrace();
-            propagateError(ErrorMessages.IOError);
+            propagateMessage(MessageType.ERROR, ErrorMessages.IOError);
         }
         propagateMessage(MessageType.NORMAL, Messages.IOConnected);
     }
@@ -95,13 +152,13 @@ public class IrcProtocolAdapter implements Runnable {
             output.flush();
         } catch (IOException e) {
             e.printStackTrace();
-            propagateError(ErrorMessages.IOError);
+            propagateMessage(MessageType.ERROR, ErrorMessages.IOError);
         }
     }
 
-    private void propagateError(String errorMessage) {
+    private void propagateChannelMessage(MessageType type, String channel, String message) {
         for (IrcProtocolServerListener listener : ircProtocolServerListeners) {
-            listener.fireEvent(MessageType.ERROR, errorMessage);
+            listener.fireChannelEvent(type, channel, message);
         }
     }
 
@@ -118,14 +175,14 @@ public class IrcProtocolAdapter implements Runnable {
         ircProtocolServerListeners.remove(listener);
     }
 
-    public enum MessageType {NORMAL, ERROR}
+    public enum MessageType {NORMAL, ERROR, SERVER_REGISTERED, JOIN, PART}
 
     public static class ErrorMessages {
-        public static String IOError = "Socket disconnected";
+        public static final String IOError = "Socket disconnected";
     }
 
     public static class Messages {
-        public static String IOConnected = "Socket created";
+        public static final String IOConnected = "Socket created";
     }
 
     /**
@@ -133,6 +190,7 @@ public class IrcProtocolAdapter implements Runnable {
      */
     public interface IrcProtocolServerListener {
         public void fireEvent(MessageType type, String message);
+        public void fireChannelEvent(MessageType type, String channel, String message);
     }
 
 }
