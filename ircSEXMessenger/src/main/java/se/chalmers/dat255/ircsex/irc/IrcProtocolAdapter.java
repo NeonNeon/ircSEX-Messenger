@@ -85,7 +85,7 @@ public class IrcProtocolAdapter implements Runnable {
      * @param realName - the users realname
      */
     public void connect(String nick, String login, String realName) {
-        write("NICK " + nick);
+        setNick(nick);
         write("USER " + login + " 8 * : " + realName);
     }
 
@@ -131,6 +131,15 @@ public class IrcProtocolAdapter implements Runnable {
      */
     public void partChannel(String channel) {
         write("PART " + channel);
+    }
+
+    /**
+     * Set or change the nickname.
+     *
+     * @param nick - the nick to use
+     */
+    public void setNick(String nick) {
+        write("NICK " + nick);
     }
 
     private void createBuffers(String host, int port) {
