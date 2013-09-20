@@ -167,6 +167,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 String newNick = ((EditText) view.findViewById(android.R.id.text1)).getText().toString();
                                 Log.e("IRCDEBUG", "Change nickname to " + newNick);
+                                session.changeNick(newNick);
                             }
                         })
                         .setNegativeButton(R.string.hint_cancel, null)
