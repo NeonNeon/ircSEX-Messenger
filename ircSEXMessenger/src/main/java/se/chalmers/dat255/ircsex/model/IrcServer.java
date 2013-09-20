@@ -59,7 +59,7 @@ public class IrcServer implements IrcProtocolAdapter.IrcProtocolServerListener {
 
         sessionListeners = new ArrayList<SessionListener>();
 
-        startProtocolAdapter(host, port, nick, login, realName);
+        startProtocolAdapter();
 
         datasource = new ChannelDatabaseAdapter();
         datasource.open();
@@ -70,14 +70,8 @@ public class IrcServer implements IrcProtocolAdapter.IrcProtocolServerListener {
     /**
      * Start the protocol adapter.
      * This includes making a connection in a new thread and logging in with the specified login/nick.
-     *
-     * @param host - Server address
-     * @param port - Server port
-     * @param login - Server username
-     * @param nick - Nickname
-     * @param realName - IRL name
      */
-    public void startProtocolAdapter(String host, int port, String nick, String login, String realName) {
+    public void startProtocolAdapter() {
         protocol = new IrcProtocolAdapter(host, port);
         protocol.addIrcProtocolServerListener(this);
         new Thread(protocol).start();
