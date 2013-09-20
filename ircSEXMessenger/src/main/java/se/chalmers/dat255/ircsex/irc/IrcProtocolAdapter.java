@@ -75,6 +75,12 @@ public class IrcProtocolAdapter implements Runnable {
         else if (reply.contains("MODE")) {
             propagateMessage(MessageType.SERVER_REGISTERED, null);
         }
+
+        // Numeric replies - should be after everything else
+        // Should maybe be implemented safer.
+        else if (reply.contains("433")) {
+            propagateMessage(MessageType.ERROR, ErrorMessages.NICK_IN_USE);
+        }
     }
 
     /**
@@ -85,7 +91,7 @@ public class IrcProtocolAdapter implements Runnable {
      * @param realName - the users realname
      */
     public void connect(String nick, String login, String realName) {
-        write("NICK " + nick);
+        setNick(nick);
         write("USER " + login + " 8 * : " + realName);
     }
 
@@ -131,6 +137,15 @@ public class IrcProtocolAdapter implements Runnable {
      */
     public void partChannel(String channel) {
         write("PART " + channel);
+    }
+
+    /**
+     * Set or change the nickname.
+     *
+     * @param nick - the nick to use
+     */
+    public void setNick(String nick) {
+        write("NICK " + nick);
     }
 
     private void createBuffers(String host, int port) {
@@ -179,6 +194,7 @@ public class IrcProtocolAdapter implements Runnable {
 
     public static class ErrorMessages {
         public static final String IOError = "Socket disconnected";
+        public static final String NICK_IN_USE = "Nick already in use";
     }
 
     public static class Messages {

@@ -1,9 +1,12 @@
 package se.chalmers.dat255.ircsex.ui;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -13,7 +16,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
-import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -21,6 +24,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -30,6 +34,8 @@ import java.util.List;
 import se.chalmers.dat255.ircsex.R;
 import se.chalmers.dat255.ircsex.model.Session;
 import se.chalmers.dat255.ircsex.model.SessionListener;
+import se.chalmers.dat255.ircsex.ui.dialog.JoinChannelDialogFragment;
+import se.chalmers.dat255.ircsex.ui.dialog.ServerConnectDialogFragment;
 
 public class ChannelActivity extends FragmentActivity implements SessionListener, /*ServerConnectDialogFragment.DialogListener,*/ JoinChannelDialogFragment.DialogListener {
     public static final String IRC_CHALMERS_IT = "irc.chalmers.it";
@@ -146,9 +152,26 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
             case R.id.action_leave_channel:
                 leaveActiveChannel();
                 break;
-            case R.id.action_user_list:
-                mDrawerLayout.openDrawer(Gravity.END);
-                drawerOpen = true;
+//            case R.id.action_user_list:
+//                mDrawerLayout.openDrawer(Gravity.END);
+//                drawerOpen = true;
+//                break;
+            case R.id.action_settings:
+                AlertDialog.Builder fest = new AlertDialog.Builder(this);
+                LayoutInflater inflater = getLayoutInflater();
+                final View view = inflater.inflate(R.layout.dialog_change_nick, null);
+                fest.setTitle("Change nickname")
+                        .setView(view)
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                String newNick = ((EditText) view.findViewById(android.R.id.text1)).getText().toString();
+                                Log.e("IRCDEBUG", "Change nickname to " + newNick);
+                                session.changeNick(newNick);
+                            }
+                        })
+                        .setNegativeButton(R.string.hint_cancel, null)
+                        .create().show();
                 break;
             default:
                 return super.onOptionsItemSelected(item);

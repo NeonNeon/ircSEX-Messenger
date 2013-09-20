@@ -1,4 +1,4 @@
-package se.chalmers.dat255.ircsex.ui;
+package se.chalmers.dat255.ircsex.ui.dialog;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -11,9 +11,9 @@ import android.view.LayoutInflater;
 import se.chalmers.dat255.ircsex.R;
 
 /**
- * Created by Wilhelm on 2013-09-13.
+ * Created by Johan on 2013-09-17.
  */
-public class ServerConnectDialogFragment extends DialogFragment {
+public class JoinChannelDialogFragment extends DialogFragment {
     private DialogListener dialogListener;
 
     @Override
@@ -30,24 +30,22 @@ public class ServerConnectDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        builder.setView(inflater.inflate(R.layout.dialog_serverconnect, null))
-                .setTitle("Connect to server")
-                .setPositiveButton(R.string.hint_connect, new DialogInterface.OnClickListener() {
+        builder.setView(inflater.inflate(R.layout.dialog_join_channel, null))
+                .setTitle("Join channel")
+                .setPositiveButton(R.string.hint_join, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
-                        dialogListener.onDialogAccept(ServerConnectDialogFragment.this);
+                        dialogListener.onJoinDialogAccept(JoinChannelDialogFragment.this);
                     }
                 })
                 .setNegativeButton(R.string.hint_cancel, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        dialogListener.onDialogCancel(ServerConnectDialogFragment.this);
                     }
                 });
         return builder.create();
     }
 
     public interface DialogListener {
-        public void onDialogAccept(DialogFragment dialog);
-        public void onDialogCancel(DialogFragment dialog);
+        public void onJoinDialogAccept(DialogFragment dialog);
     }
 }
