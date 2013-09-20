@@ -7,7 +7,6 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
-import android.widget.TextView;
 
 import se.chalmers.dat255.ircsex.R;
 
@@ -44,11 +43,6 @@ public class JoinChannelDialogFragment extends DialogFragment {
                     }
                 });
         return builder.create();
-    }
-
-    public void onDialogAccept(DialogFragment dialog){
-        String channelName = ((TextView) dialog.getDialog().findViewById(R.id.dialog_join_channel_channel_name)).getText().toString();
-        //TODO: Send to Rascal
     }
 
     public interface DialogListener {
