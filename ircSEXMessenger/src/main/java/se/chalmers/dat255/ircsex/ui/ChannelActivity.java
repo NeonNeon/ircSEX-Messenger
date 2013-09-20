@@ -27,15 +27,9 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import se.chalmers.dat255.ircsex.R;
 import se.chalmers.dat255.ircsex.model.Session;
-<<<<<<< HEAD
-=======
 import se.chalmers.dat255.ircsex.model.SessionListener;
->>>>>>> feature/join-part-channels
 
 public class ChannelActivity extends FragmentActivity implements SessionListener, /*ServerConnectDialogFragment.DialogListener,*/ JoinChannelDialogFragment.DialogListener {
     public static final String IRC_CHALMERS_IT = "irc.chalmers.it";
@@ -51,11 +45,8 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     private boolean drawerOpen;
 
     private Session session;
-<<<<<<< HEAD
-=======
     private ArrayAdapter<String> channelListArrayAdapter;
     private ProgressDialog serverConnectProgressDialog;
->>>>>>> feature/join-part-channels
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,10 +55,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
 
         mTitle = mDrawerTitle = getTitle();
         connectedChannels = new ArrayList<String>();
-<<<<<<< HEAD
-=======
         channelListArrayAdapter = new ArrayAdapter<String>(this, R.layout.drawer_list_item, connectedChannels);
->>>>>>> feature/join-part-channels
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         leftDrawer = (ViewGroup) findViewById(R.id.left_drawer);
         rightDrawer = (ListView) findViewById(R.id.right_drawer);
@@ -79,14 +67,8 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow_right, GravityCompat.END);
         // set up the drawer's list view with items and click listener
-<<<<<<< HEAD
-        leftDrawer.setAdapter(new ArrayAdapter<String>(this,
-                R.layout.drawer_list_item, connectedChannels));
-        leftDrawer.setOnItemClickListener(new DrawerItemClickListener());
-=======
         channelList.setAdapter(channelListArrayAdapter);
         channelList.setOnItemClickListener(new DrawerItemClickListener());
->>>>>>> feature/join-part-channels
 
         // enable ActionBar app icon to behave as action to toggle nav drawer
         getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -117,17 +99,10 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
         if (savedInstanceState == null) {
-<<<<<<< HEAD
-            selectItem(0);
-            // Annan typ av check för persistence
-            startActivityForResult(new Intent(this, NoServersActivity.class), NoServersActivity.REQUEST_SERVER);
-            session = new Session();
-=======
             // Annan typ av check för persistence
             startNoServersActivity();
             session = new Session(this);
             session.setActiveServer(IRC_CHALMERS_IT);
->>>>>>> feature/join-part-channels
         }
     }
 
@@ -223,16 +198,11 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
 
         // update selected item and title, then close the drawer
-<<<<<<< HEAD
-        leftDrawer.setItemChecked(position, true);
-//        setTitle(connectedChannels.get(position)); TODO
-=======
         channelList.setItemChecked(position, true);
         String channelName = connectedChannels.get(position);
         setTitle(channelName);
         getActionBar().setSubtitle(IRC_CHALMERS_IT);
         session.setActiveChannel(channelName);
->>>>>>> feature/join-part-channels
         mDrawerLayout.closeDrawer(leftDrawer);
     }
 
@@ -254,16 +224,11 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     }
 
     private void startServer(String server, int port, String nickname) {
-<<<<<<< HEAD
-        session.addServer(server, port, nickname);
-//        connectedChannels.add();
-=======
         session.addServer(server, port, nickname, this);
         serverConnectProgressDialog = new ProgressDialog(this);
         serverConnectProgressDialog.setIndeterminate(true);
         serverConnectProgressDialog.setMessage("Connecting to " + server);
         serverConnectProgressDialog.show();
->>>>>>> feature/join-part-channels
     }
 
     @Override
