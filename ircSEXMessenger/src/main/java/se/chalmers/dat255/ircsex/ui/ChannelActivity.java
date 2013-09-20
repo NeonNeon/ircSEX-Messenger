@@ -146,9 +146,12 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
             case R.id.action_leave_channel:
                 leaveActiveChannel();
                 break;
-            case R.id.action_user_list:
-                mDrawerLayout.openDrawer(Gravity.END);
-                drawerOpen = true;
+//            case R.id.action_user_list:
+//                mDrawerLayout.openDrawer(Gravity.END);
+//                drawerOpen = true;
+//                break;
+            case R.id.action_settings:
+
                 break;
             default:
                 return super.onOptionsItemSelected(item);

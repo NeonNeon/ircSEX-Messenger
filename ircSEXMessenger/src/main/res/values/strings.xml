@@ -6,7 +6,7 @@
     <string name="hint_cancel">Cancel</string>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_settings">Change nickname</string>
     <string name="no_servers_connected">You\'re not connected to any servers yet :(</string>
     <string name="action_userlist">View users</string>
     <string name="add_server">Add server</string>
