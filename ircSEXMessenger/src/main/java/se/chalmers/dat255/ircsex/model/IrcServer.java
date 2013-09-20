@@ -197,4 +197,8 @@ public class IrcServer implements IrcProtocolAdapter.IrcProtocolServerListener {
             listener.onServerPart(host, channelName);
         }
     }
+
+    public void changeNick(String newNick) {
+        protocol.setNick(newNick);
+    }
 }
