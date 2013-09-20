@@ -75,6 +75,12 @@ public class IrcProtocolAdapter implements Runnable {
         else if (reply.contains("MODE")) {
             propagateMessage(MessageType.SERVER_REGISTERED, null);
         }
+
+        // Numeric replies - should be after everything else
+        // Should maybe be implemented safer.
+        else if (reply.contains("433")) {
+            propagateMessage(MessageType.ERROR, ErrorMessages.NICK_IN_USE);
+        }
     }
 
     /**
@@ -188,6 +194,7 @@ public class IrcProtocolAdapter implements Runnable {
 
     public static class ErrorMessages {
         public static final String IOError = "Socket disconnected";
+        public static final String NICK_IN_USE = "Nick already in use";
     }
 
     public static class Messages {
