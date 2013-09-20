@@ -1,4 +1,4 @@
-package se.chalmers.dat255.ircsex.ui;
+package se.chalmers.dat255.ircsex.ui.dialog;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -7,14 +7,13 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
-import android.widget.TextView;
 
 import se.chalmers.dat255.ircsex.R;
 
 /**
- * Created by Johan on 2013-09-17.
+ * Created by Wilhelm on 2013-09-13.
  */
-public class JoinChannelDialogFragment extends DialogFragment {
+public class ServerConnectDialogFragment extends DialogFragment {
     private DialogListener dialogListener;
 
     @Override
@@ -31,27 +30,24 @@ public class JoinChannelDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        builder.setView(inflater.inflate(R.layout.dialog_join_channel, null))
-                .setTitle("Join channel")
-                .setPositiveButton(R.string.hint_join, new DialogInterface.OnClickListener() {
+        builder.setView(inflater.inflate(R.layout.dialog_serverconnect, null))
+                .setTitle("Connect to server")
+                .setPositiveButton(R.string.hint_connect, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
-                        dialogListener.onJoinDialogAccept(JoinChannelDialogFragment.this);
+                        dialogListener.onDialogAccept(ServerConnectDialogFragment.this);
                     }
                 })
                 .setNegativeButton(R.string.hint_cancel, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
+                        dialogListener.onDialogCancel(ServerConnectDialogFragment.this);
                     }
                 });
         return builder.create();
     }
 
-    public void onDialogAccept(DialogFragment dialog){
-        String channelName = ((TextView) dialog.getDialog().findViewById(R.id.dialog_join_channel_channel_name)).getText().toString();
-        //TODO: Send to Rascal
-    }
-
     public interface DialogListener {
-        public void onJoinDialogAccept(DialogFragment dialog);
+        public void onDialogAccept(DialogFragment dialog);
+        public void onDialogCancel(DialogFragment dialog);
     }
 }

@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import se.chalmers.dat255.ircsex.R;
+import se.chalmers.dat255.ircsex.ui.dialog.ServerConnectDialogFragment;
 
 /**
  * @author Wilhelm Hedman
