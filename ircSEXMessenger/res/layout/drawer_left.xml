@@ -6,7 +6,7 @@
     android:background="#EEE">
     <se.chalmers.dat255.ircsex.view.CollapsableListHeader
         style="@style/headingText"
-        android:text="irc.chalmers.it"
+        android:text="se.chalmers.dat255.ircsex.irc.chalmers.it"
         android:textColor="#58585B"/>
     <View
         style="@style/headingDivider"

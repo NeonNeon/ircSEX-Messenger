@@ -6,7 +6,7 @@
               android:layout_height="wrap_content">
     <EditText
             android:id="@+id/dialog_serverconnect_server"
-            android:text="irc.chalmers.it"
+            android:text="se.chalmers.dat255.ircsex.irc.chalmers.it"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
