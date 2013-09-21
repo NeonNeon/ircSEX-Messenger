@@ -80,7 +80,7 @@ public class ServerDatabaseAdapter {
      */
     public void removeServer(String host) {
         database.delete(DatabaseHelper.TABLE_SERVERS, DatabaseHelper.SERVER_HOST
-                + " = " + host, null);
+                + " = '" + host + "'", null);
     }
 
     /**
