@@ -12,5 +12,5 @@
         android:layout_marginRight="4dp"
         android:layout_marginBottom="16dp"
         android:inputType="textVisiblePassword"
-        android:hint="New nickname on se.chalmers.dat255.ircsex.irc.chalmers.it"/>
+        android:hint="irc.chalmers.it"/>
 </LinearLayout>
