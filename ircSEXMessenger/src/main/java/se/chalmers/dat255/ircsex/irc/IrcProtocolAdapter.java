@@ -43,8 +43,8 @@ public class IrcProtocolAdapter implements Runnable {
         createBuffers(host, port);
         String line = "";
         do {
-            handleReply(line);
             Log.e("IRC", line);
+            handleReply(line);
             try {
                 line = input.readLine();
                 // TODO: Resolve nullpointerexception
@@ -53,6 +53,18 @@ public class IrcProtocolAdapter implements Runnable {
                 propagateMessage(MessageType.ERROR, ErrorMessages.IOError);
             }
         } while(running && line != null);
+    }
+
+    private void createBuffers(String host, int port) {
+        try {
+            socket = new Socket(host, port);
+            input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            output = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+        } catch (IOException e) {
+            e.printStackTrace();
+            propagateMessage(MessageType.ERROR, ErrorMessages.IOError);
+        }
+        propagateMessage(MessageType.NORMAL, Messages.IOConnected);
     }
 
     /**
@@ -146,18 +158,6 @@ public class IrcProtocolAdapter implements Runnable {
      */
     public void setNick(String nick) {
         write("NICK " + nick);
-    }
-
-    private void createBuffers(String host, int port) {
-        try {
-            socket = new Socket(host, port);
-            input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            output = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-        } catch (IOException e) {
-            e.printStackTrace();
-            propagateMessage(MessageType.ERROR, ErrorMessages.IOError);
-        }
-        propagateMessage(MessageType.NORMAL, Messages.IOConnected);
     }
 
     private synchronized void write(String string) {
