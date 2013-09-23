@@ -84,7 +84,7 @@ public class IrcProtocolAdapter implements Runnable {
         else if ((index = reply.indexOf("PART")) != -1) {
             listener.partedChannel(reply.substring(index + 5));
         }
-        else if (reply.contains("MODE")) {
+        else if (reply.contains(":+wx")) { // TODO: This is hardcoded.
             listener.serverRegistered();
         }
 
