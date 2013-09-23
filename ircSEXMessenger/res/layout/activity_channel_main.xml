@@ -9,13 +9,15 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <LinearLayout
+    <ListView
+        android:id="@+id/left_drawer"
         android:layout_width="280dp"
         android:layout_height="match_parent"
-        android:id="@+id/left_drawer"
         android:layout_gravity="start"
-        android:orientation="vertical">
-    </LinearLayout>
+        android:choiceMode="singleChoice"
+        android:divider="#DCDCDC"
+        android:dividerHeight="1dp"
+        android:background="#EEE"/>
 
     <ListView
         android:id="@+id/right_drawer"

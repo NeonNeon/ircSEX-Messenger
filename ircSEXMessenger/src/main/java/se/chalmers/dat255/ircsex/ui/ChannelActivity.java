@@ -2,7 +2,6 @@ package se.chalmers.dat255.ircsex.ui;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.ProgressDialog;
@@ -21,7 +20,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -36,22 +34,25 @@ import se.chalmers.dat255.ircsex.model.Session;
 import se.chalmers.dat255.ircsex.model.SessionListener;
 import se.chalmers.dat255.ircsex.ui.dialog.JoinChannelDialogFragment;
 import se.chalmers.dat255.ircsex.ui.dialog.ServerConnectDialogFragment;
+import se.chalmers.dat255.ircsex.view.IrcChannelItem;
+import se.chalmers.dat255.ircsex.view.IrcConnectionItem;
+import se.chalmers.dat255.ircsex.view.IrcConnectionItemAdapter;
+import se.chalmers.dat255.ircsex.view.IrcServerHeader;
 
-public class ChannelActivity extends FragmentActivity implements SessionListener, /*ServerConnectDialogFragment.DialogListener,*/ JoinChannelDialogFragment.DialogListener {
+public class ChannelActivity extends FragmentActivity implements SessionListener, JoinChannelDialogFragment.DialogListener {
     public static final String IRC_CHALMERS_IT = "irc.chalmers.it";
     private DrawerLayout mDrawerLayout;
-    private ViewGroup leftDrawer;
-    private ListView channelList;
+    private ListView leftDrawer;
     private ListView rightDrawer;
     private ActionBarDrawerToggle mDrawerToggle;
 
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
-    private List<String> connectedChannels;
+    private List<IrcConnectionItem> connectedChannels;
+    private ArrayAdapter channelListArrayAdapter;
     private boolean drawerOpen;
 
     private Session session;
-    private ArrayAdapter<String> channelListArrayAdapter;
     private ProgressDialog serverConnectProgressDialog;
 
     @Override
@@ -60,21 +61,19 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         setContentView(R.layout.activity_channel_main);
 
         mTitle = mDrawerTitle = getTitle();
-        connectedChannels = new ArrayList<String>();
-        channelListArrayAdapter = new ArrayAdapter<String>(this, R.layout.drawer_list_item, connectedChannels);
+        connectedChannels = new ArrayList<IrcConnectionItem>();
+        channelListArrayAdapter = new IrcConnectionItemAdapter(this, connectedChannels);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        leftDrawer = (ViewGroup) findViewById(R.id.left_drawer);
-        rightDrawer = (ListView) findViewById(R.id.right_drawer);
-        View.inflate(this, R.layout.drawer_left, leftDrawer);
-
-
-        channelList = (ListView) leftDrawer.findViewById(R.id.channel_list);
-        // set a custom shadow that overlays the channel_main content when the drawer opens
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow_right, GravityCompat.END);
+
+        leftDrawer = (ListView) findViewById(R.id.left_drawer);
+        rightDrawer = (ListView) findViewById(R.id.right_drawer);
+
+
         // set up the drawer's list view with items and click listener
-        channelList.setAdapter(channelListArrayAdapter);
-        channelList.setOnItemClickListener(new DrawerItemClickListener());
+        leftDrawer.setAdapter(channelListArrayAdapter);
+        leftDrawer.setOnItemClickListener(new DrawerItemClickListener());
 
         // enable ActionBar app icon to behave as action to toggle nav drawer
         getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -221,8 +220,8 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
 
         // update selected item and title, then close the drawer
-        channelList.setItemChecked(position, true);
-        String channelName = connectedChannels.get(position);
+        leftDrawer.setItemChecked(position, true);
+        String channelName = connectedChannels.get(position).getText();
         setTitle(channelName);
         getActionBar().setSubtitle(IRC_CHALMERS_IT);
         session.setActiveChannel(channelName);
@@ -284,10 +283,17 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     }
 
     @Override
-    public void onRegistrationCompleted(String host) {
+    public void onRegistrationCompleted(final String host) {
         Log.e("IRCDEBUG", "Registration completed");
         serverConnectProgressDialog.dismiss();
-        session.setActiveServer(IRC_CHALMERS_IT);
+        session.setActiveServer(host);
+        ChannelActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                connectedChannels.add(new IrcServerHeader(host));
+                channelListArrayAdapter.notifyDataSetChanged();
+            }
+        });
     }
 
     @Override
@@ -296,12 +302,12 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     }
 
     @Override
-    public void onServerJoin(String host, String channelName) {
+    public void onServerJoin(String host, final String channelName) {
         Log.e("IRCDEBUG", "Joined channel " + channelName);
-        connectedChannels.add(channelName);
         ChannelActivity.this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                connectedChannels.add(new IrcChannelItem(channelName));
                 channelListArrayAdapter.notifyDataSetChanged();
                 selectItem(connectedChannels.size()-1);
             }

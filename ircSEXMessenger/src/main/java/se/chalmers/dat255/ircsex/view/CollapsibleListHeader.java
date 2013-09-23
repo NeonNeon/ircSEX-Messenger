@@ -13,22 +13,25 @@ import android.widget.TextView;
 /**
  * Created by Wilhelm on 2013-09-18.
  */
-public class CollapsableListHeader extends TextView {
+public class CollapsibleListHeader extends TextView {
     private String header;
 
-    public CollapsableListHeader(Context context, AttributeSet attrs) {
+    public CollapsibleListHeader(Context context, AttributeSet attrs) {
         super(context, attrs);
-        header = getText().toString().toUpperCase();
+    }
+
+    public void setServerName(String serverName) {
+        header = serverName.toUpperCase();
         setText(header);
     }
 
-    public void setDisabled() {
+    public void setDisconnected() {
         Spannable wordToSpan = new SpannableString(header + " (DISCONNECTED)");
         wordToSpan.setSpan(new ForegroundColorSpan(0xFFFF4444), header.length(), wordToSpan.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         setText(wordToSpan);
     }
 
-    public void setEnabled() {
+    public void setConnected() {
         setText(header);
     }
 }
