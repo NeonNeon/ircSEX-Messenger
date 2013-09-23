@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import se.chalmers.dat255.ircsex.irc.IrcProtocolAdapter;
+import se.chalmers.dat255.ircsex.irc.IrcProtocolListener;
 import se.chalmers.dat255.ircsex.model.database.ChannelDatabaseAdapter;
 
 /**
@@ -13,7 +14,7 @@ import se.chalmers.dat255.ircsex.model.database.ChannelDatabaseAdapter;
  *
  * Created by Oskar on 2013-09-17.
  */
-public class IrcServer implements IrcProtocolAdapter.IrcProtocolServerListener {
+public class IrcServer implements IrcProtocolListener {
 
     private final String host;
     private final int port;
@@ -72,8 +73,7 @@ public class IrcServer implements IrcProtocolAdapter.IrcProtocolServerListener {
      * This includes making a connection in a new thread and logging in with the specified login/nick.
      */
     public void startProtocolAdapter() {
-        protocol = new IrcProtocolAdapter(host, port);
-        protocol.addIrcProtocolServerListener(this);
+        protocol = new IrcProtocolAdapter(host, port, this);
         new Thread(protocol).start();
     }
 
@@ -119,42 +119,10 @@ public class IrcServer implements IrcProtocolAdapter.IrcProtocolServerListener {
     }
 
     public void quitServer(String quitMessage) {
-        protocol.removeIrcProtocolServerListener(this);
         protocol.disconnect(quitMessage);
     }
 
-    @Override
-    public void fireEvent(IrcProtocolAdapter.MessageType type, String message) {
-        switch (type) {
-            case NORMAL:
-                if (message == IrcProtocolAdapter.Messages.IOConnected) {
-                    protocol.connect(nick, login, realName);
-                    onServerConnectionEstablished();
-                }
-                break;
-            case SERVER_REGISTERED:
-                onServerRegistrationCompleted();
-                break;
-            case ERROR:
-                break;
-            case JOIN:
-                IrcChannel channel = new IrcChannel(message);
-                connectedChannels.put(message, channel);
-                datasource.addChannel(host, message);
-                onServerJoin(message);
-                break;
-            case PART:
-                connectedChannels.remove(message);
-                datasource.removeChannel(message);
-                onServerPart(message);
-                break;
-        }
-    }
 
-    @Override
-    public void fireChannelEvent(IrcProtocolAdapter.MessageType type, String channel, String message) {
-
-    }
 
     /**
      * Add a listener to everything that the session object handles.
@@ -200,5 +168,46 @@ public class IrcServer implements IrcProtocolAdapter.IrcProtocolServerListener {
 
     public void changeNick(String newNick) {
         protocol.setNick(newNick);
+    }
+
+    @Override
+    public void serverConnected() {
+        protocol.connect(nick, login, realName);
+        onServerConnectionEstablished();
+    }
+
+    @Override
+    public void serverRegistered() {
+        onServerRegistrationCompleted();
+    }
+
+    @Override
+    public void joinedChannel(String channelName) {
+        IrcChannel channel = new IrcChannel(channelName);
+        connectedChannels.put(channelName, channel);
+        datasource.addChannel(host, channelName);
+        onServerJoin(channelName);
+    }
+
+    @Override
+    public void partedChannel(String channelName) {
+        connectedChannels.remove(channelName);
+        datasource.removeChannel(channelName);
+        onServerPart(channelName);
+    }
+
+    @Override
+    public void nickChanged(String oldNick, String newNick) {
+
+    }
+
+    @Override
+    public void nickChangeError() {
+
+    }
+
+    @Override
+    public void ServerDisconnected() {
+
     }
 }
