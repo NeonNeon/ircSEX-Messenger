@@ -13,13 +13,27 @@ class IrcProtocolAdapterEventsTest extends Specification {
         ipa.addIrcProtocolServerListener(subscriber)
     }
 
-    def "test mock"() {
+    def "test join event sent"() {
         when:
         def command = ":tord!~banned@smurf-EAF5674.dynamic.se.alltele.net JOIN :"
-        def channel = "#fest"
         ipa.handleReply(command + channel)
 
         then:
-        1 * subscriber.fireEvent(IrcProtocolAdapter.MessageType.JOIN, "#fest")
+        1 * subscriber.fireEvent(IrcProtocolAdapter.MessageType.JOIN, channel)
+
+        where:
+        channel << ["#fest", "#svinstia", "#party"]
+    }
+
+    def "test part event sent"() {
+        when:
+        def command = "PART "
+        ipa.handleReply(command + channel)
+
+        then:
+        1 * subscriber.fireEvent(IrcProtocolAdapter.MessageType.PART, channel)
+
+        where:
+        channel << ["#fest", "#svinstia", "#party"]
     }
 }
