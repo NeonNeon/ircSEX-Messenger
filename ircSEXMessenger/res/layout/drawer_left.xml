@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     android:background="#EEE">
     <se.chalmers.dat255.ircsex.view.CollapsableListHeader
+        android:id="@+id/testHeader"
         style="@style/headingText"
         android:text="irc.chalmers.it"
         android:textColor="#58585B"/>
