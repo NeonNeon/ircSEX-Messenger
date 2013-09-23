@@ -9,10 +9,11 @@ import spock.lang.Specification
  */
 class IrcProtocolAdapterTest extends Specification {
     IrcProtocolAdapter ircProtocolAdapter
+    IrcProtocolListener subscriber = Mock()
     MockIrcServer mockIrcServer
 
     def setup() {
-        ircProtocolAdapter = new IrcProtocolAdapter("localhost", 80)
+        ircProtocolAdapter = new IrcProtocolAdapter("localhost", 80, subscriber)
         mockIrcServer = new MockIrcServer()
         ircProtocolAdapter.output = mockIrcServer.getAdapterOutputStream()
     }

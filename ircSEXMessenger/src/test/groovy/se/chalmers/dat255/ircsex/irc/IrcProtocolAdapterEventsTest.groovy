@@ -6,11 +6,10 @@ import spock.lang.Specification
  * Created by Wilhelm on 2013-09-22.
  */
 class IrcProtocolAdapterEventsTest extends Specification {
-    IrcProtocolAdapter ipa = new IrcProtocolAdapter("localhost", 80)
-    IrcProtocolAdapter.IrcProtocolServerListener subscriber = Mock()
+    IrcProtocolListener subscriber = Mock()
+    IrcProtocolAdapter ipa = new IrcProtocolAdapter("localhost", 80, subscriber)
 
     def setup() {
-        ipa.addIrcProtocolServerListener(subscriber)
     }
 
     def "test join event sent"() {
@@ -19,7 +18,7 @@ class IrcProtocolAdapterEventsTest extends Specification {
         ipa.handleReply(command + channel)
 
         then:
-        1 * subscriber.fireEvent(IrcProtocolAdapter.MessageType.JOIN, channel)
+        1 * subscriber.joinedChannel(channel)
 
         where:
         channel << ["#fest", "#svinstia", "#party"]
@@ -31,7 +30,7 @@ class IrcProtocolAdapterEventsTest extends Specification {
         ipa.handleReply(command + channel)
 
         then:
-        1 * subscriber.fireEvent(IrcProtocolAdapter.MessageType.PART, channel)
+        1 * subscriber.partedChannel(channel)
 
         where:
         channel << ["#fest", "#svinstia", "#party"]
