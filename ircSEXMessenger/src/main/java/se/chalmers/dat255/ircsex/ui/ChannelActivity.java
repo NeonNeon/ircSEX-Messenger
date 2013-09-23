@@ -54,6 +54,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
 
     private Session session;
     private ProgressDialog serverConnectProgressDialog;
+    private int selected = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -156,10 +157,10 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
 //                drawerOpen = true;
 //                break;
             case R.id.action_settings:
-                AlertDialog.Builder fest = new AlertDialog.Builder(this);
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 LayoutInflater inflater = getLayoutInflater();
                 final View view = inflater.inflate(R.layout.dialog_change_nick, null);
-                fest.setTitle("Change nickname")
+                builder.setTitle("Change nickname")
                         .setView(view)
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             @Override
@@ -187,7 +188,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     private void leaveActiveChannel() {
         String channelName = session.getActiveChannel().getChannelName();
         session.partChannel(session.getActiveServer().getHost(), channelName);
-        connectedChannels.remove(channelName);
+        connectedChannels.remove(selected);
         channelListArrayAdapter.notifyDataSetChanged();
         selectItem(connectedChannels.size()-1);
     }
@@ -226,6 +227,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         getActionBar().setSubtitle(IRC_CHALMERS_IT);
         session.setActiveChannel(channelName);
         mDrawerLayout.closeDrawer(leftDrawer);
+        selected = position;
     }
 
     @Override
