@@ -14,16 +14,15 @@ public class IrcChannel {
 
     private final String channelName;
     private final List<String> users;
-    private boolean unread = false;
 
     /**
      * Creates an IrcChannel object.
      *
      * @param channelName - Name of channel
      */
-    public IrcChannel(String channelName) {
+    public IrcChannel(String channelName, List<String> users) {
         this.channelName = channelName;
-        users = new ArrayList<String>();
+        this.users = users;
     }
 
     /**
@@ -33,5 +32,14 @@ public class IrcChannel {
      */
     public String getChannelName() {
         return channelName;
+    }
+
+    /**
+     * Returns a list with the names of all users.
+     *
+     * @return - A list with all users
+     */
+    public List<String> getUsers() {
+        return users;
     }
 }
