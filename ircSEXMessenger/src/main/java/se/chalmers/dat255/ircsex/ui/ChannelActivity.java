@@ -2,7 +2,6 @@ package se.chalmers.dat255.ircsex.ui;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.ProgressDialog;
@@ -32,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import se.chalmers.dat255.ircsex.R;
+import se.chalmers.dat255.ircsex.model.MessageArrayAdapter;
 import se.chalmers.dat255.ircsex.model.Session;
 import se.chalmers.dat255.ircsex.model.SessionListener;
 import se.chalmers.dat255.ircsex.ui.dialog.JoinChannelDialogFragment;
@@ -43,6 +43,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     private ViewGroup leftDrawer;
     private ListView channelList;
     private ListView rightDrawer;
+    private ListView messageList;
     private ActionBarDrawerToggle mDrawerToggle;
 
     private CharSequence mDrawerTitle;
@@ -53,6 +54,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     private Session session;
     private ArrayAdapter<String> channelListArrayAdapter;
     private ProgressDialog serverConnectProgressDialog;
+    private MessageArrayAdapter messageArrayAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +68,10 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         leftDrawer = (ViewGroup) findViewById(R.id.left_drawer);
         rightDrawer = (ListView) findViewById(R.id.right_drawer);
         View.inflate(this, R.layout.drawer_left, leftDrawer);
-
+        messageList = (ListView) findViewById(R.id.activity_channel_main_message_list);
+        messageArrayAdapter = new MessageArrayAdapter(this);
+        messageList.setAdapter(messageArrayAdapter);
+        addItems();
 
         channelList = (ListView) leftDrawer.findViewById(R.id.channel_list);
         // set a custom shadow that overlays the channel_main content when the drawer opens
@@ -218,7 +223,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         fragment.setArguments(args);
 
         FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
+        fragmentManager.beginTransaction().replace(R.id.channel_layout, fragment).commit();
 
         // update selected item and title, then close the drawer
         channelList.setItemChecked(position, true);
@@ -258,6 +263,12 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     public void setTitle(CharSequence title) {
         mTitle = title;
         getActionBar().setTitle(mTitle);
+    }
+
+    public void addItems() {
+        messageArrayAdapter.add(new SentChatBubble("Me", "GO TO BED PLS"));
+        messageArrayAdapter.add(new RecievedChatBubble("Alkohest", "ne :PPPPPPPPPPPPPPPPPPPPPPPP"));
+        messageArrayAdapter.add(new SentChatBubble("Me", "XDDDDDDDDDDDDDD"));
     }
 
     /**

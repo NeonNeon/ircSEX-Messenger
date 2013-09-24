@@ -21,7 +21,7 @@ public class ChatFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_chat, container, false);
         int i = getArguments().getInt(ARG_CHANNEL_INDEX);
 
-        ((TextView) rootView.findViewById(R.id.textView)).setText("IRCChannel at index "+i);
+        ((TextView) rootView.findViewById(R.id.fragment_chat_textView)).setText("IRCChannel at index "+i);
         return rootView;
     }
 }
