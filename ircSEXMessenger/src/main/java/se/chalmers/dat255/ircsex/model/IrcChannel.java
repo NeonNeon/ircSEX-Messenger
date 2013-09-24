@@ -1,6 +1,7 @@
 package se.chalmers.dat255.ircsex.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import se.chalmers.dat255.ircsex.irc.IrcProtocolAdapter;
@@ -41,6 +42,25 @@ public class IrcChannel {
      */
     public void setUsers(List<String> users) {
         this.users = users;
+    }
+
+    /**
+     * Adds a user to the list of users.
+     *
+     * @param user - The user who joined
+     */
+    public void userJoined(String user) {
+        users.add(user);
+        Collections.sort(users);
+    }
+
+    /**
+     * Removes a user from the list of users.
+     *
+     * @param user - The user who left
+     */
+    public void userParted(String user) {
+        users.remove(user);
     }
 
     /**

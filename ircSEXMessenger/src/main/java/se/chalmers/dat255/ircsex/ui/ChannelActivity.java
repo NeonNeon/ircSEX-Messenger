@@ -291,6 +291,11 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     }
 
     @Override
+    public void onDisconnect(String host) {
+
+    }
+
+    @Override
     public void onServerDisconnect(String host, String message) {
 
     }
@@ -314,17 +319,17 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     }
 
     @Override
-    public void onChannelJoin(String host, String channel, String message) {
-
-    }
-
-    @Override
-    public void onChannelPart(String host, String channel, String message) {
+    public void onChannelUserChange(String host, String channel, List<String> users) {
 
     }
 
     @Override
     public void onChannelMessage(String host, String channel, String message) {
+
+    }
+
+    @Override
+    public void onNickChange(String host, String oldNick, String newNick) {
 
     }
 }
