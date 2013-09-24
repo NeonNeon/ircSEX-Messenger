@@ -29,9 +29,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import se.chalmers.dat255.ircsex.R;
+import se.chalmers.dat255.ircsex.model.IrcUser;
 import se.chalmers.dat255.ircsex.model.Session;
 import se.chalmers.dat255.ircsex.model.SessionListener;
 import se.chalmers.dat255.ircsex.ui.dialog.JoinChannelDialogFragment;
@@ -319,7 +321,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     }
 
     @Override
-    public void onChannelUserChange(String host, String channel, List<String> users) {
+    public void onChannelUserChange(String host, String channel, Collection<IrcUser> users) {
 
     }
 

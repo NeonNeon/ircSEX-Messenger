@@ -1,10 +1,9 @@
 package se.chalmers.dat255.ircsex.model;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
-
-import se.chalmers.dat255.ircsex.irc.IrcProtocolAdapter;
+import java.util.Map;
 
 /**
  * This class represents an IrcChannel and handles messages sent in it.
@@ -14,7 +13,7 @@ import se.chalmers.dat255.ircsex.irc.IrcProtocolAdapter;
 public class IrcChannel {
 
     private final String channelName;
-    private List<String> users;
+    private Map<String, IrcUser> users;
 
     /**
      * Creates an IrcChannel object.
@@ -23,7 +22,7 @@ public class IrcChannel {
      */
     public IrcChannel(String channelName) {
         this.channelName = channelName;
-        this.users = new ArrayList<String>();
+        this.users = new HashMap<String, IrcUser>();
     }
 
     /**
@@ -41,7 +40,9 @@ public class IrcChannel {
      * @param users - A list with the users
      */
     public void setUsers(List<String> users) {
-        this.users = users;
+        for (String user : users) {
+            this.users.put(user, new IrcUser(user));
+        }
     }
 
     /**
@@ -50,8 +51,7 @@ public class IrcChannel {
      * @param user - The user who joined
      */
     public void userJoined(String user) {
-        users.add(user);
-        Collections.sort(users);
+        users.put(user, new IrcUser(user));
     }
 
     /**
@@ -68,7 +68,7 @@ public class IrcChannel {
      *
      * @return - A list with all users
      */
-    public List<String> getUsers() {
-        return users;
+    public Collection<IrcUser> getUsers() {
+        return users.values();
     }
 }
