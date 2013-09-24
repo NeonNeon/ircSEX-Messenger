@@ -107,7 +107,6 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
             // Annan typ av check för persistence
             startNoServersActivity();
             session = new Session(this);
-            session.setActiveServer(IRC_CHALMERS_IT); // TODO pröva utan denna
         }
     }
 
@@ -191,6 +190,8 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         channelListArrayAdapter.notifyDataSetChanged();
         int position = connectedChannels.size()-1;
         if (ircChannelSelector.isIndexHeading(position)) {
+            connectedChannels.remove(position);
+            ircChannelSelector.removeHeader(position);
             session.removeServer(session.getActiveServer().getHost());
             startNoServersActivity();
         }
@@ -207,6 +208,9 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             if (!ircChannelSelector.isIndexHeading(position)) {
                 selectItem(position);
+            }
+            else {
+                leftDrawer.setItemChecked(1, true);
             }
         }
     }
@@ -240,6 +244,8 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         super.onActivityResult(requestCode, resultCode, data);
         switch (resultCode) {
             case NoServersActivity.RESULT_RETURN_DATA:
+                session = new Session(this);
+                ircChannelSelector = new IrcChannelSelector();
                 String server = data.getStringExtra(NoServersActivity.EXTRA_SERVER);
                 String port = data.getStringExtra(NoServersActivity.EXTRA_PORT);
                 String nickname = data.getStringExtra(NoServersActivity.EXTRA_NICKNAME);
