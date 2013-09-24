@@ -23,5 +23,5 @@ public interface IrcProtocolListener {
 
     public void ServerDisconnected();
 
-    public void messageReceived();
+    public void messageReceived(String channel, String user, String message, long timestamp);
 }
