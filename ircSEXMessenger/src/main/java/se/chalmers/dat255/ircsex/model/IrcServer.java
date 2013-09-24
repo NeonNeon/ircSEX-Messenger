@@ -183,7 +183,7 @@ public class IrcServer implements IrcProtocolListener {
 
     @Override
     public void joinedChannel(String channelName) {
-        IrcChannel channel = new IrcChannel(channelName, new ArrayList<String>());
+        IrcChannel channel = new IrcChannel(channelName);
         connectedChannels.put(channelName, channel);
         datasource.addChannel(host, channelName);
         onServerJoin(channelName);
@@ -198,6 +198,21 @@ public class IrcServer implements IrcProtocolListener {
 
     @Override
     public void nickChanged(String oldNick, String newNick) {
+
+    }
+
+    @Override
+    public void usersInChannel(String channelName, List<String> users) {
+
+    }
+
+    @Override
+    public void userJoined(String channelName, String nick) {
+
+    }
+
+    @Override
+    public void userParted(String channelName, String nick) {
 
     }
 

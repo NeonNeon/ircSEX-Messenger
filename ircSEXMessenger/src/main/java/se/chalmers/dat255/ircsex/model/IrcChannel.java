@@ -13,16 +13,16 @@ import se.chalmers.dat255.ircsex.irc.IrcProtocolAdapter;
 public class IrcChannel {
 
     private final String channelName;
-    private final List<String> users;
+    private List<String> users;
 
     /**
      * Creates an IrcChannel object.
      *
      * @param channelName - Name of channel
      */
-    public IrcChannel(String channelName, List<String> users) {
+    public IrcChannel(String channelName) {
         this.channelName = channelName;
-        this.users = users;
+        this.users = new ArrayList<String>();
     }
 
     /**
@@ -32,6 +32,15 @@ public class IrcChannel {
      */
     public String getChannelName() {
         return channelName;
+    }
+
+    /**
+     * Empties and sets the list of users.
+     *
+     * @param users - A list with the users
+     */
+    public void setUsers(List<String> users) {
+        this.users = users;
     }
 
     /**
