@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -17,6 +18,7 @@ import java.util.List;
  * Created by oed on 9/16/13.
  */
 public class IrcProtocolAdapter implements Runnable {
+
     private boolean running = true;
     private Socket socket;
     private BufferedReader input;
@@ -86,6 +88,14 @@ public class IrcProtocolAdapter implements Runnable {
         }
         else if (reply.contains("MODE")) {
             listener.serverRegistered();
+        }
+        else if (reply.contains(host + " 353")) {
+            index = reply.indexOf("=");
+            String channel = reply.substring(index + 2, reply.indexOf(" ", index + 2));
+
+            index = reply.indexOf(':', 1);
+
+            listener.usersInChannel(channel, Arrays.asList(reply.substring(index + 1).split(" ")));
         }
 
         // Numeric replies - should be after everything else
