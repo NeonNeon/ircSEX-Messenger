@@ -78,7 +78,7 @@ public class IrcServer implements IrcProtocolListener {
     }
 
     /**
-     * Returns the serveraddress.
+     * Returns the address of the server.
      *
      * @return Address to the server
      */
