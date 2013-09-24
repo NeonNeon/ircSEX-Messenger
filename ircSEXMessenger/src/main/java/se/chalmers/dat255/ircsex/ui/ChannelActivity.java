@@ -27,7 +27,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import se.chalmers.dat255.ircsex.R;
 import se.chalmers.dat255.ircsex.model.Session;
@@ -55,6 +57,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     private Session session;
     private ProgressDialog serverConnectProgressDialog;
     private int selected = -1;
+    private ChannelListOnClickListener channelDrawerOnClickListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +65,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         setContentView(R.layout.activity_channel_main);
 
         mTitle = mDrawerTitle = getTitle();
+        channelDrawerOnClickListener = new ChannelListOnClickListener();
         connectedChannels = new ArrayList<IrcConnectionItem>();
         channelListArrayAdapter = new IrcConnectionItemAdapter(this, connectedChannels);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -74,7 +78,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
 
         // set up the drawer's list view with items and click listener
         leftDrawer.setAdapter(channelListArrayAdapter);
-        leftDrawer.setOnItemClickListener(new DrawerItemClickListener());
+        leftDrawer.setOnItemClickListener(channelDrawerOnClickListener);
 
         // enable ActionBar app icon to behave as action to toggle nav drawer
         getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -193,11 +197,36 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         selectItem(connectedChannels.size()-1);
     }
 
-    /* The click listner for ListView in the navigation drawer */
-    private class DrawerItemClickListener implements ListView.OnItemClickListener {
+    /**
+     *  The click listener for ListView in the left drawer, the Channel List.
+     */
+    private class ChannelListOnClickListener implements ListView.OnItemClickListener {
+        private Set<Integer> headingIndices;
+
+        public ChannelListOnClickListener() {
+            headingIndices = new HashSet<Integer>();
+        }
+
+        public void setHeader(int index) {
+            headingIndices.add(index);
+        }
+
+        public void removeHeader(int index) {
+            headingIndices.remove(index);
+        }
+
+        public boolean isIndexHeading(int position) {
+            for (Integer i : headingIndices) {
+                if (position == i) return true;
+            }
+            return false;
+        }
+
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            selectItem(position);
+            if (!headingIndices.contains(position)) {
+                selectItem(position);
+            }
         }
     }
 
@@ -206,7 +235,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     }
 
     private void selectItem(int position) {
-        if (position < 0) {
+        if (channelDrawerOnClickListener.isIndexHeading(position)) {
             session.removeServer(IRC_CHALMERS_IT);
             startNoServersActivity();
             return;
@@ -292,6 +321,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         ChannelActivity.this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                channelDrawerOnClickListener.setHeader(connectedChannels.size());
                 connectedChannels.add(new IrcServerHeader(host));
                 channelListArrayAdapter.notifyDataSetChanged();
             }
