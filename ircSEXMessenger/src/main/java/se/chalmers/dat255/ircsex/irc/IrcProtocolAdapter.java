@@ -52,7 +52,7 @@ public class IrcProtocolAdapter implements Runnable {
                 // TODO: Resolve nullpointerexception
             } catch (IOException e) {
                 e.printStackTrace();
-                listener.ServerDisconnected();
+                listener.serverDisconnected();
             }
         } while(running && line != null);
     }
@@ -64,7 +64,7 @@ public class IrcProtocolAdapter implements Runnable {
             output = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
         } catch (IOException e) {
             e.printStackTrace();
-            listener.ServerDisconnected();
+            listener.serverDisconnected();
         }
         listener.serverConnected();
     }
@@ -177,7 +177,7 @@ public class IrcProtocolAdapter implements Runnable {
             output.flush();
         } catch (IOException e) {
             e.printStackTrace();
-            listener.ServerDisconnected();
+            listener.serverDisconnected();
         }
     }
 }
