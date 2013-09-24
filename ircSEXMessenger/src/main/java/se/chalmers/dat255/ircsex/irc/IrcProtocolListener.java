@@ -22,4 +22,6 @@ public interface IrcProtocolListener {
     public void nickChangeError();
 
     public void ServerDisconnected();
+
+    public void messageReceived();
 }

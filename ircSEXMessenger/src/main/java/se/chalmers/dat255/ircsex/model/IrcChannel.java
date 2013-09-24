@@ -15,28 +15,46 @@ public class IrcChannel {
     private final String channelName;
     private final List<String> users;
 
-    private final List<IrcMessage> readMessages;
-    private final List<IrcMessage> unreadMessages;
+    private final List<IrcMessage> messages;
 
     /**
      * Creates an IrcChannel object.
      *
-     * @param channelName - Name of channel
+     * @param channelName Name of channel
      */
     public IrcChannel(String channelName) {
         this.channelName = channelName;
         users = new ArrayList<String>();
 
-        readMessages = new ArrayList<IrcMessage>();
-        unreadMessages = new ArrayList<IrcMessage>();
+        messages = new ArrayList<IrcMessage>();
     }
 
     /**
      * Returns the name of the channel.
      *
-     * @return - Name of the channel
+     * @return Name of the channel
      */
     public String getChannelName() {
         return channelName;
+    }
+
+    /**
+     * Adds a message to undread.
+     *
+     * @param user User who sent the message
+     * @param message Message to add
+     * @param timestamp Time when message was sent
+     */
+    public void newMessage(String user, String message, long timestamp) {
+        messages.add(new IrcMessage(user, message, timestamp));
+    }
+
+    /**
+     * Marks message as read.
+     *
+     * @param message Message that will be marked as read
+     */
+    public void readMessage(IrcMessage message) {
+        message.read();
     }
 }

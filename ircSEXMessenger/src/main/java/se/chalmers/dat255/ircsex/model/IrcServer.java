@@ -210,4 +210,9 @@ public class IrcServer implements IrcProtocolListener {
     public void ServerDisconnected() {
 
     }
+
+    @Override
+    public void messageReceived() {
+
+    }
 }
