@@ -14,7 +14,9 @@ public class IrcChannel {
 
     private final String channelName;
     private final List<String> users;
-    private boolean unread = false;
+
+    private final List<IrcMessage> readMessages;
+    private final List<IrcMessage> unreadMessages;
 
     /**
      * Creates an IrcChannel object.
@@ -24,6 +26,9 @@ public class IrcChannel {
     public IrcChannel(String channelName) {
         this.channelName = channelName;
         users = new ArrayList<String>();
+
+        readMessages = new ArrayList<IrcMessage>();
+        unreadMessages = new ArrayList<IrcMessage>();
     }
 
     /**
