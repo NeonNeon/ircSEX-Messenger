@@ -86,8 +86,14 @@ public class IrcServer implements IrcProtocolListener {
         return host;
     }
 
-    public IrcChannel getConnectedChannel(String string) {
-        return connectedChannels.get(string);
+    /**
+     * Returns a channel by string.
+     *
+     * @param channelName - Name of the channel to return
+     * @return Requested channel
+     */
+    public IrcChannel getConnectedChannel(String channelName) {
+        return connectedChannels.get(channelName);
     }
 
     /**
@@ -118,11 +124,20 @@ public class IrcServer implements IrcProtocolListener {
         protocol.partChannel(channel);
     }
 
-
+    /**
+     * Disconnects the server.
+     *
+     * @param quitMessage - Message to be shown to other users.
+     */
     public void quitServer(String quitMessage) {
         protocol.disconnect(quitMessage);
     }
 
+    /**
+     * Changes nickname.
+     *
+     * @param newNick - New nickname
+     */
     public void changeNick(String newNick) {
         protocol.setNick(newNick);
     }
