@@ -170,6 +170,14 @@ public class IrcProtocolAdapter implements Runnable {
         write("NICK " + nick);
     }
 
+    /**
+     * Send request to list the users in the given channel.
+     * @param channel - the channel to check
+     */
+    public void getUsers(String channel) {
+        write("NAMES " + channel);
+    }
+
     private synchronized void write(String string) {
         System.out.println(string);
         try {
