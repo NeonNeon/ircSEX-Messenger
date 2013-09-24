@@ -39,6 +39,15 @@ public class IrcChannel {
     }
 
     /**
+     * Return all messages.
+     *
+     * @return The messages in this channel
+     */
+    public List<IrcMessage> getMessages() {
+        return messages;
+    }
+
+    /**
      * Adds a message to undread.
      *
      * @param user User who sent the message
