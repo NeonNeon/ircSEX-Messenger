@@ -27,9 +27,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import se.chalmers.dat255.ircsex.R;
 import se.chalmers.dat255.ircsex.model.Session;
@@ -43,7 +41,7 @@ import se.chalmers.dat255.ircsex.view.IrcServerHeader;
 
 public class ChannelActivity extends FragmentActivity implements SessionListener, JoinChannelDialogFragment.DialogListener {
     public static final String IRC_CHALMERS_IT = "irc.chalmers.it";
-    private DrawerLayout mDrawerLayout;
+    private DrawerLayout drawerLayout;
     private ListView leftDrawer;
     private ListView rightDrawer;
     private ActionBarDrawerToggle mDrawerToggle;
@@ -52,6 +50,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     private CharSequence mTitle;
     private List<IrcConnectionItem> connectedChannels;
     private ArrayAdapter channelListArrayAdapter;
+    private IrcChannelSelector ircChannelSelector;
     private boolean drawerOpen;
 
     private Session session;
@@ -68,51 +67,47 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         channelDrawerOnClickListener = new ChannelListOnClickListener();
         connectedChannels = new ArrayList<IrcConnectionItem>();
         channelListArrayAdapter = new IrcConnectionItemAdapter(this, connectedChannels);
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
-        mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow_right, GravityCompat.END);
+        ircChannelSelector = new IrcChannelSelector();
+
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
+        drawerLayout.setDrawerShadow(R.drawable.drawer_shadow_right, GravityCompat.END);
 
         leftDrawer = (ListView) findViewById(R.id.left_drawer);
-        rightDrawer = (ListView) findViewById(R.id.right_drawer);
-
-
-        // set up the drawer's list view with items and click listener
         leftDrawer.setAdapter(channelListArrayAdapter);
         leftDrawer.setOnItemClickListener(channelDrawerOnClickListener);
+        rightDrawer = (ListView) findViewById(R.id.right_drawer);
 
-        // enable ActionBar app icon to behave as action to toggle nav drawer
         getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setHomeButtonEnabled(true);
-
-        // ActionBarDrawerToggle ties together the the proper interactions
-        // between the sliding drawer and the action bar app icon
         mDrawerToggle = new ActionBarDrawerToggle(
-                this,                  /* host Activity */
-                mDrawerLayout,         /* DrawerLayout object */
-                R.drawable.ic_drawer,  /* nav drawer image to replace 'Up' caret */
-                R.string.drawer_open,  /* "open drawer" description for accessibility */
-                R.string.drawer_close  /* "close drawer" description for accessibility */
-        ) {
+                this,
+                drawerLayout,
+                R.drawable.ic_drawer,
+                R.string.drawer_open,
+                R.string.drawer_close) {
+            @Override
             public void onDrawerClosed(View view) {
                 setTitle(mTitle);
                 getActionBar().setSubtitle(IRC_CHALMERS_IT);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
 
+            @Override
             public void onDrawerOpened(View drawerView) {
-                mDrawerLayout.closeDrawer(drawerView == rightDrawer ? leftDrawer : rightDrawer);
+                drawerLayout.closeDrawer(drawerView == rightDrawer ? leftDrawer : rightDrawer);
                 getActionBar().setTitle(mDrawerTitle);
                 getActionBar().setSubtitle(null);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
         };
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
+        drawerLayout.setDrawerListener(mDrawerToggle);
 
         if (savedInstanceState == null) {
             // Annan typ av check för persistence
             startNoServersActivity();
             session = new Session(this);
-            session.setActiveServer(IRC_CHALMERS_IT);
+            session.setActiveServer(IRC_CHALMERS_IT); // TODO pröva utan denna
         }
     }
 
@@ -132,7 +127,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         // If the nav drawer is open, hide action items related to the content view
-        drawerOpen = (mDrawerLayout.isDrawerOpen(leftDrawer) || mDrawerLayout.isDrawerOpen(rightDrawer));
+        drawerOpen = (drawerLayout.isDrawerOpen(leftDrawer) || drawerLayout.isDrawerOpen(rightDrawer));
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -157,7 +152,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
                 leaveActiveChannel();
                 break;
 //            case R.id.action_user_list:
-//                mDrawerLayout.openDrawer(Gravity.END);
+//                drawerLayout.openDrawer(Gravity.END);
 //                drawerOpen = true;
 //                break;
             case R.id.action_settings:
@@ -194,37 +189,23 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         session.partChannel(session.getActiveServer().getHost(), channelName);
         connectedChannels.remove(selected);
         channelListArrayAdapter.notifyDataSetChanged();
-        selectItem(connectedChannels.size()-1);
+        int position = connectedChannels.size()-1;
+        if (ircChannelSelector.isIndexHeading(position)) {
+            session.removeServer(session.getActiveServer().getHost());
+            startNoServersActivity();
+        }
+        else {
+            selectItem(position);
+        }
     }
 
     /**
      *  The click listener for ListView in the left drawer, the Channel List.
      */
     private class ChannelListOnClickListener implements ListView.OnItemClickListener {
-        private Set<Integer> headingIndices;
-
-        public ChannelListOnClickListener() {
-            headingIndices = new HashSet<Integer>();
-        }
-
-        public void setHeader(int index) {
-            headingIndices.add(index);
-        }
-
-        public void removeHeader(int index) {
-            headingIndices.remove(index);
-        }
-
-        public boolean isIndexHeading(int position) {
-            for (Integer i : headingIndices) {
-                if (position == i) return true;
-            }
-            return false;
-        }
-
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            if (!headingIndices.contains(position)) {
+            if (!ircChannelSelector.isIndexHeading(position)) {
                 selectItem(position);
             }
         }
@@ -235,11 +216,6 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     }
 
     private void selectItem(int position) {
-        if (channelDrawerOnClickListener.isIndexHeading(position)) {
-            session.removeServer(IRC_CHALMERS_IT);
-            startNoServersActivity();
-            return;
-        }
         // update the channel_main content by replacing fragments
         Fragment fragment = new ChatFragment();
         Bundle args = new Bundle();
@@ -255,7 +231,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         setTitle(channelName);
         getActionBar().setSubtitle(IRC_CHALMERS_IT);
         session.setActiveChannel(channelName);
-        mDrawerLayout.closeDrawer(leftDrawer);
+        drawerLayout.closeDrawer(leftDrawer);
         selected = position;
     }
 
@@ -321,7 +297,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         ChannelActivity.this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                channelDrawerOnClickListener.setHeader(connectedChannels.size());
+                ircChannelSelector.setHeader(connectedChannels.size());
                 connectedChannels.add(new IrcServerHeader(host));
                 channelListArrayAdapter.notifyDataSetChanged();
             }
