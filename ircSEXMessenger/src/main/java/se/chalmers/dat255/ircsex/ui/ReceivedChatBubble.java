@@ -8,23 +8,30 @@ import se.chalmers.dat255.ircsex.R;
 /**
  * Created by Johan on 2013-09-24.
  */
-public class SentChatBubble extends ChatBubble {
-    public SentChatBubble(String message) {
+public class ReceivedChatBubble extends ChatBubble {
+    private String nick;
+
+    protected ReceivedChatBubble(String nick, String message) {
         super(message);
+        this.nick = nick;
+    }
+
+    public String getNick() {
+        return nick;
     }
 
     @Override
     public int getGravity() {
-        return Gravity.RIGHT;
+        return Gravity.LEFT;
     }
 
     @Override
     public int getBackgroundColor() {
-        return Color.GREEN;
+        return Color.GRAY;
     }
 
     @Override
     public int getLayoutID() {
-        return R.layout.sent_chat_bubble;
+        return R.layout.received_chat_bubble;
     }
 }

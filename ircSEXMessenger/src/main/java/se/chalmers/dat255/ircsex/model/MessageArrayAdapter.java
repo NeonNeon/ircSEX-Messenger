@@ -13,6 +13,7 @@ import java.util.List;
 
 import se.chalmers.dat255.ircsex.R;
 import se.chalmers.dat255.ircsex.ui.ChatBubble;
+import se.chalmers.dat255.ircsex.ui.ReceivedChatBubble;
 
 /**
  * Created by Johan on 2013-09-24.
@@ -23,7 +24,7 @@ public class MessageArrayAdapter extends ArrayAdapter<ChatBubble> {
     private LinearLayout wrapper;
 
     public MessageArrayAdapter(Context context) {
-        super(context, R.layout.chat_bubble);
+        super(context, R.layout.received_chat_bubble);
         this.context = context;
     }
 
@@ -35,15 +36,17 @@ public class MessageArrayAdapter extends ArrayAdapter<ChatBubble> {
 
     public View getView(int position, View convertView, ViewGroup parent) {
         View rowView = convertView;
+        ChatBubble chatBubble = getItem(position);
         if (rowView == null) {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            rowView = inflater.inflate(R.layout.chat_bubble, parent, false);
+            rowView = inflater.inflate(chatBubble.getLayoutID(), parent, false);
         }
         wrapper = (LinearLayout) rowView.findViewById(R.id.chat_bubble_wrapper);
-        ChatBubble chatBubble = getItem(position);
-        TextView nickView = (TextView) rowView.findViewById(R.id.chat_bubble_nick);
         TextView messageView = (TextView) rowView.findViewById(R.id.chat_bubble_message);
-        nickView.setText(chatBubble.getNick());
+        if (chatBubble instanceof ReceivedChatBubble) {
+            TextView nickView = (TextView) rowView.findViewById(R.id.chat_bubble_nick);
+            nickView.setText(((ReceivedChatBubble) chatBubble).getNick());
+        }
         messageView.setText(chatBubble.getMessage());
         wrapper.setBackgroundColor(chatBubble.getBackgroundColor());
         wrapper.setGravity(chatBubble.getGravity());
