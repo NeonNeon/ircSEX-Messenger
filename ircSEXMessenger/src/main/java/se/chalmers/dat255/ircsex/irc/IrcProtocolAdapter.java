@@ -75,7 +75,15 @@ public class IrcProtocolAdapter implements Runnable {
         //TODO - handle more cases
         System.out.println(reply);
         int index;
-        if (reply.startsWith("PING ")) {
+        if ((index = reply.indexOf("PRIVMSG")) != -1) {
+            String nick = reply.substring(1, reply.indexOf('!'));
+            int msgIndex = reply.indexOf(':', 1);
+            String channel = reply.substring(index + 8, msgIndex - 1);
+            String message = reply.substring(msgIndex + 1);
+
+            listener.messageReceived(channel, nick, message);
+        }
+        else if (reply.startsWith("PING ")) {
             write("PONG " + reply.substring(5));
         }
         else if ((index = reply.indexOf("JOIN")) != -1) {
