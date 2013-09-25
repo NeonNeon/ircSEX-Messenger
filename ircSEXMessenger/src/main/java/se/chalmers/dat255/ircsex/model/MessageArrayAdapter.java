@@ -48,7 +48,6 @@ public class MessageArrayAdapter extends ArrayAdapter<ChatBubble> {
             nickView.setText(((ReceivedChatBubble) chatBubble).getNick());
         }
         messageView.setText(chatBubble.getMessage());
-        wrapper.setBackgroundColor(chatBubble.getBackgroundColor());
         wrapper.setGravity(chatBubble.getGravity());
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);

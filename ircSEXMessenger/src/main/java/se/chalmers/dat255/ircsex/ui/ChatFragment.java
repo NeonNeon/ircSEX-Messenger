@@ -40,8 +40,10 @@ public class ChatFragment extends Fragment {
 
     public void addItems() {
         messageArrayAdapter.add(new SentChatBubble("GO TO BED PLS"));
-        messageArrayAdapter.add(new ReceivedChatBubble("Alkohest", "ne :PPPPPPPPPPPPPPPPPPPPPPPP du är hyb asdjh asdjhas dasdas dasd asd asd asd asd s s XD"));
+        messageArrayAdapter.add(new ReceivedChatBubble("Alkohest", "ne :PPPPPPPPPPPPPPPPPPPPPPPP du är hyb asdjh asdjhas dasdas dasd asd asd asd asd s s XD \n pls gib \n ur money"));
         messageArrayAdapter.add(new SentChatBubble("XDDDDDDDDDDDDDD"));
+        messageArrayAdapter.add(new SentChatBubble("ogm"));
+        messageArrayAdapter.add(new ReceivedChatBubble("Mormor", "pls"));
     }
 
     public void sendMessage(View view) {
