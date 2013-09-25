@@ -34,7 +34,6 @@ import se.chalmers.dat255.ircsex.view.IrcChannelItem;
 import se.chalmers.dat255.ircsex.view.IrcServerHeader;
 
 public class ChannelActivity extends FragmentActivity implements SessionListener, JoinChannelDialogFragment.DialogListener {
-    public static final String IRC_CHALMERS_IT = "irc.chalmers.it";
     private DrawerLayout drawerLayout;
     private ListView leftDrawer;
     private ListView rightDrawer;
@@ -81,7 +80,6 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
             @Override
             public void onDrawerClosed(View view) {
                 setTitle(mTitle);
-                getActionBar().setSubtitle(IRC_CHALMERS_IT);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
 
@@ -230,7 +228,6 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         leftDrawer.setItemChecked(position, true);
         String channelName = ircChannelSelector.getItem(position).getText();
         setTitle(channelName);
-        getActionBar().setSubtitle(IRC_CHALMERS_IT);
         session.setActiveChannel(channelName);
         drawerLayout.closeDrawer(leftDrawer);
         selected = position;
@@ -265,6 +262,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     public void setTitle(CharSequence title) {
         mTitle = title;
         getActionBar().setTitle(mTitle);
+        getActionBar().setSubtitle(session.getActiveServer().getHost());
     }
 
     /**
