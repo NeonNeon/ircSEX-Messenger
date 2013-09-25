@@ -168,6 +168,15 @@ public class IrcProtocolAdapter implements Runnable {
         write("NICK " + nick);
     }
 
+    /**
+     * Sends a message to the server.
+     * @param channel - the channel to send message to
+     * @param message - the message to send.
+     */
+    public void sendChannelMessage(String channel, String message) {
+        write("PRIVMSG " + channel + " :" + message);
+    }
+
     private synchronized void write(String string) {
         System.out.println(string);
         try {
