@@ -64,13 +64,13 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
 
         mTitle = mDrawerTitle = getTitle();
         connectedChannels = new ArrayList<String>();
-        channelListArrayAdapter = new ArrayAdapter<String>(this, R.layout.drawer_list_item, connectedChannels);
+        channelListArrayAdapter = new ArrayAdapter<String>(this, R.layout.drawer_list_item, android.R.id.text1, connectedChannels);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         leftDrawer = (ViewGroup) findViewById(R.id.left_drawer);
         rightDrawer = (ListView) findViewById(R.id.right_drawer);
         View.inflate(this, R.layout.drawer_left, leftDrawer);
         users = new ArrayList<IrcUser>();
-        userArrayAdapter = new ArrayAdapter<IrcUser>(this, R.layout.drawer_list_item, users);
+        userArrayAdapter = new ArrayAdapter<IrcUser>(this, R.layout.drawer_list_item, android.R.id.text1, users);
         rightDrawer.setAdapter(userArrayAdapter);
 
         channelList = (ListView) leftDrawer.findViewById(R.id.channel_list);
