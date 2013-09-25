@@ -1,5 +1,7 @@
 package se.chalmers.dat255.ircsex.model;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,8 +21,9 @@ public class IrcServer implements IrcProtocolListener {
     private final String host;
     private final int port;
     private final String login;
-    private final String nick;
+    private String nick;
     private final String realName;
+    private boolean connected = false;
 
     private final ChannelDatabaseAdapter datasource;
 
@@ -29,6 +32,8 @@ public class IrcServer implements IrcProtocolListener {
 
     private IrcProtocolAdapter protocol;
 
+    private List<SessionListener> sessionListeners;
+
     public IrcServer(String host, int port, String nick) {
         this(host, port, nick, nick);
     }
@@ -36,9 +41,6 @@ public class IrcServer implements IrcProtocolListener {
     public IrcServer(String host, int port, String login, String nick) {
         this(host, port, login, nick, "");
     }
-
-
-    private List<SessionListener> sessionListeners;
 
     /**
      * Creates an IrcServer.
@@ -56,8 +58,6 @@ public class IrcServer implements IrcProtocolListener {
         this.nick = nick;
         this.realName = realName;
 
-        channels = new HashMap<String, IrcChannel>();
-
         sessionListeners = new ArrayList<SessionListener>();
 
         startProtocolAdapter();
@@ -65,6 +65,7 @@ public class IrcServer implements IrcProtocolListener {
         datasource = new ChannelDatabaseAdapter();
         datasource.open();
 
+        channels = new HashMap<String, IrcChannel>();
         connectedChannels = new HashMap<String, IrcChannel>();
     }
 
@@ -78,7 +79,7 @@ public class IrcServer implements IrcProtocolListener {
     }
 
     /**
-     * Returns the serveraddress.
+     * Returns the address of the server.
      *
      * @return Address to the server
      */
@@ -86,8 +87,14 @@ public class IrcServer implements IrcProtocolListener {
         return host;
     }
 
-    public IrcChannel getConnectedChannel(String string) {
-        return connectedChannels.get(string);
+    /**
+     * Returns a channel by string.
+     *
+     * @param channelName - Name of the channel to return
+     * @return Requested channel
+     */
+    public IrcChannel getConnectedChannel(String channelName) {
+        return connectedChannels.get(channelName);
     }
 
     /**
@@ -118,11 +125,23 @@ public class IrcServer implements IrcProtocolListener {
         protocol.partChannel(channel);
     }
 
+    /**
+     * Disconnects the server.
+     *
+     * @param quitMessage - Message to be shown to other users.
+     */
     public void quitServer(String quitMessage) {
         protocol.disconnect(quitMessage);
     }
 
-
+    /**
+     * Changes nickname.
+     *
+     * @param newNick - New nickname
+     */
+    public void changeNick(String newNick) {
+        protocol.setNick(newNick);
+    }
 
     /**
      * Add a listener to everything that the session object handles.
@@ -142,63 +161,69 @@ public class IrcServer implements IrcProtocolListener {
         sessionListeners.remove(listener);
     }
 
-    private void onServerConnectionEstablished() {
+    @Override
+    public void serverConnected() {
+        connected = true;
+        protocol.connect(nick, login, realName);
         for (SessionListener listener : sessionListeners) {
             listener.onConnectionEstablished(host);
         }
     }
 
-    private void onServerRegistrationCompleted() {
+    @Override
+    public void serverRegistered() {
         for (SessionListener listener : sessionListeners) {
             listener.onRegistrationCompleted(host);
         }
     }
 
-    private void onServerJoin(String channelName) {
-        for (SessionListener listener : sessionListeners) {
-            listener.onServerJoin(host, channelName);
-        }
-    }
-
-    private void onServerPart(String channelName) {
-        for (SessionListener listener : sessionListeners) {
-            listener.onServerPart(host, channelName);
-        }
-    }
-
-    public void changeNick(String newNick) {
-        protocol.setNick(newNick);
-    }
-
-    @Override
-    public void serverConnected() {
-        protocol.connect(nick, login, realName);
-        onServerConnectionEstablished();
-    }
-
-    @Override
-    public void serverRegistered() {
-        onServerRegistrationCompleted();
-    }
-
-    @Override
-    public void joinedChannel(String channelName) {
-        IrcChannel channel = new IrcChannel(channelName);
-        connectedChannels.put(channelName, channel);
-        datasource.addChannel(host, channelName);
-        onServerJoin(channelName);
-    }
-
-    @Override
-    public void partedChannel(String channelName) {
-        connectedChannels.remove(channelName);
-        datasource.removeChannel(channelName);
-        onServerPart(channelName);
-    }
-
     @Override
     public void nickChanged(String oldNick, String newNick) {
+        nick = newNick;
+        for (SessionListener listener : sessionListeners) {
+            listener.onNickChange(host, oldNick, newNick);
+        }
+    }
 
+    @Override
+    public void usersInChannel(String channelName, List<String> users) {
+        connectedChannels.get(channelName).addUsers(users);
+        for (SessionListener listener : sessionListeners) {
+            listener.onChannelUserChange(host, channelName, connectedChannels.get(channelName).getUsers());
+        }
+    }
+
+    @Override
+    public void userJoined(String channelName, String nick) {
+        if (this.nick.equals(nick)) {
+            IrcChannel channel = new IrcChannel(channelName);
+            connectedChannels.put(channelName, channel);
+            datasource.addChannel(host, channelName);
+            for (SessionListener listener : sessionListeners) {
+                listener.onServerJoin(host, channelName);
+            }
+        } else {
+            connectedChannels.get(channelName).userJoined(nick);
+            for (SessionListener listener : sessionListeners) {
+                listener.onChannelUserChange(host, channelName, connectedChannels.get(channelName).getUsers());
+            }
+        }
+    }
+
+    @Override
+    public void userParted(String channelName, String nick) {
+        if (this.nick.equals(nick)) {
+            connectedChannels.remove(channelName);
+            datasource.removeChannel(channelName);
+            for (SessionListener listener : sessionListeners) {
+                listener.onServerPart(host, channelName);
+            }
+        } else {
+            connectedChannels.get(channelName).userParted(nick);
+            for (SessionListener listener : sessionListeners) {
+                listener.onChannelUserChange(host, channelName, connectedChannels.get(channelName).getUsers());
+            }
+        }
     }
 
     @Override
@@ -207,7 +232,12 @@ public class IrcServer implements IrcProtocolListener {
     }
 
     @Override
-    public void ServerDisconnected() {
+    public void serverDisconnected() {
+        protocol = new IrcProtocolAdapter(host, port, this);
+    }
 
+    @Override
+    public void messageReceived(String channel, String user, String message, long timestamp) {
+        connectedChannels.get(channel).newMessage(user, message, timestamp);
     }
 }

@@ -27,9 +27,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import se.chalmers.dat255.ircsex.R;
+import se.chalmers.dat255.ircsex.model.IrcUser;
 import se.chalmers.dat255.ircsex.model.Session;
 import se.chalmers.dat255.ircsex.model.SessionListener;
 import se.chalmers.dat255.ircsex.ui.dialog.JoinChannelDialogFragment;
@@ -45,6 +47,8 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     private ListView leftDrawer;
     private ListView rightDrawer;
     private ActionBarDrawerToggle mDrawerToggle;
+    private ArrayAdapter<IrcUser> userArrayAdapter;
+    private List<IrcUser> users;
 
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
@@ -70,7 +74,9 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
 
         leftDrawer = (ListView) findViewById(R.id.left_drawer);
         rightDrawer = (ListView) findViewById(R.id.right_drawer);
-
+        users = new ArrayList<IrcUser>();
+        userArrayAdapter = new ArrayAdapter<IrcUser>(this, R.layout.drawer_list_item, android.R.id.text1, users);
+        rightDrawer.setAdapter(userArrayAdapter);
 
         // set up the drawer's list view with items and click listener
         leftDrawer.setAdapter(channelListArrayAdapter);
@@ -218,7 +224,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         fragment.setArguments(args);
 
         FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
+        fragmentManager.beginTransaction().replace(R.id.channel_layout, fragment).commit();
 
         // update selected item and title, then close the drawer
         leftDrawer.setItemChecked(position, true);
@@ -228,6 +234,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         session.setActiveChannel(channelName);
         mDrawerLayout.closeDrawer(leftDrawer);
         selected = position;
+        updateUserList(session.getActiveChannel().getUsers());
     }
 
     @Override
@@ -299,6 +306,11 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     }
 
     @Override
+    public void onDisconnect(String host) {
+
+    }
+
+    @Override
     public void onServerDisconnect(String host, String message) {
 
     }
@@ -322,17 +334,33 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     }
 
     @Override
-    public void onChannelJoin(String host, String channel, String message) {
-
+    public void onChannelUserChange(String host, String channel, final List<IrcUser> users) {
+        if (session.getActiveChannel() != null && session.getActiveChannel().getChannelName().equals(channel)) {
+            ChannelActivity.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    updateUserList(users);
+                    userArrayAdapter.notifyDataSetChanged();
+                }
+            });
+        }
     }
 
-    @Override
-    public void onChannelPart(String host, String channel, String message) {
-
+    private void updateUserList(List<IrcUser> users) {
+        this.users.clear();
+        for (IrcUser user : users) {
+            this.users.add(user);
+        }
+        userArrayAdapter.notifyDataSetChanged();
     }
 
     @Override
     public void onChannelMessage(String host, String channel, String message) {
+
+    }
+
+    @Override
+    public void onNickChange(String host, String oldNick, String newNick) {
 
     }
 }

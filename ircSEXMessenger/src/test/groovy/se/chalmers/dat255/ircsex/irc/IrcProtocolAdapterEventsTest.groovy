@@ -7,32 +7,56 @@ import spock.lang.Specification
  */
 class IrcProtocolAdapterEventsTest extends Specification {
     IrcProtocolListener subscriber = Mock()
-    IrcProtocolAdapter ipa = new IrcProtocolAdapter("localhost", 80, subscriber)
+    IrcProtocolAdapter ipa = new IrcProtocolAdapter("irc.chalmers.it", 80, subscriber)
 
     def setup() {
     }
 
-    def "test join event sent"() {
+
+    def "test userJoined event sent"() {
         when:
-        def command = ":tord!~banned@smurf-EAF5674.dynamic.se.alltele.net JOIN :"
-        ipa.handleReply(command + channel)
+        def command = "!~joelto@smurf-BA46BB40.edstud.chalmers.se JOIN :"
+        ipa.handleReply(":" + user + command + channel)
 
         then:
-        1 * subscriber.joinedChannel(channel)
+        1 * subscriber.userJoined(channel, user)
 
         where:
         channel << ["#fest", "#svinstia", "#party"]
+        user << ["oed", "Heissman", "Rascal"]
     }
 
-    def "test part event sent"() {
+    def "test userParted event sent"() {
         when:
-        def command = "PART "
-        ipa.handleReply(command + channel)
+        def command = "!~joelto@smurf-BA46BB40.edstud.chalmers.se PART "
+        ipa.handleReply(":" + user + command + channel)
 
         then:
-        1 * subscriber.partedChannel(channel)
+        1 * subscriber.userParted(channel, user)
 
         where:
         channel << ["#fest", "#svinstia", "#party"]
+        user << ["oed", "Heissman", "Rascal"]
+    }
+
+    def "test usersInChannel event sent"() {
+        def channel = "#ircSEX-asp"
+
+        when:
+        def command1 = ":irc.chalmers.it 353 tord = "
+        def command2 = ":irc.chalmers.it 366 tord "
+        ipa.handleReply(command1 + channel + " :" + users)
+        ipa.handleReply(command2 + channel + " :End of /NAMES list.")
+
+        then:
+        1 * subscriber.usersInChannel(channel, usersList)
+
+        where:
+        users << ["tord Micro rekoil",
+                "@Norrland @Heissman @Hultner @oed @Tuna @Roras",
+                "+Rascal ~stefan"]
+        usersList << [["tord", "Micro", "rekoil"],
+                    ["@Norrland", "@Heissman", "@Hultner", "@oed", "@Tuna", "@Roras"],
+                    ["+Rascal", "~stefan"]]
     }
 }

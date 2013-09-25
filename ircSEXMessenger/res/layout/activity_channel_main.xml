@@ -4,10 +4,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <FrameLayout
-        android:id="@+id/content_frame"
+    <LinearLayout
+        android:id="@+id/channel_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+    </LinearLayout>
 
     <ListView
         android:id="@+id/left_drawer"
@@ -25,7 +27,6 @@
         android:layout_height="match_parent"
         android:layout_gravity="end"
         android:choiceMode="singleChoice"
-        android:divider="@android:color/transparent"
-        android:dividerHeight="0dp"
+        android:dividerHeight="1dp"
         android:background="#EEE"/>
 </android.support.v4.widget.DrawerLayout>

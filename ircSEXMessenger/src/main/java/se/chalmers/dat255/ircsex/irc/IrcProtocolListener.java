@@ -1,5 +1,7 @@
 package se.chalmers.dat255.ircsex.irc;
 
+import java.util.List;
+
 /**
  * Created by oed on 9/23/13.
  * An interface that listens to events that are relevant to the IRC Server.
@@ -18,23 +20,32 @@ public interface IrcProtocolListener {
     public void serverRegistered();
 
     /**
-     * Called when you join a channel.
-     * @param channelName - the name of the channel you joined
-     */
-    public void joinedChannel(String channelName);
-
-    /**
-     * Called when you part a channel.
-     * @param channelName - - the name of the channel you parted
-     */
-    public void partedChannel(String channelName);
-
-    /**
      * Called when a user changed nick.
      * @param oldNick - the nick that the user had until now
      * @param newNick - the new nick of the user
      */
     public void nickChanged(String oldNick, String newNick);
+
+    /**
+     * This method gives you info about which users are in a specific channel.
+     * @param channelName
+     * @param users
+     */
+    public void usersInChannel(String channelName, List<String> users);
+
+    /**
+     * This method is called when a user joins a channel.
+     * @param channelName
+     * @param nick
+     */
+    public void userJoined(String channelName, String nick);
+
+    /**
+     * This method is called when a user parts a channel.
+     * @param channelName
+     * @param nick
+     */
+    public void userParted(String channelName, String nick);
 
     // ERRORS
 
@@ -47,5 +58,7 @@ public interface IrcProtocolListener {
      * The server was disconnected.
      * To reconnect get a new IPA.
      */
-    public void ServerDisconnected();
+    public void serverDisconnected();
+
+    public void messageReceived(String channel, String user, String message, long timestamp);
 }

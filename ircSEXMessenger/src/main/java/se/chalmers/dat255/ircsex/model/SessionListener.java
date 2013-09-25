@@ -1,5 +1,9 @@
 package se.chalmers.dat255.ircsex.model;
 
+import java.util.List;
+
+import java.util.Collection;
+
 /**
  * Created by Wilhelm on 2013-09-19.
  */
@@ -15,6 +19,13 @@ public interface SessionListener {
      * @param host Host on which the registration was completed.
      */
     public void onRegistrationCompleted(String host);
+
+    /**
+     * User disconnected the server.
+     *
+     * @param host server adress
+     */
+    public void onDisconnect(String host);
 
     /**
      *
@@ -41,17 +52,9 @@ public interface SessionListener {
      * Another user joined the channel.
      * @param host
      * @param channel
-     * @param message
+     * @param users
      */
-    public void onChannelJoin(String host, String channel, String message);
-
-    /**
-     * Another user parted the channel.
-     * @param host
-     * @param channel
-     * @param message
-     */
-    public void onChannelPart(String host, String channel, String message);
+    public void onChannelUserChange(String host, String channel, List<IrcUser> users);
 
     /**
      *
@@ -60,4 +63,12 @@ public interface SessionListener {
      * @param message
      */
     public void onChannelMessage(String host, String channel, String message);
+
+    /**
+     * Notifies the ui when a user has changed nick.
+     *
+     * @param oldNick
+     * @param newNick
+     */
+    public void onNickChange(String host, String oldNick, String newNick);
 }
