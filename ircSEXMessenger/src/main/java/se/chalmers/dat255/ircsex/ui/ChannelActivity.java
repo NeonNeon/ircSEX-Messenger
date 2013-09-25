@@ -21,13 +21,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import se.chalmers.dat255.ircsex.R;
 import se.chalmers.dat255.ircsex.model.Session;
@@ -35,8 +31,6 @@ import se.chalmers.dat255.ircsex.model.SessionListener;
 import se.chalmers.dat255.ircsex.ui.dialog.JoinChannelDialogFragment;
 import se.chalmers.dat255.ircsex.ui.dialog.ServerConnectDialogFragment;
 import se.chalmers.dat255.ircsex.view.IrcChannelItem;
-import se.chalmers.dat255.ircsex.view.IrcConnectionItem;
-import se.chalmers.dat255.ircsex.view.IrcConnectionItemAdapter;
 import se.chalmers.dat255.ircsex.view.IrcServerHeader;
 
 public class ChannelActivity extends FragmentActivity implements SessionListener, JoinChannelDialogFragment.DialogListener {
@@ -182,9 +176,9 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     private void leaveActiveChannel() {
         String channelName = session.getActiveChannel().getChannelName();
         session.partChannel(session.getActiveServer().getHost(), channelName);
-        int newPosition = ircChannelSelector.removeItem(selected);
+        int newPosition = ircChannelSelector.removeChannel(selected);
         if (ircChannelSelector.isIndexHeading(newPosition)) {
-            ircChannelSelector.removeItem(newPosition);
+            ircChannelSelector.removeChannel(newPosition);
             session.removeServer(session.getActiveServer().getHost());
             startNoServersActivity(); // TODO: starta bara om det inte finns servrar kvar
         }

@@ -22,15 +22,15 @@ import se.chalmers.dat255.ircsex.view.IrcServerHeader;
  */
 public class IrcChannelSelector {
 //    private ArrayAdapter channelListArrayAdapter;
-    private List<IrcConnectionItem> connectedChannels;
+    private List<IrcConnectionItem> connections;
     private List<IrcServerHeader> servers;
     private Map<IrcServerHeader, List<IrcChannelItem>> headersToChannels;
 
     public IrcChannelSelector(Context context) {
-        connectedChannels = new ArrayList<IrcConnectionItem>();
+        connections = new ArrayList<IrcConnectionItem>();
         servers = new ArrayList<IrcServerHeader>();
         headersToChannels = new HashMap<IrcServerHeader, List<IrcChannelItem>>();
-//        channelListArrayAdapter = new IrcConnectionItemAdapter(context, connectedChannels);
+//        channelListArrayAdapter = new IrcConnectionItemAdapter(context, connections);
     }
 
     public ArrayAdapter getArrayAdapter() {
@@ -38,7 +38,7 @@ public class IrcChannelSelector {
     }
 
     public void addHeader(IrcServerHeader header) {
-        header.index = connectedChannels.size();
+        header.index = connections.size();
         headersToChannels.put(header, new ArrayList<IrcChannelItem>());
         servers.add(header);
         addItem(header);
@@ -47,13 +47,13 @@ public class IrcChannelSelector {
     public int addChannel(String server, IrcChannelItem channel) {
         int headerIndex = getHeader(server);
         IrcServerHeader serverHeader = servers.get(headerIndex);
-        connectedChannels.add(channel);
         List<IrcChannelItem> serverChildren = headersToChannels.get(serverHeader);
         serverChildren.add(channel);
         int channelIndex = serverChildren.size();
         for (int i = 0; i < headerIndex; i++) {
             channelIndex+=headersToChannels.get(servers.get(i)).size()+1;
         }
+        connections.add(channelIndex, channel);
         return channelIndex;
     }
 
@@ -68,23 +68,32 @@ public class IrcChannelSelector {
     }
 
     private void addItem(IrcConnectionItem item) {
-        addItem(connectedChannels.size(), item);
+        addItem(connections.size(), item);
     }
 
     private void addItem(int index, IrcConnectionItem item) {
-        connectedChannels.add(index, item);
+        connections.add(index, item);
         datasetChanged();
     }
 
     public IrcConnectionItem getItem(int index) {
-        return connectedChannels.get(index);
+        return connections.get(index);
     }
 
-    public int removeItem(int selected) {
-        connectedChannels.remove(selected);
+    public int removeChannel(int index) {
+        IrcConnectionItem item = connections.remove(index);
+        List<IrcChannelItem> childList = null;
+        for (List<IrcChannelItem> list : headersToChannels.values()) {
+            if (list.remove(item)) {
+                childList = list;
+            }
+        }
         datasetChanged();
-        // TODO: Gör andra saker om det är en server
-        return connectedChannels.size()-1;
+        int newIndex = index-1;
+        if (isIndexHeading(newIndex) && !childList.isEmpty()) {
+            newIndex++;
+        }
+        return newIndex;
     }
 
     public void datasetChanged() {
@@ -92,7 +101,7 @@ public class IrcChannelSelector {
     }
 
     public void expandHeader() {
-//        ((IrcServerHeader) connectedChannels)
+//        ((IrcServerHeader) connections)
     }
 
     public void disconnect(int index) {
@@ -100,6 +109,6 @@ public class IrcChannelSelector {
     }
 
     public boolean isIndexHeading(int position) {
-        return false;
+        return connections.get(position).getViewType() == IrcConnectionItemAdapter.RowType.HEADER_ITEM.ordinal();
     }
 }
