@@ -62,6 +62,8 @@ public class IrcProtocolAdapter implements Runnable {
             socket = new Socket(host, port);
             input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             output = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+            Log.e("IRC", host);
+            Log.e("IRC", socket.toString());
         } catch (IOException e) {
             e.printStackTrace();
             listener.serverDisconnected();

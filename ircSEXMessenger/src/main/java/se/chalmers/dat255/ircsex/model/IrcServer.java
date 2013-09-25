@@ -1,5 +1,7 @@
 package se.chalmers.dat255.ircsex.model;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -176,25 +178,6 @@ public class IrcServer implements IrcProtocolListener {
     }
 
     @Override
-    public void joinedChannel(String channelName) {
-        IrcChannel channel = new IrcChannel(channelName);
-        connectedChannels.put(channelName, channel);
-        datasource.addChannel(host, channelName);
-        for (SessionListener listener : sessionListeners) {
-            listener.onServerJoin(host, channelName);
-        }
-    }
-
-    @Override
-    public void partedChannel(String channelName) {
-        connectedChannels.remove(channelName);
-        datasource.removeChannel(channelName);
-        for (SessionListener listener : sessionListeners) {
-            listener.onServerPart(host, channelName);
-        }
-    }
-
-    @Override
     public void nickChanged(String oldNick, String newNick) {
         nick = newNick;
         for (SessionListener listener : sessionListeners) {
@@ -206,23 +189,40 @@ public class IrcServer implements IrcProtocolListener {
     public void usersInChannel(String channelName, List<String> users) {
         connectedChannels.get(channelName).addUsers(users);
         for (SessionListener listener : sessionListeners) {
-            listener.onChannelUserChange(host, channelName, channels.get(channelName).getUsers());
+            listener.onChannelUserChange(host, channelName, connectedChannels.get(channelName).getUsers());
         }
     }
 
     @Override
     public void userJoined(String channelName, String nick) {
-        connectedChannels.get(channelName).userJoined(nick);
-        for (SessionListener listener : sessionListeners) {
-            listener.onChannelUserChange(host, channelName, channels.get(channelName).getUsers());
+        if (this.nick.equals(nick)) {
+            IrcChannel channel = new IrcChannel(channelName);
+            connectedChannels.put(channelName, channel);
+            datasource.addChannel(host, channelName);
+            for (SessionListener listener : sessionListeners) {
+                listener.onServerJoin(host, channelName);
+            }
+        } else {
+            connectedChannels.get(channelName).userJoined(nick);
+            for (SessionListener listener : sessionListeners) {
+                listener.onChannelUserChange(host, channelName, connectedChannels.get(channelName).getUsers());
+            }
         }
     }
 
     @Override
     public void userParted(String channelName, String nick) {
-        connectedChannels.get(channelName).userParted(nick);
-        for (SessionListener listener : sessionListeners) {
-            listener.onChannelUserChange(host, channelName, channels.get(channelName).getUsers());
+        if (this.nick.equals(nick)) {
+            connectedChannels.remove(channelName);
+            datasource.removeChannel(channelName);
+            for (SessionListener listener : sessionListeners) {
+                listener.onServerPart(host, channelName);
+            }
+        } else {
+            connectedChannels.get(channelName).userParted(nick);
+            for (SessionListener listener : sessionListeners) {
+                listener.onChannelUserChange(host, channelName, connectedChannels.get(channelName).getUsers());
+            }
         }
     }
 

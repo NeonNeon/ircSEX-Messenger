@@ -13,10 +13,6 @@ public interface IrcProtocolListener {
 
     public void serverRegistered();
 
-    public void joinedChannel(String channelName);
-
-    public void partedChannel(String channelName);
-
     public void nickChanged(String oldNick, String newNick);
 
     /**
