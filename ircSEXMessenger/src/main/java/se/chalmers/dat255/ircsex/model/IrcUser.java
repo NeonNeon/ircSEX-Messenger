@@ -52,10 +52,10 @@ public class IrcUser implements Comparable<IrcUser> {
 
     @Override
     public int compareTo(IrcUser ircUser) {
-        if (op != ircUser.isOp()) {
-            return Boolean.compare(ircUser.isOp(), op);
-        } else if (owner != ircUser.isOwner()) {
+        if (owner != ircUser.isOwner()) {
             return Boolean.compare(ircUser.isOwner(), owner);
+        } else if (op != ircUser.isOp()) {
+            return Boolean.compare(ircUser.isOp(), op);
         } else if (voice != ircUser.isVoice()) {
             return Boolean.compare(ircUser.isVoice(), voice);
         } else {
