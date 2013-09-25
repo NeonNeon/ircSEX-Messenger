@@ -35,12 +35,9 @@ public class MessageArrayAdapter extends ArrayAdapter<ChatBubble> {
     }
 
     public View getView(int position, View convertView, ViewGroup parent) {
-        View rowView = convertView;
         ChatBubble chatBubble = getItem(position);
-        if (rowView == null) {
-            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            rowView = inflater.inflate(chatBubble.getLayoutID(), parent, false);
-        }
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View rowView = inflater.inflate(chatBubble.getLayoutID(), parent, false);
         wrapper = (LinearLayout) rowView.findViewById(R.id.chat_bubble_wrapper);
         TextView messageView = (TextView) rowView.findViewById(R.id.chat_bubble_message);
         if (chatBubble instanceof ReceivedChatBubble) {

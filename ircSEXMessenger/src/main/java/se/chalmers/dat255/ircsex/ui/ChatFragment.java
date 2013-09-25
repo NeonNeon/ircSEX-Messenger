@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ListView;
 
 import se.chalmers.dat255.ircsex.R;
@@ -44,10 +45,24 @@ public class ChatFragment extends Fragment {
         messageArrayAdapter.add(new SentChatBubble("XDDDDDDDDDDDDDD"));
         messageArrayAdapter.add(new SentChatBubble("ogm"));
         messageArrayAdapter.add(new ReceivedChatBubble("Mormor", "pls"));
+        messageArrayAdapter.add(new ReceivedChatBubble("Alkohest", "ne :PPPPPPPPPPPPPPPPPPPPPPPP du är hyb asdjh asdjhas dasdas dasd asd asd asd asd s s XD \n pls gib \n ur money"));
+        messageArrayAdapter.add(new ReceivedChatBubble("Mormor", "pls"));
+        messageArrayAdapter.add(new ReceivedChatBubble("Mormor", "pls"));
+        messageArrayAdapter.add(new ReceivedChatBubble("Arnold", "JAG FATTAR NOLL :("));
+        messageArrayAdapter.add(new ReceivedChatBubble("Mormor", "vad är felet"));
+        messageArrayAdapter.add(new ReceivedChatBubble("Mormor", "ogm"));
+        messageArrayAdapter.add(new ReceivedChatBubble("Mormor", "money"));
+        messageArrayAdapter.add(new ReceivedChatBubble("Mormor", "asdjh asdjhas dasdas dasd"));
+        messageArrayAdapter.add(new ReceivedChatBubble("Mormor", "Nationalensykolpedin"));
+        messageArrayAdapter.add(new ReceivedChatBubble("Mormor", "Nationalensykolpedin"));
+        messageArrayAdapter.add(new ReceivedChatBubble("Mormor", "Nationalensykolpedin"));
+        messageArrayAdapter.add(new ReceivedChatBubble("Mormor", "Nationalensykolpedin"));
+        messageArrayAdapter.add(new ReceivedChatBubble("Mormor", "XDDDDDDDDDDDDDD"));
+        messageArrayAdapter.add(new SentChatBubble("uuuh i lajk your style"));
     }
 
     public void sendMessage(View view) {
-        //String message = ((EditText) findViewById(R.id.activity_channel_main_message)).getText().toString();
-        //messageArrayAdapter.add(new SentChatBubble("Me", message));
+        String message = ((EditText) getView().findViewById(R.id.activity_channel_main_message)).getText().toString();
+        messageArrayAdapter.add(new SentChatBubble(message));
     }
 }

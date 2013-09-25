@@ -9,7 +9,7 @@ import se.chalmers.dat255.ircsex.R;
  * Created by Johan on 2013-09-24.
  */
 public class ReceivedChatBubble extends ChatBubble {
-    private String nick;
+    private final String nick;
 
     protected ReceivedChatBubble(String nick, String message) {
         super(message);
