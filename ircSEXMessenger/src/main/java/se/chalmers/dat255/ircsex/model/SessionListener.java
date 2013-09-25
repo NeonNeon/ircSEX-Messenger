@@ -59,5 +59,5 @@ public interface SessionListener {
      * @param channel
      * @param message
      */
-    public void onChannelMessage(String host, String channel, String message);
+    public void onChannelMessage(String host, String channel, IrcMessage message);
 }

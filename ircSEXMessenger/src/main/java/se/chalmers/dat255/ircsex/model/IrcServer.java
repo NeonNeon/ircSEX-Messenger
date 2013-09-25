@@ -213,6 +213,9 @@ public class IrcServer implements IrcProtocolListener {
 
     @Override
     public void messageReceived(String channel, String user, String message) {
-        channels.get(channel).newMessage(user, message);
+        IrcMessage ircMessage = channels.get(channel).newMessage(user, message);
+        for (SessionListener listener : sessionListeners) {
+            listener.onChannelMessage(host, channel, ircMessage);
+        }
     }
 }
