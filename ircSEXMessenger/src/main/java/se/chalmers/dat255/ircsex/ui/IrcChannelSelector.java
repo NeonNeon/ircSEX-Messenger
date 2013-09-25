@@ -5,17 +5,13 @@ package se.chalmers.dat255.ircsex.ui;
  */
 
 import android.content.Context;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ListView;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
-import se.chalmers.dat255.ircsex.model.Session;
 import se.chalmers.dat255.ircsex.view.IrcChannelItem;
 import se.chalmers.dat255.ircsex.view.IrcConnectionItem;
 import se.chalmers.dat255.ircsex.view.IrcConnectionItemAdapter;
@@ -27,11 +23,11 @@ import se.chalmers.dat255.ircsex.view.IrcServerHeader;
 public class IrcChannelSelector {
     private ArrayAdapter channelListArrayAdapter;
     private List<IrcConnectionItem> connectedChannels;
-    private Set<Integer> headingIndices;
+    private List<Header> headers;
 
     public IrcChannelSelector(Context context) {
         connectedChannels = new ArrayList<IrcConnectionItem>();
-        headingIndices = new HashSet<Integer>();
+        headers = new ArrayList<Header>();
         channelListArrayAdapter = new IrcConnectionItemAdapter(context, connectedChannels);
     }
 
@@ -40,16 +36,27 @@ public class IrcChannelSelector {
     }
 
     public void addHeader(IrcServerHeader header) {
+        headers.add(new Header(header.getText(), headers.size()));
         addItem(header);
     }
 
     public int addChannel(String server, IrcChannelItem channel) {
-        addItem(channel);
-        return 1; // TODO: returnera vilket index kanalen hamnade på
+        Header header = getHeader(server);
+        int channelIndex = header.getNextChannelIndex();
+        header.addChild(channel.getText());
+        addItem(channelIndex, channel);
+        for (int i = headers.indexOf(header)+1; i < headers.size()-1; i++) {
+            headers.get(i).index++;
+        }
+        return channelIndex;
     }
 
     private void addItem(IrcConnectionItem item) {
-        connectedChannels.add(item);
+        addItem(connectedChannels.size(), item);
+    }
+
+    private void addItem(int index, IrcConnectionItem item) {
+        connectedChannels.add(index, item);
         datasetChanged();
     }
 
@@ -60,6 +67,7 @@ public class IrcChannelSelector {
     public int removeItem(int selected) {
         connectedChannels.remove(selected);
         datasetChanged();
+        // TODO: Ta bort ifrån headern
         // TODO: Gör andra saker om det är en server
         return connectedChannels.size()-1;
     }
@@ -72,11 +80,51 @@ public class IrcChannelSelector {
 //        ((IrcServerHeader) connectedChannels)
     }
 
-    public boolean isIndexHeading(int newPosition) {
-        return false; // TODO
+    public void disconnect(int index) {
+        // TODO
     }
 
-    public void disconnect() {
-        // TODO
+    public boolean isIndexHeading(int position) {
+        for (Header header : headers) {
+            if (header.index == position) return true;
+        }
+        return false;
+    }
+
+    private Header getHeader(String name) {
+        for (Header header : headers) {
+            if (header.name == name) {
+                return header;
+            }
+        }
+        return null;
+    }
+
+    private class Header {
+        private final String name;
+        private List<String> children;
+        private int index;
+
+        public Header(String name, int index) {
+            this.index = index;
+            this.name = name;
+            this.children = new ArrayList<String>();
+        }
+
+        private int getNextChannelIndex() {
+            return index + children.size() + 1;
+        }
+
+        private void addChild(String child) {
+            children.add(child);
+        }
+
+        private void removeChild(String child) {
+            children.remove(child);
+        }
+
+        private void removeChild(int index) {
+            children.remove(index);
+        }
     }
 }

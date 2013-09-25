@@ -186,11 +186,19 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         if (ircChannelSelector.isIndexHeading(newPosition)) {
             ircChannelSelector.removeItem(newPosition);
             session.removeServer(session.getActiveServer().getHost());
-            startNoServersActivity();
+            startNoServersActivity(); // TODO: starta bara om det inte finns servrar kvar
         }
         else {
             selectItem(newPosition);
         }
+    }
+
+    public void disconnectServer(View view) {
+        ircChannelSelector.disconnect(0); // TODO: ha fält
+    }
+
+    private void startNoServersActivity() {
+        startActivityForResult(new Intent(this, NoServersActivity.class), NoServersActivity.REQUEST_SERVER);
     }
 
     /**
@@ -204,18 +212,9 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
             }
             else {
                 ircChannelSelector.expandHeader();
-                leftDrawer.setItemChecked(1, true);
+                leftDrawer.setItemChecked(selected, true);
             }
         }
-    }
-
-    public void disconnectServer(View view) {
-        ircChannelSelector.disconnect();
-        // TODO:
-    }
-
-    private void startNoServersActivity() {
-        startActivityForResult(new Intent(this, NoServersActivity.class), NoServersActivity.REQUEST_SERVER);
     }
 
     private void selectItem(int position) {
@@ -301,7 +300,6 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
             @Override
             public void run() {
                 ircChannelSelector.addHeader(new IrcServerHeader(host));
-                Log.e("IRCDEBUG", "AA: " + ircChannelSelector.getArrayAdapter().getCount() + " LV: " + leftDrawer.getCount());
             }
         });
     }
