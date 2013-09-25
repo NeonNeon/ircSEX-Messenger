@@ -233,10 +233,7 @@ public class IrcServer implements IrcProtocolListener {
 
     @Override
     public void serverDisconnected() {
-        connected = false;
-        for (SessionListener listener : sessionListeners) {
-            listener.onDisconnect(host);
-        }
+        protocol = new IrcProtocolAdapter(host, port, this);
     }
 
     @Override
