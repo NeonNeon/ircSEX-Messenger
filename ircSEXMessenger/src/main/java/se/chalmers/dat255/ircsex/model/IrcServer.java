@@ -205,7 +205,7 @@ public class IrcServer implements IrcProtocolListener {
 
     @Override
     public void usersInChannel(String channelName, List<String> users) {
-        channels.get(channelName).setUsers(users);
+        channels.get(channelName).addUsers(users);
         for (SessionListener listener : sessionListeners) {
             listener.onChannelUserChange(host, channelName, channels.get(channelName).getUsers());
         }

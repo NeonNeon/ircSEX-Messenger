@@ -39,7 +39,7 @@ public class IrcChannel {
      *
      * @param users - A list with the users
      */
-    public void setUsers(List<String> users) {
+    public void addUsers(List<String> users) {
         for (String user : users) {
             this.users.put(user, new IrcUser(user));
         }
