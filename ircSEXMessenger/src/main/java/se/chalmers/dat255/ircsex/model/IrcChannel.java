@@ -54,8 +54,8 @@ public class IrcChannel {
      * @param message Message to add
      * @param timestamp Time when message was sent
      */
-    public void newMessage(String user, String message, long timestamp) {
-        messages.add(new IrcMessage(user, message, timestamp));
+    public void newMessage(String user, String message) {
+        messages.add(new IrcMessage(user, message));
     }
 
     /**

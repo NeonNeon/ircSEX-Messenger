@@ -212,7 +212,7 @@ public class IrcServer implements IrcProtocolListener {
     }
 
     @Override
-    public void messageReceived(String channel, String user, String message, long timestamp) {
-        channels.get(channel).newMessage(user, message, timestamp);
+    public void messageReceived(String channel, String user, String message) {
+        channels.get(channel).newMessage(user, message);
     }
 }

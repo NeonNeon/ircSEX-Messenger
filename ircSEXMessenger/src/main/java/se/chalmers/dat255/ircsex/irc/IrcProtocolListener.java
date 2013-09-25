@@ -17,11 +17,18 @@ public interface IrcProtocolListener {
 
     public void nickChanged(String oldNick, String newNick);
 
+    /**
+     * Sent when a message is received from the server.
+     * @param channel - the channel that the message was sent to
+     * @param user - the user that sent the message
+     * @param message - the message sent
+     */
+    public void messageReceived(String channel, String user, String message);
+
     // ERRORS
 
     public void nickChangeError();
 
     public void ServerDisconnected();
 
-    public void messageReceived(String channel, String user, String message, long timestamp);
 }

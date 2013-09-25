@@ -12,10 +12,10 @@ public class IrcMessage {
     private final long timestamp;
     private boolean read;
 
-    public IrcMessage(String user, String message, long timestamp) {
+    public IrcMessage(String user, String message) {
         this.user = user;
         this.message = message;
-        this.timestamp = timestamp;
+        this.timestamp = 0;
         this.read = false;
     }
 
