@@ -1,7 +1,7 @@
 package se.chalmers.dat255.ircsex.model.database;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -79,16 +79,15 @@ public class ChannelDatabaseAdapter {
      *
      * @return Channels as a Map with name as key and channel as value
      */
-    public Map<String, IrcChannel> getIrcChannelsByServer(String server) {
-        Map<String, IrcChannel> channels = new HashMap<String, IrcChannel>();
+    public List<String> getIrcChannelsByServer(String server) {
+        List<String> channels = new ArrayList<String>();
 
         Cursor cursor = database.query(DatabaseHelper.TABLE_CHANNELS,
                 allColumns, DatabaseHelper.CHANNEL_SERVER + " = '" + server +"'", null, null, null, null);
 
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
-            IrcChannel channel = cursorToChannel(cursor);
-            channels.put(channel.getChannelName(), channel);
+            channels.add(cursorToChannel(cursor));
             cursor.moveToNext();
         }
         // Make sure to close the cursor
@@ -96,8 +95,7 @@ public class ChannelDatabaseAdapter {
         return channels;
     }
 
-    private IrcChannel cursorToChannel(Cursor cursor) {
-        IrcChannel channel = new IrcChannel(cursor.getString(2));
-        return channel;
+    private String cursorToChannel(Cursor cursor) {
+        return cursor.getString(2);
     }
 }

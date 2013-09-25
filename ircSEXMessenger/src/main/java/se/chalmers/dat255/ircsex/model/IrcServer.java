@@ -69,6 +69,12 @@ public class IrcServer implements IrcProtocolListener {
         connectedChannels = new HashMap<String, IrcChannel>();
     }
 
+    private void restoreChannels() {
+        for (String channel : datasource.getIrcChannelsByServer(host)) {
+            joinChannel(channel);
+        }
+    }
+
     /**
      * Start the protocol adapter.
      * This includes making a connection in a new thread and logging in with the specified login/nick.
@@ -174,6 +180,8 @@ public class IrcServer implements IrcProtocolListener {
         for (SessionListener listener : sessionListeners) {
             listener.onRegistrationCompleted(host);
         }
+
+        restoreChannels();
     }
 
     @Override
