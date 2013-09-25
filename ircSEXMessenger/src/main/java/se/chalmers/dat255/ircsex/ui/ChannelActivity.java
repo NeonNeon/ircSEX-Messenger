@@ -65,7 +65,9 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
 
         leftDrawer = (ListView) findViewById(R.id.left_drawer);
         leftDrawer.setAdapter(ircChannelSelector.getArrayAdapter());
+        leftDrawer.setItemsCanFocus(false);
         leftDrawer.setOnItemClickListener(channelDrawerOnClickListener);
+        leftDrawer.setItemsCanFocus(false);
         rightDrawer = (ListView) findViewById(R.id.right_drawer);
 
         getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -204,9 +206,10 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             if (!ircChannelSelector.isIndexHeading(position)) {
                 selectItem(position);
+                ircChannelSelector.expandHeader(0);
             }
             else {
-                ircChannelSelector.expandHeader();
+                ircChannelSelector.expandHeader(0);
                 leftDrawer.setItemChecked(selected, true);
             }
         }
