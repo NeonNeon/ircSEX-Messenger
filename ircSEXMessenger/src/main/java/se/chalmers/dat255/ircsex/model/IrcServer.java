@@ -56,8 +56,6 @@ public class IrcServer implements IrcProtocolListener {
         this.nick = nick;
         this.realName = realName;
 
-        channels = new HashMap<String, IrcChannel>();
-
         sessionListeners = new ArrayList<SessionListener>();
 
         startProtocolAdapter();
@@ -65,6 +63,7 @@ public class IrcServer implements IrcProtocolListener {
         datasource = new ChannelDatabaseAdapter();
         datasource.open();
 
+        channels = new HashMap<String, IrcChannel>();
         connectedChannels = new HashMap<String, IrcChannel>();
     }
 
@@ -205,7 +204,7 @@ public class IrcServer implements IrcProtocolListener {
 
     @Override
     public void usersInChannel(String channelName, List<String> users) {
-        channels.get(channelName).addUsers(users);
+        connectedChannels.get(channelName).addUsers(users);
         for (SessionListener listener : sessionListeners) {
             listener.onChannelUserChange(host, channelName, channels.get(channelName).getUsers());
         }
@@ -213,7 +212,7 @@ public class IrcServer implements IrcProtocolListener {
 
     @Override
     public void userJoined(String channelName, String nick) {
-        channels.get(channelName).userJoined(nick);
+        connectedChannels.get(channelName).userJoined(nick);
         for (SessionListener listener : sessionListeners) {
             listener.onChannelUserChange(host, channelName, channels.get(channelName).getUsers());
         }
@@ -221,7 +220,7 @@ public class IrcServer implements IrcProtocolListener {
 
     @Override
     public void userParted(String channelName, String nick) {
-        channels.get(channelName).userParted(nick);
+        connectedChannels.get(channelName).userParted(nick);
         for (SessionListener listener : sessionListeners) {
             listener.onChannelUserChange(host, channelName, channels.get(channelName).getUsers());
         }
@@ -242,6 +241,6 @@ public class IrcServer implements IrcProtocolListener {
 
     @Override
     public void messageReceived(String channel, String user, String message, long timestamp) {
-        channels.get(channel).newMessage(user, message, timestamp);
+        connectedChannels.get(channel).newMessage(user, message, timestamp);
     }
 }
