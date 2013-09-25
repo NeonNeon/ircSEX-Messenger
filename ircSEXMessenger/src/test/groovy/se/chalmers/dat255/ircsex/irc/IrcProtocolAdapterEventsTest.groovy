@@ -12,28 +12,31 @@ class IrcProtocolAdapterEventsTest extends Specification {
     def setup() {
     }
 
-    def "test join event sent"() {
+
+    def "test userJoined event sent"() {
         when:
-        def command = ":tord!~banned@smurf-EAF5674.dynamic.se.alltele.net JOIN :"
-        ipa.handleReply(command + channel)
+        def command = "!~joelto@smurf-BA46BB40.edstud.chalmers.se JOIN :"
+        ipa.handleReply(":" + user + command + channel)
 
         then:
-        1 * subscriber.joinedChannel(channel)
+        1 * subscriber.userJoined(channel, user)
 
         where:
         channel << ["#fest", "#svinstia", "#party"]
+        user << ["oed", "Heissman", "Rascal"]
     }
 
-    def "test part event sent"() {
+    def "test userParted event sent"() {
         when:
-        def command = "PART "
-        ipa.handleReply(command + channel)
+        def command = "!~joelto@smurf-BA46BB40.edstud.chalmers.se PART "
+        ipa.handleReply(":" + user + command + channel)
 
         then:
-        1 * subscriber.partedChannel(channel)
+        1 * subscriber.userParted(channel, user)
 
         where:
         channel << ["#fest", "#svinstia", "#party"]
+        user << ["oed", "Heissman", "Rascal"]
     }
 
     def "test usersInChannel event sent"() {

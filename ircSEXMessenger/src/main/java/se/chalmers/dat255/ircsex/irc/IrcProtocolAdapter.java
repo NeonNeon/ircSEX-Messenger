@@ -81,10 +81,10 @@ public class IrcProtocolAdapter implements Runnable {
             write("PONG " + reply.substring(5));
         }
         else if ((index = reply.indexOf("JOIN")) != -1) {
-            listener.joinedChannel(reply.substring(index + 6));
+            listener.userJoined(reply.substring(index + 6), reply.substring(1, reply.indexOf('!')));
         }
         else if ((index = reply.indexOf("PART")) != -1) {
-            listener.partedChannel(reply.substring(index + 5));
+            listener.userParted(reply.substring(index + 5), reply.substring(1, reply.indexOf('!')));
         }
         else if (reply.contains("MODE")) {
             listener.serverRegistered();
