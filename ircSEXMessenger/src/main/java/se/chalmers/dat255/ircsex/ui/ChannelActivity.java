@@ -108,8 +108,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         if (!session.containsServers()) {
             startNoServersActivity();
         } else {
-            showConnectionDialog("Reconnecting to servers");
-            session = new Session(this, this);
+            showConnectionDialog(getString(R.string.dialog_connect_reconnect));
         }
     }
 
@@ -273,7 +272,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
 
     private void startServer(String server, int port, String nickname) {
         session.addServer(server, port, nickname, this);
-        showConnectionDialog("Connecting to " + server);
+        showConnectionDialog(getString(R.string.dialog_connect_connecting) + " " + server);
     }
 
     @Override

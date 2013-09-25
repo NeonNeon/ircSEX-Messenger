@@ -21,4 +21,6 @@
     <string name="server_header_reconnect">Reconnect</string>
     <string name="dialog_nick_title">Change nickname</string>
     <string name="dialog_nick_hint">New nickname on</string>
+    <string name="dialog_connect_reconnect">Reconnecting to servers</string>
+    <string name="dialog_connect_connecting">Connecting to</string>
 </resources>
