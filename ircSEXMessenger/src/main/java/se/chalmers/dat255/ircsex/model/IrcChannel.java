@@ -44,6 +44,7 @@ public class IrcChannel {
      */
     public void addUsers(List<String> users) {
         for (String user : users) {
+            user = IrcUser.extractUserName(user);
             this.users.put(user, new IrcUser(user));
         }
     }
@@ -54,6 +55,7 @@ public class IrcChannel {
      * @param user - The user who joined
      */
     public void userJoined(String user) {
+        user = IrcUser.extractUserName(user);
         users.put(user, new IrcUser(user));
     }
 
@@ -63,6 +65,7 @@ public class IrcChannel {
      * @param user - The user who left
      */
     public void userParted(String user) {
+        user = IrcUser.extractUserName(user);
         users.remove(user);
     }
 
@@ -92,6 +95,7 @@ public class IrcChannel {
      * @param timestamp Time when message was sent
      */
     public void newMessage(String user, String message, long timestamp) {
+        user = IrcUser.extractUserName(user);
         messages.add(new IrcMessage(user, message, timestamp));
     }
 
