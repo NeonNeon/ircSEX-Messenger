@@ -232,6 +232,8 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         getActionBar().setSubtitle(IRC_CHALMERS_IT);
         session.setActiveChannel(channelName);
         mDrawerLayout.closeDrawer(leftDrawer);
+
+        updateUserList(session.getActiveChannel().getUsers());
     }
 
     @Override
@@ -324,18 +326,24 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     }
 
     @Override
-    public void onChannelUserChange(String host, String channel, List<IrcUser> users) {
-        Log.i("IRC", "onChannelUserChange, "+ users.size());
+    public void onChannelUserChange(String host, String channel, final List<IrcUser> users) {
+        if (session.getActiveChannel() != null && session.getActiveChannel().getChannelName().equals(channel)) {
+            ChannelActivity.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    updateUserList(users);
+                    userArrayAdapter.notifyDataSetChanged();
+                }
+            });
+        }
+    }
+
+    private void updateUserList(List<IrcUser> users) {
         this.users.clear();
         for (IrcUser user : users) {
             this.users.add(user);
         }
-        ChannelActivity.this.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                userArrayAdapter.notifyDataSetChanged();
-            }
-        });
+        userArrayAdapter.notifyDataSetChanged();
     }
 
     @Override
