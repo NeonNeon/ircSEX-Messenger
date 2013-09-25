@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string name="app_name">ircSEX Messenger</string>
     <string name="hint_connect">Connect</string>
     <string name="hint_cancel">Cancel</string>
@@ -17,4 +16,6 @@
     <string name="join_channel">Join channel</string>
     <string name="hint_channel_name">Channel name</string>
     <string name="hint_join">Join</string>
+    <string name="server_header_disconnect">Disconnect</string>
+    <string name="server_header_reconnect">Reconnect</string>
 </resources>

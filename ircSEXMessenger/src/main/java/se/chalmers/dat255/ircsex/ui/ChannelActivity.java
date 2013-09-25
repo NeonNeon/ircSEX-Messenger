@@ -191,7 +191,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     }
 
     public void disconnectServer(View view) {
-        ircChannelSelector.disconnect(0); // TODO: ha fält
+        ircChannelSelector.disconnect(0);
     }
 
     private void startNoServersActivity() {
@@ -206,10 +206,9 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             if (!ircChannelSelector.isIndexHeading(position)) {
                 selectItem(position);
-                ircChannelSelector.expandHeader(0);
             }
             else {
-                ircChannelSelector.expandHeader(0);
+//                ircChannelSelector.expandHeader(0); Enable once model/backend supports it.
                 leftDrawer.setItemChecked(selected, true);
             }
         }
