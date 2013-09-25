@@ -178,13 +178,14 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         session.partChannel(session.getActiveServer().getHost(), channelName);
         int newPosition = ircChannelSelector.removeChannel(selected);
         if (ircChannelSelector.isIndexHeading(newPosition)) {
-            ircChannelSelector.removeChannel(newPosition);
+            newPosition = ircChannelSelector.removeServer(newPosition);
             session.removeServer(session.getActiveServer().getHost());
-            startNoServersActivity(); // TODO: starta bara om det inte finns servrar kvar
+            if (newPosition == IrcChannelSelector.NO_SERVERS_CONNECTED) {
+                startNoServersActivity();
+                return;
+            }
         }
-        else {
-            selectItem(newPosition);
-        }
+        selectItem(newPosition);
     }
 
     public void disconnectServer(View view) {

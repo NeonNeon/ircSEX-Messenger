@@ -9,6 +9,7 @@ import spock.lang.Specification
  * @author: wilhelm
  * @date: 9/25/13
  */
+@Ignore
 class IrcChannelSelectorTest extends Specification {
     IrcChannelSelector ircChannelSelector = new IrcChannelSelector(null);
 

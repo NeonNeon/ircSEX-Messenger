@@ -21,7 +21,8 @@ import se.chalmers.dat255.ircsex.view.IrcServerHeader;
  *
  */
 public class IrcChannelSelector {
-//    private ArrayAdapter channelListArrayAdapter;
+    public static final int NO_SERVERS_CONNECTED = -1;
+    private ArrayAdapter channelListArrayAdapter;
     private List<IrcConnectionItem> connections;
     private List<IrcServerHeader> servers;
     private Map<IrcServerHeader, List<IrcChannelItem>> headersToChannels;
@@ -30,11 +31,11 @@ public class IrcChannelSelector {
         connections = new ArrayList<IrcConnectionItem>();
         servers = new ArrayList<IrcServerHeader>();
         headersToChannels = new HashMap<IrcServerHeader, List<IrcChannelItem>>();
-//        channelListArrayAdapter = new IrcConnectionItemAdapter(context, connections);
+        channelListArrayAdapter = new IrcConnectionItemAdapter(context, connections);
     }
 
     public ArrayAdapter getArrayAdapter() {
-        return null;
+        return channelListArrayAdapter;
     }
 
     public void addHeader(IrcServerHeader header) {
@@ -104,11 +105,11 @@ public class IrcChannelSelector {
         List<IrcChannelItem> children = headersToChannels.remove(removedServer);
         connections.removeAll(children);
         datasetChanged();
-        return servers.isEmpty() ? -1 : indexOfHeading >= servers.size() ? indexOfHeading-1 : indexOfHeading;
+        return servers.isEmpty() ? NO_SERVERS_CONNECTED : indexOfHeading >= servers.size() ? indexOfHeading-1 : indexOfHeading;
     }
 
     public void datasetChanged() {
-//        channelListArrayAdapter.notifyDataSetChanged();
+        channelListArrayAdapter.notifyDataSetChanged();
     }
 
     public void expandHeader() {
