@@ -184,6 +184,10 @@ public class IrcProtocolAdapter implements Runnable {
         write("NAMES " + channel);
     }
 
+    public void whois(String nick) {
+        write("WHOIS " + nick);
+    }
+
     private synchronized void write(String string) {
         System.out.println(string);
         try {
