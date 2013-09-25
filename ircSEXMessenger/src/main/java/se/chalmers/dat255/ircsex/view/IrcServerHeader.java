@@ -10,6 +10,7 @@ import se.chalmers.dat255.ircsex.R;
  * Created by Wilhelm on 2013-09-23.
  */
 public class IrcServerHeader implements IrcConnectionItem {
+    public int index;
     private final String name;
     private Button test;
 

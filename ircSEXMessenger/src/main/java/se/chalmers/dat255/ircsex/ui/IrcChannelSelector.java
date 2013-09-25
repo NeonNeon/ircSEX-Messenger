@@ -21,34 +21,50 @@ import se.chalmers.dat255.ircsex.view.IrcServerHeader;
  *
  */
 public class IrcChannelSelector {
-    private ArrayAdapter channelListArrayAdapter;
+//    private ArrayAdapter channelListArrayAdapter;
     private List<IrcConnectionItem> connectedChannels;
-    private List<Header> headers;
+    private List<IrcServerHeader> servers;
+    private Map<IrcServerHeader, List<IrcChannelItem>> headersToChannels;
 
     public IrcChannelSelector(Context context) {
         connectedChannels = new ArrayList<IrcConnectionItem>();
-        headers = new ArrayList<Header>();
-        channelListArrayAdapter = new IrcConnectionItemAdapter(context, connectedChannels);
+        servers = new ArrayList<IrcServerHeader>();
+        headersToChannels = new HashMap<IrcServerHeader, List<IrcChannelItem>>();
+//        channelListArrayAdapter = new IrcConnectionItemAdapter(context, connectedChannels);
     }
 
     public ArrayAdapter getArrayAdapter() {
-        return channelListArrayAdapter;
+        return null;
     }
 
     public void addHeader(IrcServerHeader header) {
-        headers.add(new Header(header.getText(), headers.size()));
+        header.index = connectedChannels.size();
+        headersToChannels.put(header, new ArrayList<IrcChannelItem>());
+        servers.add(header);
         addItem(header);
     }
 
     public int addChannel(String server, IrcChannelItem channel) {
-        Header header = getHeader(server);
-        int channelIndex = header.getNextChannelIndex();
-        header.addChild(channel.getText());
-        addItem(channelIndex, channel);
-        for (int i = headers.indexOf(header)+1; i < headers.size()-1; i++) {
-            headers.get(i).index++;
+        int headerIndex = getHeader(server);
+        IrcServerHeader serverHeader = servers.get(headerIndex);
+        connectedChannels.add(channel);
+        List<IrcChannelItem> serverChildren = headersToChannels.get(serverHeader);
+        serverChildren.add(channel);
+        int channelIndex = serverChildren.size();
+        for (int i = 0; i < headerIndex; i++) {
+            channelIndex+=headersToChannels.get(servers.get(i)).size()+1;
         }
         return channelIndex;
+    }
+
+    private int getHeader(String server) {
+        for (int i = 0; i < servers.size(); i++) {
+            IrcServerHeader ircServerHeader = servers.get(i);
+            if (ircServerHeader.getText().equals(server)) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     private void addItem(IrcConnectionItem item) {
@@ -67,13 +83,12 @@ public class IrcChannelSelector {
     public int removeItem(int selected) {
         connectedChannels.remove(selected);
         datasetChanged();
-        // TODO: Ta bort ifrån headern
         // TODO: Gör andra saker om det är en server
         return connectedChannels.size()-1;
     }
 
     public void datasetChanged() {
-        channelListArrayAdapter.notifyDataSetChanged();
+//        channelListArrayAdapter.notifyDataSetChanged();
     }
 
     public void expandHeader() {
@@ -85,46 +100,6 @@ public class IrcChannelSelector {
     }
 
     public boolean isIndexHeading(int position) {
-        for (Header header : headers) {
-            if (header.index == position) return true;
-        }
         return false;
-    }
-
-    private Header getHeader(String name) {
-        for (Header header : headers) {
-            if (header.name == name) {
-                return header;
-            }
-        }
-        return null;
-    }
-
-    private class Header {
-        private final String name;
-        private List<String> children;
-        private int index;
-
-        public Header(String name, int index) {
-            this.index = index;
-            this.name = name;
-            this.children = new ArrayList<String>();
-        }
-
-        private int getNextChannelIndex() {
-            return index + children.size() + 1;
-        }
-
-        private void addChild(String child) {
-            children.add(child);
-        }
-
-        private void removeChild(String child) {
-            children.remove(child);
-        }
-
-        private void removeChild(int index) {
-            children.remove(index);
-        }
     }
 }
