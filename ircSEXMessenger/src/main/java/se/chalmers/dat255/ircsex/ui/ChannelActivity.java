@@ -149,18 +149,20 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
             case R.id.action_settings:
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 LayoutInflater inflater = getLayoutInflater();
-                final View view = inflater.inflate(R.layout.dialog_change_nick, null);
-                builder.setTitle("Change nickname")
+                View view = inflater.inflate(R.layout.dialog_change_nick, null);
+                final EditText nickEditText = (EditText) view.findViewById(android.R.id.text1);
+                nickEditText.setHint(getString(R.string.dialog_nick_hint) + " " + session.getActiveServer().getHost());
+                builder.setTitle(R.string.dialog_nick_title)
                         .setView(view)
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        .setPositiveButton(getString(R.string.dialog_generic_ok), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                String newNick = ((EditText) view.findViewById(android.R.id.text1)).getText().toString();
+                                String newNick = nickEditText.getText().toString();
                                 Log.e("IRCDEBUG", "Change nickname to " + newNick);
                                 session.changeNick(newNick);
                             }
                         })
-                        .setNegativeButton(R.string.hint_cancel, null)
+                        .setNegativeButton(R.string.dialog_generic_cancel, null)
                         .create().show();
                 break;
             default:

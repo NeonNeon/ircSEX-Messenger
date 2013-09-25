@@ -38,7 +38,7 @@ public class JoinChannelDialogFragment extends DialogFragment {
                         dialogListener.onJoinDialogAccept(JoinChannelDialogFragment.this);
                     }
                 })
-                .setNegativeButton(R.string.hint_cancel, new DialogInterface.OnClickListener() {
+                .setNegativeButton(R.string.dialog_generic_cancel, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                     }
                 });
