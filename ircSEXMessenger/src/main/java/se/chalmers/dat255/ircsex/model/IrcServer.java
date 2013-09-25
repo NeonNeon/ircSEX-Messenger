@@ -190,11 +190,22 @@ public class IrcServer implements IrcProtocolListener {
 
     @Override
     public void nickChanged(String oldNick, String newNick) {
-
-        nick = newNick;
-        serverDatasource.updateNickname(host, newNick);
-        for (SessionListener listener : sessionListeners) {
-            listener.onNickChange(host, oldNick, newNick);
+        if (oldNick.equals(this.nick)) {
+            nick = newNick;
+            serverDatasource.updateNickname(host, newNick);
+            for (SessionListener listener : sessionListeners) {
+                listener.onNickChange(host, oldNick, newNick);
+            }
+        } else {
+            for (IrcChannel channel : connectedChannels.values()) {
+                channel.nickChanged(oldNick, newNick);
+            }
+        }
+        for (IrcChannel channel : connectedChannels.values()) {
+            channel.nickChanged(oldNick, newNick);
+            for (SessionListener listener : sessionListeners) {
+                listener.onChannelUserChange(host, channel.getChannelName(), channel.getUsers());
+            }
         }
     }
 
