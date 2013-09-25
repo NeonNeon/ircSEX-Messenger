@@ -8,19 +8,19 @@ import spock.lang.Specification
  * Created by Wilhelm on 2013-09-22.
  */
 class IrcProtocolAdapterTest extends Specification {
-    IrcProtocolAdapter ircProtocolAdapter
+    IrcProtocolAdapter ipa
     IrcProtocolListener subscriber = Mock()
     MockIrcServer mockIrcServer
 
     def setup() {
-        ircProtocolAdapter = new IrcProtocolAdapter("localhost", 80, subscriber)
+        ipa = new IrcProtocolAdapter("localhost", 80, subscriber)
         mockIrcServer = new MockIrcServer()
-        ircProtocolAdapter.output = mockIrcServer.getAdapterOutputStream()
+        ipa.output = mockIrcServer.getAdapterOutputStream()
     }
 
     def "test connect"() {
         when: "IPA connects to the server"
-        ircProtocolAdapter.connect("Hest", "Fest", "Alko Hest")
+        ipa.connect("Hest", "Fest", "Alko Hest")
 
         then: "NICK and USER is sent to the socket"
         mockIrcServer.readLine().startsWith("NICK")
@@ -30,14 +30,26 @@ class IrcProtocolAdapterTest extends Specification {
 
     @Ignore("Socket does not work on Linux. Try ExpandoMetaClass runtime change for IPA.")
     def "test disconnect"() {
-        ircProtocolAdapter.input = mockIrcServer.getAdapterInputStream()
-        ircProtocolAdapter.socket = mockIrcServer.getAdapterSocket()
+        ipa.input = mockIrcServer.getAdapterInputStream()
+        ipa.socket = mockIrcServer.getAdapterSocket()
 
         when: "IPA disconnects from the server"
-        ircProtocolAdapter.disconnect("Bye")
+        ipa.disconnect("Bye")
 
         then: "QUIT is sent to the socket"
         mockIrcServer.readLine().startsWith("QUIT")
         mockIrcServer.readLine() == null
+    }
+
+    def "test sendChannelMessage"() {
+        when:
+        ipa.sendChannelMessage(channel, message)
+
+        then:
+        mockIrcServer.readLine().equals("PRIVMSG " + channel + " :" + message + "\r\n")
+
+        where:
+        channel << ["#fest", "#svinstia", "#party"]
+        message << ["Jag kommer fan med", "HAH, aldrig!", "men jag vill :(:(:("]
     }
 }
