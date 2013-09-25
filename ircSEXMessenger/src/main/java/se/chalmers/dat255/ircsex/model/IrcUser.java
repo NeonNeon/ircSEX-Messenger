@@ -3,9 +3,10 @@ package se.chalmers.dat255.ircsex.model;
 /**
  * Created by Oskar on 2013-09-24.
  */
-public class IrcUser {
+public class IrcUser implements Comparable<IrcUser> {
 
     private String nick;
+    private char status;
     private boolean op;
     private boolean voice;
     private boolean owner;
@@ -17,14 +18,49 @@ public class IrcUser {
 
     public IrcUser(String user, char status) {
         this.nick = user;
+        this.status = status;
         op = status == OP;
         voice = status == VOICE;
         owner = status == OWNER;
     }
 
+    /**
+     * Returns the nickname.
+     *
+     * @return The nickname
+     */
+    public String getNick() {
+        return nick;
+    }
+
+    public boolean isOp() {
+        return op;
+    }
+
+    public boolean isVoice() {
+        return voice;
+    }
+
+    public boolean isOwner() {
+        return owner;
+    }
+
     @Override
     public String toString() {
-        return nick;
+        return status + nick;
+    }
+
+    @Override
+    public int compareTo(IrcUser ircUser) {
+        if (op != ircUser.isOp()) {
+            return Boolean.compare(ircUser.isOp(), op);
+        } else if (owner != ircUser.isOwner()) {
+            return Boolean.compare(ircUser.isOwner(), owner);
+        } else if (voice != ircUser.isVoice()) {
+            return Boolean.compare(ircUser.isVoice(), voice);
+        } else {
+            return nick.toLowerCase().compareTo(ircUser.getNick().toLowerCase());
+        }
     }
 
     /**

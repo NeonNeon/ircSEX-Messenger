@@ -1,6 +1,7 @@
 package se.chalmers.dat255.ircsex.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -76,7 +77,9 @@ public class IrcChannel {
      * @return - A list with all users
      */
     public List<IrcUser> getUsers() {
-        return new ArrayList<IrcUser>(users.values());
+        List<IrcUser> users = new ArrayList<IrcUser>(this.users.values());
+        Collections.sort(users);
+        return users;
     }
 
     /**
