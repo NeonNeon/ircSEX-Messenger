@@ -2,7 +2,6 @@ package se.chalmers.dat255.ircsex.ui;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.ProgressDialog;
@@ -68,7 +67,6 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         leftDrawer = (ViewGroup) findViewById(R.id.left_drawer);
         rightDrawer = (ListView) findViewById(R.id.right_drawer);
         View.inflate(this, R.layout.drawer_left, leftDrawer);
-
 
         channelList = (ListView) leftDrawer.findViewById(R.id.channel_list);
         // set a custom shadow that overlays the channel_main content when the drawer opens
@@ -220,7 +218,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         fragment.setArguments(args);
 
         FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
+        fragmentManager.beginTransaction().replace(R.id.channel_layout, fragment).commit();
 
         // update selected item and title, then close the drawer
         channelList.setItemChecked(position, true);

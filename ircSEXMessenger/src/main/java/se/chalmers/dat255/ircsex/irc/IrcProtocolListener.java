@@ -45,4 +45,6 @@ public interface IrcProtocolListener {
     public void nickChangeError();
 
     public void serverDisconnected();
+
+    public void messageReceived(String channel, String user, String message, long timestamp);
 }

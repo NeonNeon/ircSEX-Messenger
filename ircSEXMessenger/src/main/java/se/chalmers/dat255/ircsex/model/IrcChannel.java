@@ -1,5 +1,6 @@
 package se.chalmers.dat255.ircsex.model;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -14,21 +15,23 @@ public class IrcChannel {
 
     private final String channelName;
     private Map<String, IrcUser> users;
+    private final List<IrcMessage> messages;
 
     /**
      * Creates an IrcChannel object.
      *
-     * @param channelName - Name of channel
+     * @param channelName Name of channel
      */
     public IrcChannel(String channelName) {
         this.channelName = channelName;
         this.users = new HashMap<String, IrcUser>();
+        messages = new ArrayList<IrcMessage>();
     }
 
     /**
      * Returns the name of the channel.
      *
-     * @return - Name of the channel
+     * @return Name of the channel
      */
     public String getChannelName() {
         return channelName;
@@ -70,5 +73,34 @@ public class IrcChannel {
      */
     public Collection<IrcUser> getUsers() {
         return users.values();
+    }
+
+    /**
+     * Return all messages.
+     *
+     * @return The messages in this channel
+     */
+    public List<IrcMessage> getMessages() {
+        return messages;
+    }
+
+    /**
+     * Adds a message to undread.
+     *
+     * @param user User who sent the message
+     * @param message Message to add
+     * @param timestamp Time when message was sent
+     */
+    public void newMessage(String user, String message, long timestamp) {
+        messages.add(new IrcMessage(user, message, timestamp));
+    }
+
+    /**
+     * Marks message as read.
+     *
+     * @param message Message that will be marked as read
+     */
+    public void readMessage(IrcMessage message) {
+        message.read();
     }
 }
