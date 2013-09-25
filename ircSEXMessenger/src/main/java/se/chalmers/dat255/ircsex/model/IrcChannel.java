@@ -44,8 +44,9 @@ public class IrcChannel {
      */
     public void addUsers(List<String> users) {
         for (String user : users) {
+            char status = IrcUser.extractUserStatus(user);
             user = IrcUser.extractUserName(user);
-            this.users.put(user, new IrcUser(user));
+            this.users.put(user, new IrcUser(user, status));
         }
     }
 
@@ -55,8 +56,9 @@ public class IrcChannel {
      * @param user - The user who joined
      */
     public void userJoined(String user) {
+        char status = IrcUser.extractUserStatus(user);
         user = IrcUser.extractUserName(user);
-        users.put(user, new IrcUser(user));
+        users.put(user, new IrcUser(user, status));
     }
 
     /**

@@ -15,7 +15,11 @@ public class IrcUser {
     public static final char OWNER = '~';
     public static final char NO_STATUS = (char) -1;
 
-    public IrcUser(String user) {
+    public IrcUser(String user, char status) {
+        this.nick = user;
+        op = status == OP;
+        voice = status == VOICE;
+        owner = status == OWNER;
     }
 
 
