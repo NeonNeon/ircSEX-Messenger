@@ -90,7 +90,7 @@ public class IrcProtocolAdapter implements Runnable {
         }
         else if ((index = reply.indexOf("NICK ")) != -1) {
             listener.nickChanged(reply.substring(reply.indexOf(':') + 1, reply.indexOf('!')),
-                    reply.substring(index + 5));
+                    reply.substring(index + 6));
         }
         else if (reply.contains(":+wx")) { // TODO: This is hardcoded.
             listener.serverRegistered();
