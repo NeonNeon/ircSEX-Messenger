@@ -1,7 +1,9 @@
 package se.chalmers.dat255.ircsex.model.database;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -53,15 +55,17 @@ public class ChannelDatabaseAdapter {
      * @param name - Name of the channel
      */
     public void addChannel(String server, String name) {
-        ContentValues values = new ContentValues();
-        values.put(DatabaseHelper.CHANNEL_SERVER, server);
-        values.put(DatabaseHelper.CHANNEL_NAME, name);
-        long insertId = database.insert(DatabaseHelper.TABLE_CHANNELS, null, values);
-        Cursor cursor = database.query(DatabaseHelper.TABLE_CHANNELS,
-                allColumns, DatabaseHelper.CHANNEL_ID + " = " + insertId, null,
-                null, null, null);
-        cursor.moveToFirst();
-        cursor.close();
+        if (!getIrcChannelsByServer(server).contains(name)) {
+            ContentValues values = new ContentValues();
+            values.put(DatabaseHelper.CHANNEL_SERVER, server);
+            values.put(DatabaseHelper.CHANNEL_NAME, name);
+            long insertId = database.insert(DatabaseHelper.TABLE_CHANNELS, null, values);
+            Cursor cursor = database.query(DatabaseHelper.TABLE_CHANNELS,
+                    allColumns, DatabaseHelper.CHANNEL_ID + " = " + insertId, null,
+                    null, null, null);
+            cursor.moveToFirst();
+            cursor.close();
+        }
     }
 
     /**
@@ -80,7 +84,7 @@ public class ChannelDatabaseAdapter {
      * @return Channels as a Map with name as key and channel as value
      */
     public List<String> getIrcChannelsByServer(String server) {
-        List<String> channels = new ArrayList<String>();
+        Set<String> channels = new HashSet<String>();
 
         Cursor cursor = database.query(DatabaseHelper.TABLE_CHANNELS,
                 allColumns, DatabaseHelper.CHANNEL_SERVER + " = '" + server +"'", null, null, null, null);
@@ -92,7 +96,7 @@ public class ChannelDatabaseAdapter {
         }
         // Make sure to close the cursor
         cursor.close();
-        return channels;
+        return new ArrayList<String>(channels);
     }
 
     private String cursorToChannel(Cursor cursor) {

@@ -2,6 +2,7 @@ package se.chalmers.dat255.ircsex.view;
 
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.TextView;
 
 import se.chalmers.dat255.ircsex.R;
 
@@ -10,9 +11,23 @@ import se.chalmers.dat255.ircsex.R;
  */
 public class IrcServerHeader implements IrcConnectionItem {
     private final String name;
+    private TextView connection;
+    private CollapsibleListHeader listHeader;
 
     public IrcServerHeader(String name) {
         this.name = name;
+    }
+
+    public void expand() {
+        connection.setVisibility(connection.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
+    }
+
+    public void disconnect() {
+        listHeader.setDisconnected();
+    }
+
+    public void reconnect() {
+        listHeader.setConnected();
     }
 
     @Override
@@ -30,8 +45,9 @@ public class IrcServerHeader implements IrcConnectionItem {
             view = convertView;
         }
 
-        CollapsibleListHeader text = (CollapsibleListHeader) view.findViewById(R.id.server_name);
-        text.setServerName(name);
+        connection = (TextView) view.findViewById(R.id.server_header_connection);
+        listHeader = (CollapsibleListHeader) view.findViewById(R.id.server_name);
+        listHeader.setServerName(name);
         return view;
     }
 

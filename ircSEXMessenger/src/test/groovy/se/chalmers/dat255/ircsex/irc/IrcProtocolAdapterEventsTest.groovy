@@ -62,7 +62,7 @@ class IrcProtocolAdapterEventsTest extends Specification {
 
     def "test nickChanged event sent"() {
         when:
-        def command = "!anon@smurf-BA46BB40.edstud.chalmers.se NICK "
+        def command = "!anon@smurf-BA46BB40.edstud.chalmers.se NICK :"
         ipa.handleReply(":" + oldNick + command + newNick)
 
         then:
