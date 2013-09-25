@@ -62,6 +62,22 @@ public class IrcChannel {
     }
 
     /**
+     * A user changed nickname.
+     *
+     * @param oldNick Old nickname
+     * @param newNick New nickname
+     */
+    public void nickChanged(String oldNick, String newNick) {
+        oldNick = IrcUser.extractUserName(oldNick);
+        if (users.containsKey(oldNick)) {
+            IrcUser user = users.get(oldNick);
+            user.changeNick(newNick);
+            users.remove(oldNick);
+            users.put(newNick, user);
+        }
+    }
+
+    /**
      * Removes a user from the list of users.
      *
      * @param user - The user who left

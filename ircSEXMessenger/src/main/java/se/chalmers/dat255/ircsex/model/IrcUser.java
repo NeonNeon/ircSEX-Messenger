@@ -45,6 +45,10 @@ public class IrcUser implements Comparable<IrcUser> {
         return owner;
     }
 
+    public void changeNick(String nick) {
+        this.nick = nick;
+    }
+
     @Override
     public String toString() {
         return status + nick;

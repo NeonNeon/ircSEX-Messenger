@@ -81,10 +81,16 @@ public class IrcProtocolAdapter implements Runnable {
             write("PONG " + reply.substring(5));
         }
         else if ((index = reply.indexOf("JOIN")) != -1) {
-            listener.userJoined(reply.substring(index + 6), reply.substring(1, reply.indexOf('!')));
+            listener.userJoined(reply.substring(index + 6),
+                    reply.substring(1, reply.indexOf('!')));
         }
         else if ((index = reply.indexOf("PART")) != -1) {
-            listener.userParted(reply.substring(index + 5), reply.substring(1, reply.indexOf('!')));
+            listener.userParted(reply.substring(index + 5),
+                    reply.substring(1, reply.indexOf('!')));
+        }
+        else if ((index = reply.indexOf("NICK ")) != -1) {
+            listener.nickChanged(reply.substring(reply.indexOf(':') + 1, reply.indexOf('!')),
+                    reply.substring(index + 6));
         }
         else if (reply.contains(":+wx")) { // TODO: This is hardcoded.
             listener.serverRegistered();

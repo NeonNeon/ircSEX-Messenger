@@ -263,6 +263,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     }
 
     private void startServer(String server, int port, String nickname) {
+        session.addServer(server, port, nickname, this);
         showConnectionDialog("Connecting to " + server);
     }
 

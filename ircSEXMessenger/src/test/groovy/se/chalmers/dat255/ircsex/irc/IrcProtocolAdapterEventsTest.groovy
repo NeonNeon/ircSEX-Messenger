@@ -15,7 +15,7 @@ class IrcProtocolAdapterEventsTest extends Specification {
 
     def "test userJoined event sent"() {
         when:
-        def command = "!~joelto@smurf-BA46BB40.edstud.chalmers.se JOIN :"
+        def command = "!~anon@smurf-BA46BB40.edstud.chalmers.se JOIN :"
         ipa.handleReply(":" + user + command + channel)
 
         then:
@@ -28,7 +28,7 @@ class IrcProtocolAdapterEventsTest extends Specification {
 
     def "test userParted event sent"() {
         when:
-        def command = "!~joelto@smurf-BA46BB40.edstud.chalmers.se PART "
+        def command = "!~anon@smurf-BA46BB40.edstud.chalmers.se PART "
         ipa.handleReply(":" + user + command + channel)
 
         then:
@@ -58,5 +58,19 @@ class IrcProtocolAdapterEventsTest extends Specification {
         usersList << [["tord", "Micro", "rekoil"],
                     ["@Norrland", "@Heissman", "@Hultner", "@oed", "@Tuna", "@Roras"],
                     ["+Rascal", "~stefan"]]
+    }
+
+    def "test nickChanged event sent"() {
+        when:
+        def command = "!anon@smurf-BA46BB40.edstud.chalmers.se NICK "
+        ipa.handleReply(":" + oldNick + command + newNick)
+
+        then:
+        1 * subscriber.nickChanged(oldNick, newNick)
+
+        where:
+        oldNick << ["oed", "Heissman", "Rascal"]
+        newNick << ["tord", "hestpojken", "OXi"]
+
     }
 }
