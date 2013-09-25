@@ -10,6 +10,7 @@ import java.util.Map;
 import se.chalmers.dat255.ircsex.irc.IrcProtocolAdapter;
 import se.chalmers.dat255.ircsex.irc.IrcProtocolListener;
 import se.chalmers.dat255.ircsex.model.database.ChannelDatabaseAdapter;
+import se.chalmers.dat255.ircsex.model.database.ServerDatabaseAdapter;
 
 /**
  * This class lists and handles a server, including the protocol adapter and channels.
@@ -26,6 +27,7 @@ public class IrcServer implements IrcProtocolListener {
     private boolean connected = false;
 
     private final ChannelDatabaseAdapter datasource;
+    private final ServerDatabaseAdapter serverDatasource;
 
     private final Map<String, IrcChannel> channels;
     private final Map<String, IrcChannel> connectedChannels;
@@ -62,11 +64,19 @@ public class IrcServer implements IrcProtocolListener {
 
         startProtocolAdapter();
 
+        serverDatasource = new ServerDatabaseAdapter();
+        serverDatasource.open();
         datasource = new ChannelDatabaseAdapter();
         datasource.open();
 
         channels = new HashMap<String, IrcChannel>();
         connectedChannels = new HashMap<String, IrcChannel>();
+    }
+
+    private void restoreChannels() {
+        for (String channel : datasource.getIrcChannelsByServer(host)) {
+            joinChannel(channel);
+        }
     }
 
     /**
@@ -174,11 +184,14 @@ public class IrcServer implements IrcProtocolListener {
         for (SessionListener listener : sessionListeners) {
             listener.onRegistrationCompleted(host);
         }
+
+        restoreChannels();
     }
 
     @Override
     public void nickChanged(String oldNick, String newNick) {
         nick = newNick;
+        serverDatasource.updateNickname(host, newNick);
         for (SessionListener listener : sessionListeners) {
             listener.onNickChange(host, oldNick, newNick);
         }
