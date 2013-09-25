@@ -102,4 +102,8 @@ public class ChannelDatabaseAdapter {
     private String cursorToChannel(Cursor cursor) {
         return cursor.getString(2);
     }
+
+    public void drop() {
+        database.execSQL("DROP TABLE IF EXISTS " + DatabaseHelper.TABLE_CHANNELS);
+    }
 }

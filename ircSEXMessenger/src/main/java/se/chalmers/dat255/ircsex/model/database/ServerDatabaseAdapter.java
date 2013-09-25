@@ -126,4 +126,8 @@ public class ServerDatabaseAdapter {
                                             cursor.getString(5));
         return server;
     }
+
+    public void drop() {
+        database.execSQL("DROP TABLE IF EXISTS " + DatabaseHelper.TABLE_SERVERS);
+    }
 }
