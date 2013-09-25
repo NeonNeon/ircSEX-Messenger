@@ -25,7 +25,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String CHANNEL_NAME = "name";
 
     private static final String DATABASE_NAME = "ircSEX.database";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 4;
 
     // Database creation sql statement
     private static final String TABLE_SERVERS_CREATE = "create table " + TABLE_SERVERS + "("

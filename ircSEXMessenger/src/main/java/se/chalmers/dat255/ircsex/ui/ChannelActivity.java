@@ -110,12 +110,20 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         };
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
-        if (savedInstanceState == null) {
-            // Annan typ av check för persistence
+        session = new Session(this, this);
+        if (!session.containsServers()) {
             startNoServersActivity();
-            session = new Session(this);
             session.setActiveServer(IRC_CHALMERS_IT);
+        } else {
+            showConnectionDialog("Reconnecting to servers");
         }
+    }
+
+    private void showConnectionDialog(String message) {
+        serverConnectProgressDialog = new ProgressDialog(this);
+        serverConnectProgressDialog.setIndeterminate(true);
+        serverConnectProgressDialog.setMessage(message);
+        serverConnectProgressDialog.show();
     }
 
     @Override
@@ -255,11 +263,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     }
 
     private void startServer(String server, int port, String nickname) {
-        session.addServer(server, port, nickname, this);
-        serverConnectProgressDialog = new ProgressDialog(this);
-        serverConnectProgressDialog.setIndeterminate(true);
-        serverConnectProgressDialog.setMessage("Connecting to " + server);
-        serverConnectProgressDialog.show();
+        showConnectionDialog("Connecting to " + server);
     }
 
     @Override

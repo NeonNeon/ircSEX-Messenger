@@ -163,7 +163,6 @@ public class IrcServer implements IrcProtocolListener {
 
     @Override
     public void serverConnected() {
-        connected = true;
         protocol.connect(nick, login, realName);
         for (SessionListener listener : sessionListeners) {
             listener.onConnectionEstablished(host);
