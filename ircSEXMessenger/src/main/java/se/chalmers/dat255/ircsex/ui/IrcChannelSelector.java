@@ -93,7 +93,18 @@ public class IrcChannelSelector {
         if (isIndexHeading(newIndex) && !childList.isEmpty()) {
             newIndex++;
         }
+        datasetChanged();
         return newIndex;
+    }
+
+    public int removeServer(int index) {
+        IrcConnectionItem removedServer = connections.remove(index);
+        int indexOfHeading = servers.indexOf(removedServer);
+        servers.remove(indexOfHeading);
+        List<IrcChannelItem> children = headersToChannels.remove(removedServer);
+        connections.removeAll(children);
+        datasetChanged();
+        return servers.isEmpty() ? -1 : indexOfHeading >= servers.size() ? indexOfHeading-1 : indexOfHeading;
     }
 
     public void datasetChanged() {
