@@ -108,7 +108,7 @@ public class IrcChannel {
     }
 
     /**
-     * Adds a message to undread.
+     * Adds a message to unread.
      *
      * @param user User who sent the message
      * @param message Message to add
