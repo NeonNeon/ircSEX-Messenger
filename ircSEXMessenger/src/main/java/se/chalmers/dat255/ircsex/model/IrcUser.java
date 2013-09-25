@@ -22,6 +22,10 @@ public class IrcUser {
         owner = status == OWNER;
     }
 
+    @Override
+    public String toString() {
+        return nick;
+    }
 
     /**
      * Extracts the status sign in a username.

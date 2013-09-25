@@ -45,6 +45,8 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     private ListView channelList;
     private ListView rightDrawer;
     private ActionBarDrawerToggle mDrawerToggle;
+    private ArrayAdapter<IrcUser> userArrayAdapter;
+    private List<IrcUser> users;
 
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
@@ -67,6 +69,9 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         leftDrawer = (ViewGroup) findViewById(R.id.left_drawer);
         rightDrawer = (ListView) findViewById(R.id.right_drawer);
         View.inflate(this, R.layout.drawer_left, leftDrawer);
+        users = new ArrayList<IrcUser>();
+        userArrayAdapter = new ArrayAdapter<IrcUser>(this, R.layout.drawer_list_item, users);
+        rightDrawer.setAdapter(userArrayAdapter);
 
         channelList = (ListView) leftDrawer.findViewById(R.id.channel_list);
         // set a custom shadow that overlays the channel_main content when the drawer opens
@@ -319,8 +324,18 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     }
 
     @Override
-    public void onChannelUserChange(String host, String channel, Collection<IrcUser> users) {
-
+    public void onChannelUserChange(String host, String channel, List<IrcUser> users) {
+        Log.i("IRC", "onChannelUserChange, "+ users.size());
+        this.users.clear();
+        for (IrcUser user : users) {
+            this.users.add(user);
+        }
+        ChannelActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                userArrayAdapter.notifyDataSetChanged();
+            }
+        });
     }
 
     @Override
