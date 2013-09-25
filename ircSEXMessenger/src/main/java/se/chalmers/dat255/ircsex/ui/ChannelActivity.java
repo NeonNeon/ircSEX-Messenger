@@ -48,8 +48,6 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
 
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
-    private List<IrcConnectionItem> connectedChannels;
-    private ArrayAdapter channelListArrayAdapter;
     private IrcChannelSelector ircChannelSelector;
     private boolean drawerOpen;
 
@@ -64,17 +62,15 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         setContentView(R.layout.activity_channel_main);
 
         mTitle = mDrawerTitle = getTitle();
+        ircChannelSelector = new IrcChannelSelector(this);
         channelDrawerOnClickListener = new ChannelListOnClickListener();
-        connectedChannels = new ArrayList<IrcConnectionItem>();
-        channelListArrayAdapter = new IrcConnectionItemAdapter(this, connectedChannels);
-        ircChannelSelector = new IrcChannelSelector();
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
         drawerLayout.setDrawerShadow(R.drawable.drawer_shadow_right, GravityCompat.END);
 
         leftDrawer = (ListView) findViewById(R.id.left_drawer);
-        leftDrawer.setAdapter(channelListArrayAdapter);
+        leftDrawer.setAdapter(ircChannelSelector.getArrayAdapter());
         leftDrawer.setOnItemClickListener(channelDrawerOnClickListener);
         rightDrawer = (ListView) findViewById(R.id.right_drawer);
 
@@ -186,17 +182,14 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     private void leaveActiveChannel() {
         String channelName = session.getActiveChannel().getChannelName();
         session.partChannel(session.getActiveServer().getHost(), channelName);
-        connectedChannels.remove(selected);
-        channelListArrayAdapter.notifyDataSetChanged();
-        int position = connectedChannels.size()-1;
-        if (ircChannelSelector.isIndexHeading(position)) {
-            connectedChannels.remove(position);
-            ircChannelSelector.removeHeader(position);
+        int newPosition = ircChannelSelector.removeItem(selected);
+        if (ircChannelSelector.isIndexHeading(newPosition)) {
+            ircChannelSelector.removeItem(newPosition);
             session.removeServer(session.getActiveServer().getHost());
             startNoServersActivity();
         }
         else {
-            selectItem(position);
+            selectItem(newPosition);
         }
     }
 
@@ -210,9 +203,15 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
                 selectItem(position);
             }
             else {
+                ircChannelSelector.expandHeader();
                 leftDrawer.setItemChecked(1, true);
             }
         }
+    }
+
+    public void disconnectServer(View view) {
+        ircChannelSelector.disconnect();
+        // TODO:
     }
 
     private void startNoServersActivity() {
@@ -231,7 +230,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
 
         // update selected item and title, then close the drawer
         leftDrawer.setItemChecked(position, true);
-        String channelName = connectedChannels.get(position).getText();
+        String channelName = ircChannelSelector.getItem(position).getText();
         setTitle(channelName);
         getActionBar().setSubtitle(IRC_CHALMERS_IT);
         session.setActiveChannel(channelName);
@@ -244,8 +243,6 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         super.onActivityResult(requestCode, resultCode, data);
         switch (resultCode) {
             case NoServersActivity.RESULT_RETURN_DATA:
-                session = new Session(this);
-                ircChannelSelector = new IrcChannelSelector();
                 String server = data.getStringExtra(NoServersActivity.EXTRA_SERVER);
                 String port = data.getStringExtra(NoServersActivity.EXTRA_PORT);
                 String nickname = data.getStringExtra(NoServersActivity.EXTRA_NICKNAME);
@@ -303,9 +300,8 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         ChannelActivity.this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                ircChannelSelector.setHeader(connectedChannels.size());
-                connectedChannels.add(new IrcServerHeader(host));
-                channelListArrayAdapter.notifyDataSetChanged();
+                ircChannelSelector.addHeader(new IrcServerHeader(host));
+                Log.e("IRCDEBUG", "AA: " + ircChannelSelector.getArrayAdapter().getCount() + " LV: " + leftDrawer.getCount());
             }
         });
     }
@@ -316,14 +312,13 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     }
 
     @Override
-    public void onServerJoin(String host, final String channelName) {
+    public void onServerJoin(final String host, final String channelName) {
         Log.e("IRCDEBUG", "Joined channel " + channelName);
         ChannelActivity.this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                connectedChannels.add(new IrcChannelItem(channelName));
-                channelListArrayAdapter.notifyDataSetChanged();
-                selectItem(connectedChannels.size()-1);
+                int channelIndex = ircChannelSelector.addChannel(host, new IrcChannelItem(channelName));
+                selectItem(channelIndex);
             }
         });
     }
