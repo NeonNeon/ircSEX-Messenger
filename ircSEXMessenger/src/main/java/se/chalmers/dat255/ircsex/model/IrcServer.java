@@ -190,6 +190,7 @@ public class IrcServer implements IrcProtocolListener {
 
     @Override
     public void nickChanged(String oldNick, String newNick) {
+
         nick = newNick;
         serverDatasource.updateNickname(host, newNick);
         for (SessionListener listener : sessionListeners) {
