@@ -367,11 +367,6 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     }
 
     @Override
-    public void onChannelMessage(String host, String channel, String message) {
-
-    }
-
-    @Override
     public void onChannelMessage(String host, String channel, IrcMessage message) {
 
     }
