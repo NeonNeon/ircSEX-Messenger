@@ -57,9 +57,9 @@ public interface IrcProtocolListener {
     /**
      * This method sends the nicks realname as a whois request resopnse.
      * @param nick
-     * @param Realname
+     * @param realname
      */
-    public void whoisRealname(String nick, String Realname);
+    public void whoisRealname(String nick, String realname);
 
     /**
      * This method sends the nicks idletime as a whois request resopnse.
