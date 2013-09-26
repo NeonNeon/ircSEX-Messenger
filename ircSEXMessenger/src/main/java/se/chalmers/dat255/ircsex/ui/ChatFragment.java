@@ -7,6 +7,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 
 import se.chalmers.dat255.ircsex.R;
@@ -17,10 +19,11 @@ public class ChatFragment extends Fragment {
     public static final String ARG_CHANNEL_INDEX = "channelIndex";
     private ListView messageList;
     private MessageArrayAdapter messageArrayAdapter;
+    private EditText messageEditText;
+    private final ChatMessageSendListener messageSendListener;
 
-    public ChatFragment() {
-        // Empty constructor required for fragment subclasses
-
+    public ChatFragment(ChatMessageSendListener messageSendListener) {
+        this.messageSendListener = messageSendListener;
     }
 
     @Override
@@ -35,6 +38,17 @@ public class ChatFragment extends Fragment {
         int i = getArguments().getInt(ARG_CHANNEL_INDEX);
         messageList = (ListView) rootView.findViewById(R.id.chat_message_list);
         messageList.setAdapter(messageArrayAdapter);
+        messageEditText = (EditText) rootView.findViewById(R.id.fragment_chat_message);
+        rootView.findViewById(R.id.fragment_chat_send).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String message = messageEditText.getText().toString();
+                messageSendListener.userSentMessage(message);
+                messageArrayAdapter.add(new SentChatBubble(message));
+                messageList.invalidate();
+                messageEditText.setText("");
+            }
+        });
         return rootView;
     }
 
@@ -44,7 +58,7 @@ public class ChatFragment extends Fragment {
         messageList.invalidate();
     }
 
-    public void stuff() {
-        Log.d("IRC", "detta funkar ju iaf");
+    public interface ChatMessageSendListener {
+        public void userSentMessage(String string);
     }
 }

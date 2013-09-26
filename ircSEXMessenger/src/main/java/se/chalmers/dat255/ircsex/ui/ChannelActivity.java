@@ -38,7 +38,8 @@ import se.chalmers.dat255.ircsex.ui.dialog.ServerConnectDialogFragment;
 import se.chalmers.dat255.ircsex.view.IrcChannelItem;
 import se.chalmers.dat255.ircsex.view.IrcServerHeader;
 
-public class ChannelActivity extends FragmentActivity implements SessionListener, JoinChannelDialogFragment.DialogListener {
+public class ChannelActivity extends FragmentActivity implements SessionListener,
+        JoinChannelDialogFragment.DialogListener, ChatFragment.ChatMessageSendListener {
     private DrawerLayout drawerLayout;
     private ListView leftDrawer;
     private ListView rightDrawer;
@@ -236,7 +237,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
 
     private void selectItem(int position) {
         // update the channel_main content by replacing fragments
-        fragment = new ChatFragment();
+        fragment = new ChatFragment(this);
         Bundle args = new Bundle();
         args.putInt(ChatFragment.ARG_CHANNEL_INDEX, position);
         fragment.setArguments(args);
@@ -386,5 +387,10 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
 
     public void onNickChange(String host, String oldNick, String newNick) {
 
+    }
+
+    @Override
+    public void userSentMessage(String string) {
+        session.getActiveServer().sendMessage(session.getActiveChannel().getChannelName(), string);
     }
 }
