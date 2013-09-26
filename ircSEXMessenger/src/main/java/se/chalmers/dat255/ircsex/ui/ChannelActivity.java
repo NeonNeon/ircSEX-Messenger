@@ -439,9 +439,14 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
                 LayoutInflater inflater = getLayoutInflater();
                 whois = inflater.inflate(R.layout.dialog_whois, null);
                 AlertDialog.Builder builder = new AlertDialog.Builder(ChannelActivity.this);
-                whoisResultDialog = builder.setTitle(R.string.dialog_whois_title)
-                        .setView(whois)
+                whoisResultDialog = builder.setTitle(R.string.dialog_whois_title).setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialogInterface) {
+                        whois = null;
+                    }
+                }).setView(whois)
                         .create();
+
                 whoisResultDialog.show();
             }
         });
