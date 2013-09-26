@@ -7,6 +7,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import se.chalmers.dat255.ircsex.model.IrcServer;
 
@@ -84,6 +85,18 @@ public class ServerDatabaseAdapter {
     }
 
     /**
+     * Updates the saved nickname.
+     *
+     * @param host Server to change nickname on
+     * @param nick New Nickname
+     */
+    public void updateNickname(String host, String nick) {
+        ContentValues values = new ContentValues();
+        values.put(DatabaseHelper.SERVER_NICK, nick);
+        database.update(DatabaseHelper.TABLE_SERVERS, values, DatabaseHelper.SERVER_HOST +"='"+ host +"'", null);
+    }
+
+    /**
      * Returns all saved servers.
      *
      * @return Servers as a Map with address as key and server as value
@@ -112,5 +125,9 @@ public class ServerDatabaseAdapter {
                                             cursor.getString(4),
                                             cursor.getString(5));
         return server;
+    }
+
+    public void drop() {
+        database.execSQL("DROP TABLE IF EXISTS " + DatabaseHelper.TABLE_SERVERS);
     }
 }

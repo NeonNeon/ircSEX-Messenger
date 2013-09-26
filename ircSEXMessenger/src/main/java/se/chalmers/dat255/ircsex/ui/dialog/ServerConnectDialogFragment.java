@@ -32,13 +32,13 @@ public class ServerConnectDialogFragment extends DialogFragment {
         LayoutInflater inflater = getActivity().getLayoutInflater();
         builder.setView(inflater.inflate(R.layout.dialog_serverconnect, null))
                 .setTitle("Connect to server")
-                .setPositiveButton(R.string.hint_connect, new DialogInterface.OnClickListener() {
+                .setPositiveButton(R.string.dialog_generic_connect, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
                         dialogListener.onDialogAccept(ServerConnectDialogFragment.this);
                     }
                 })
-                .setNegativeButton(R.string.hint_cancel, new DialogInterface.OnClickListener() {
+                .setNegativeButton(R.string.dialog_generic_cancel, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         dialogListener.onDialogCancel(ServerConnectDialogFragment.this);
                     }

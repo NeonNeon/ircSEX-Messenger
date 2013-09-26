@@ -1,6 +1,7 @@
 package se.chalmers.dat255.ircsex.model;
 
 import android.content.Context;
+import android.util.Log;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,21 +20,23 @@ public class Session {
     private final Map<String, IrcServer> servers;
 
     private final ServerDatabaseAdapter datasource;
+    private final SessionListener listener;
 
     /**
      * Creates an Session object.
      */
-    public Session(Context context) {
+    public Session(Context context, SessionListener listener) {
         ContextManager.CHANNEL_CONTEXT = context;
         ContextManager.SERVER_CONTEXT = context;
+        this.listener = listener;
 
         datasource = new ServerDatabaseAdapter();
         datasource.open();
 
-        //disabled due to no ui support
-        //servers = datasource.getAllIrcServers();
-        //Initialize map when above code is commented
-        servers = new HashMap<String, IrcServer>();
+        servers = datasource.getAllIrcServers();
+        for (IrcServer server : servers.values()) {
+            server.addSessionListener(listener);
+        }
     }
 
     /**
@@ -115,28 +118,6 @@ public class Session {
         servers.get(host).partChannel(channel);
     }
 
-    /**
-     * Adds a listener.
-     *
-     * @param listener - Listener to add
-     */
-    public void addListener(SessionListener listener) {
-        for (IrcServer server : servers.values()) {
-            server.addSessionListener(listener);
-        }
-    }
-
-    /**
-     * Removes a listener.
-     *
-     * @param listener - Listener to remove
-     */
-    public void removeListener(SessionListener listener) {
-        for (IrcServer server : servers.values()) {
-            server.removeSessionListener(listener);
-        }
-    }
-
     public IrcServer getActiveServer() {
         return activeServer;
     }
@@ -155,5 +136,9 @@ public class Session {
 
     public void changeNick(String newNick) {
         activeServer.changeNick(newNick);
+    }
+
+    public boolean containsServers() {
+        return servers.size() > 0;
     }
 }

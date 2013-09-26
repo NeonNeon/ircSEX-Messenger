@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string name="app_name">ircSEX Messenger</string>
-    <string name="hint_connect">Connect</string>
-    <string name="hint_cancel">Cancel</string>
+    <string name="dialog_generic_ok">OK</string>
+    <string name="dialog_generic_connect">Connect</string>
+    <string name="dialog_generic_cancel">Cancel</string>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
     <string name="action_settings">Change nickname</string>
@@ -17,4 +17,10 @@
     <string name="join_channel">Join channel</string>
     <string name="hint_channel_name">Channel name</string>
     <string name="hint_join">Join</string>
+    <string name="server_header_disconnect">Disconnect</string>
+    <string name="server_header_reconnect">Reconnect</string>
+    <string name="dialog_nick_title">Change nickname</string>
+    <string name="dialog_nick_hint">New nickname on</string>
+    <string name="dialog_connect_reconnect">Reconnecting to servers</string>
+    <string name="dialog_connect_connecting">Connecting to</string>
 </resources>
