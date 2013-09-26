@@ -4,11 +4,14 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import se.chalmers.dat255.ircsex.R;
 import se.chalmers.dat255.ircsex.model.IrcMessage;
@@ -38,18 +41,33 @@ public class ChatFragment extends Fragment {
         messageList = (ListView) rootView.findViewById(R.id.chat_message_list);
         messageList.setAdapter(messageArrayAdapter);
         messageEditText = (EditText) rootView.findViewById(R.id.fragment_chat_message);
+        ((EditText) rootView.findViewById(R.id.fragment_chat_message)).setOnEditorActionListener(
+                new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                if (i == EditorInfo.IME_ACTION_DONE) {
+                    sendMessage();
+                    return true;
+                }
+                return false;
+            }
+        });
         rootView.findViewById(R.id.fragment_chat_send).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String message = messageEditText.getText().toString();
-                messageSendListener.userSentMessage(message);
-                messageArrayAdapter.add(new SentChatBubble(message));
-                messageList.invalidate();
-                messageEditText.setText("");
-                scrollToBottom();
+                sendMessage();
             }
         });
         return rootView;
+    }
+
+    private void sendMessage() {
+        String message = messageEditText.getText().toString();
+        messageSendListener.userSentMessage(message);
+        messageArrayAdapter.add(new SentChatBubble(message));
+        messageList.invalidate();
+        messageEditText.setText("");
+        scrollToBottom();
     }
 
     public void addMessage(IrcMessage ircMessage) {
