@@ -82,7 +82,7 @@ public interface SessionListener {
     /**
      * This method sends the nicks realname as a whois request resopnse.
      * @param nick
-     * @param Realname
+     * @param realname
      */
     public void whoisRealname(String nick, String realname);
 

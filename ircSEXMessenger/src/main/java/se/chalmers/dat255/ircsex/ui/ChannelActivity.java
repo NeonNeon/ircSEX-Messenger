@@ -400,7 +400,8 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
                 if (whois == null) {
                     showWhoisDialog();
                 }
-                ((TextView) whois.findViewById(R.id.dialog_whois_channels)).setText(channels.toString());
+                ((TextView) whois.findViewById(R.id.dialog_whois_channels)).setText("Connected to "+
+                        channels.toString().replace("[", "").replace("]", ""));
             }
         });
     }
@@ -426,7 +427,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
                 if (whois == null) {
                     showWhoisDialog();
                 }
-                ((TextView) whois.findViewById(R.id.dialog_whois_idle)).setText(seconds);
+                ((TextView) whois.findViewById(R.id.dialog_whois_idle)).setText(Integer.toString(seconds));
             }
         });
     }
