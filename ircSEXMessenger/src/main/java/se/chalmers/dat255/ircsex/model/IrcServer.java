@@ -261,6 +261,21 @@ public class IrcServer implements IrcProtocolListener {
     }
 
     @Override
+    public void whoisChannels(String nick, List<String> channels) {
+
+    }
+
+    @Override
+    public void whoisRealname(String nick, String Realname) {
+
+    }
+
+    @Override
+    public void whoisIdleTime(String nick, int seconds) {
+
+    }
+
+    @Override
     public void nickChangeError() {
 
     }
