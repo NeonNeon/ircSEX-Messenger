@@ -51,7 +51,7 @@ public class IrcUser implements Comparable<IrcUser> {
 
     @Override
     public String toString() {
-        return status + nick;
+        return (status == NO_STATUS ? " " : status) + nick;
     }
 
     @Override
