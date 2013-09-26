@@ -4,11 +4,9 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.graphics.NinePatch;
 import android.graphics.PorterDuff;
-import android.graphics.Rect;
 import android.graphics.drawable.NinePatchDrawable;
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -59,7 +57,12 @@ public class MessageArrayAdapter extends ArrayAdapter<ChatBubble> {
                 ViewGroup.LayoutParams.WRAP_CONTENT);
         params.gravity = chatBubble.getGravity();
         wrapper.setLayoutParams(params);
-        wrapper.setBackground(createNinePatchDrawable(chatBubble));
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+            wrapper.setBackgroundDrawable(createNinePatchDrawable(chatBubble));
+        }
+        else {
+            wrapper.setBackground(createNinePatchDrawable(chatBubble));
+        }
         return rowView;
     }
 

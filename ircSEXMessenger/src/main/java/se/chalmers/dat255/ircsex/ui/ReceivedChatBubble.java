@@ -2,14 +2,10 @@ package se.chalmers.dat255.ircsex.ui;
 
 import android.graphics.Color;
 import android.graphics.Rect;
-import android.util.Log;
 import android.view.Gravity;
 
-import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Random;
 
 import se.chalmers.dat255.ircsex.R;
 
@@ -47,7 +43,7 @@ public class ReceivedChatBubble extends ChatBubble {
             e.printStackTrace();
             hue = 0;
         }
-        float[] hsv = {hue, 0.15f, 0.8f};
+        float[] hsv = {hue, 0.05f, 0.99f};
         return Color.HSVToColor(hsv);
     }
 
