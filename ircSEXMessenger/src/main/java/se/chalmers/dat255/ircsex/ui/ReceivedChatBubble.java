@@ -12,9 +12,11 @@ import se.chalmers.dat255.ircsex.model.IrcUser;
  */
 public class ReceivedChatBubble extends ChatBubble {
     private final IrcUser ircUser;
+    private final IrcMessage ircMessage;
 
     protected ReceivedChatBubble(IrcMessage ircMessage) {
         super(ircMessage.getMessage());
+        this.ircMessage = ircMessage;
         this.ircUser = ircMessage.getUser();
     }
 
@@ -45,5 +47,10 @@ public class ReceivedChatBubble extends ChatBubble {
     @Override
     public int getLayoutID() {
         return R.layout.received_chat_bubble;
+    }
+
+    @Override
+    public String getTimestamp() {
+        return ircMessage.getReadableTimestamp();
     }
 }

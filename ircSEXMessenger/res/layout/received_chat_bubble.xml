@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/chat_bubble_wrapper"
         style="@style/chatBubbleLayout"
         android:background="@drawable/left_chat_bubble"
@@ -16,11 +16,22 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textStyle="bold"
+            android:layout_alignParentTop="true"
             android:id="@+id/chat_bubble_nick" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/chat_bubble_nick"
             android:id="@+id/chat_bubble_message" />
-    </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="6dp"
+            android:id="@+id/chat_bubble_timestamp"
+            android:layout_toRightOf="@+id/chat_bubble_nick"
+            android:textColor="@android:color/secondary_text_light_nodisable"
+            android:textSize="12sp"/>
+    </RelativeLayout>
 </LinearLayout>

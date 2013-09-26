@@ -17,7 +17,7 @@ public class IrcMessage {
     public IrcMessage(IrcUser user, String message) {
         this.user = user;
         this.message = message;
-        this.timestamp = System.currentTimeMillis()/1000L;
+        this.timestamp = System.currentTimeMillis();
         this.read = false;
     }
 

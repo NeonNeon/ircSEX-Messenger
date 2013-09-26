@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -27,7 +28,7 @@ import se.chalmers.dat255.ircsex.ui.ReceivedChatBubble;
 public class MessageArrayAdapter extends ArrayAdapter<ChatBubble> {
     private Context context;
     private List<ChatBubble> chatBubbles = new ArrayList<ChatBubble>();
-    private LinearLayout wrapper;
+    private RelativeLayout wrapper;
 
     public MessageArrayAdapter(Context context) {
         super(context, R.layout.received_chat_bubble);
@@ -45,11 +46,13 @@ public class MessageArrayAdapter extends ArrayAdapter<ChatBubble> {
         ChatBubble chatBubble = getItem(position);
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View rowView = inflater.inflate(chatBubble.getLayoutID(), parent, false);
-        wrapper = (LinearLayout) rowView.findViewById(R.id.chat_bubble_wrapper);
+        wrapper = (RelativeLayout) rowView.findViewById(R.id.chat_bubble_wrapper);
         TextView messageView = (TextView) rowView.findViewById(R.id.chat_bubble_message);
         if (chatBubble instanceof ReceivedChatBubble) {
             TextView nickView = (TextView) rowView.findViewById(R.id.chat_bubble_nick);
+            TextView timestampView = (TextView) rowView.findViewById(R.id.chat_bubble_timestamp);
             nickView.setText(((ReceivedChatBubble) chatBubble).getNick());
+            timestampView.setText(chatBubble.getTimestamp());
         }
         messageView.setText(chatBubble.getMessage());
         wrapper.setGravity(chatBubble.getGravity());

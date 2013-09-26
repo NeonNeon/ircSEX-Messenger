@@ -4,14 +4,19 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.view.Gravity;
 
+import java.text.SimpleDateFormat;
+
 import se.chalmers.dat255.ircsex.R;
 
 /**
  * Created by Johan on 2013-09-24.
  */
 public class SentChatBubble extends ChatBubble {
+    private final long timestamp;
+
     public SentChatBubble(String message) {
         super(message);
+        timestamp = System.currentTimeMillis();
     }
 
     @Override
@@ -37,5 +42,14 @@ public class SentChatBubble extends ChatBubble {
     @Override
     public int getLayoutID() {
         return R.layout.sent_chat_bubble;
+    }
+
+    @Override
+    public String getTimestamp() {
+        if (System.currentTimeMillis()/1000L - timestamp < 60*60*24) {
+            return new SimpleDateFormat("HH:mm").format(timestamp);
+        } else {
+            return new SimpleDateFormat("yyyy-MM-dd HH:mm").format(timestamp);
+        }
     }
 }

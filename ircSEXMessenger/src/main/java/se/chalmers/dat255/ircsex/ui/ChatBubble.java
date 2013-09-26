@@ -1,6 +1,5 @@
 package se.chalmers.dat255.ircsex.ui;
 
-import android.graphics.Color;
 import android.graphics.Rect;
 
 /**
@@ -22,4 +21,5 @@ public abstract class ChatBubble {
     public abstract int getColor();
     public abstract int getNinePatchID();
     public abstract int getLayoutID();
+    public abstract String getTimestamp();
 }
