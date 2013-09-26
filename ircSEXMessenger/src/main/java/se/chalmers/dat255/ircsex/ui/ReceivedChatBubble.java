@@ -2,6 +2,7 @@ package se.chalmers.dat255.ircsex.ui;
 
 import android.graphics.Color;
 import android.graphics.Rect;
+import android.util.Log;
 import android.view.Gravity;
 
 import java.nio.ByteBuffer;
@@ -34,7 +35,7 @@ public class ReceivedChatBubble extends ChatBubble {
 
     @Override
     public Rect getPadding() {
-        return new Rect(30, 20, 40, 30);
+        return new Rect(40, 20, 30, 30);
     }
 
     @Override
@@ -56,7 +57,7 @@ public class ReceivedChatBubble extends ChatBubble {
         bytes = md5.digest(nick.getBytes());
         float steklek = 0;
         for (byte value : bytes) {
-            steklek += value;
+            steklek += Math.abs(value);
         }
         return steklek % 360;
     }

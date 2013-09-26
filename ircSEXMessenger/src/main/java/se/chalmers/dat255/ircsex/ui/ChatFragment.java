@@ -50,11 +50,11 @@ public class ChatFragment extends Fragment {
         messageArrayAdapter.add(new ReceivedChatBubble("Mormor", "pls"));
         messageArrayAdapter.add(new ReceivedChatBubble("Arnold", "JAG FATTAR NOLL :("));
         messageArrayAdapter.add(new ReceivedChatBubble("Mormor", "vad är felet"));
-        messageArrayAdapter.add(new ReceivedChatBubble("Mormor", "ogm"));
-        messageArrayAdapter.add(new ReceivedChatBubble("Mormor", "money"));
-        messageArrayAdapter.add(new ReceivedChatBubble("Mormor", "asdjh asdjhas dasdas dasd"));
-        messageArrayAdapter.add(new ReceivedChatBubble("Mormor", "Nationalensykolpedin"));
-        messageArrayAdapter.add(new ReceivedChatBubble("Mormor", "Nationalensykolpedin"));
+        messageArrayAdapter.add(new ReceivedChatBubble("Heißmann", "ogm"));
+        messageArrayAdapter.add(new ReceivedChatBubble("oéd", "money"));
+        messageArrayAdapter.add(new ReceivedChatBubble("oedd", "asdjh asdjhas dasdas dasd"));
+        messageArrayAdapter.add(new ReceivedChatBubble("oed", "Nationalensykolpedin"));
+        messageArrayAdapter.add(new ReceivedChatBubble("joed", "Nationalensykolpedin"));
         messageArrayAdapter.add(new ReceivedChatBubble("Mormor", "Nationalensykolpedin"));
         messageArrayAdapter.add(new ReceivedChatBubble("Mormor", "Nationalensykolpedin"));
         messageArrayAdapter.add(new ReceivedChatBubble("Mormor", "XDDDDDDDDDDDDDD"));

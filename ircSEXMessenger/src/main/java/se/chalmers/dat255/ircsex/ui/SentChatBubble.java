@@ -21,7 +21,7 @@ public class SentChatBubble extends ChatBubble {
 
     @Override
     public Rect getPadding() {
-        return new Rect(40, 20, 30, 30);
+        return new Rect(30, 20, 40, 30);
     }
 
     @Override
