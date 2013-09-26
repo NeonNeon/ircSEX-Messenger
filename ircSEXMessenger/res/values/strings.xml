@@ -4,6 +4,7 @@
     <string name="dialog_generic_ok">OK</string>
     <string name="dialog_generic_connect">Connect</string>
     <string name="dialog_generic_cancel">Cancel</string>
+    <string name="dialog_generic_close">Close</string>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
     <string name="action_settings">Change nickname</string>

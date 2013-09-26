@@ -417,7 +417,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
                 }
                 ((TextView) whois.findViewById(R.id.dialog_whois_realname)).setText(
                         getApplication().getString(R.string.dialog_whois_realname)
-                                +": "+ realname);
+                                + ": " + realname);
             }
         });
     }
@@ -473,6 +473,12 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
                         whois = null;
                     }
                 }).setView(whois)
+                        .setNegativeButton(R.string.dialog_generic_close, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                whois = null;
+                            }
+                        })
                         .create();
 
                 whoisResultDialog.show();
