@@ -1,27 +1,25 @@
 package se.chalmers.dat255.ircsex.ui;
 
-import android.graphics.Color;
 import android.graphics.Rect;
 import android.view.Gravity;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
 import se.chalmers.dat255.ircsex.R;
+import se.chalmers.dat255.ircsex.model.IrcMessage;
+import se.chalmers.dat255.ircsex.model.IrcUser;
 
 /**
  * Created by Johan on 2013-09-24.
  */
 public class ReceivedChatBubble extends ChatBubble {
-    private final String nick;
+    private final IrcUser ircUser;
 
-    protected ReceivedChatBubble(String nick, String message) {
-        super(message);
-        this.nick = nick;
+    protected ReceivedChatBubble(IrcMessage ircMessage) {
+        super(ircMessage.getMessage());
+        this.ircUser = ircMessage.getUser();
     }
 
     public String getNick() {
-        return nick;
+        return ircUser.getNick();
     }
 
     @Override
@@ -36,26 +34,7 @@ public class ReceivedChatBubble extends ChatBubble {
 
     @Override
     public int getColor() {
-        float hue;
-        try {
-            hue = generateHue();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-            hue = 0;
-        }
-        float[] hsv = {hue, 0.05f, 0.99f};
-        return Color.HSVToColor(hsv);
-    }
-
-    private float generateHue() throws NoSuchAlgorithmException {
-        byte[] bytes;
-        MessageDigest md5 = MessageDigest.getInstance("MD5");
-        bytes = md5.digest(nick.getBytes());
-        float steklek = 0;
-        for (byte value : bytes) {
-            steklek += Math.abs(value);
-        }
-        return steklek % 360;
+        return ircUser.getColor();
     }
 
     @Override

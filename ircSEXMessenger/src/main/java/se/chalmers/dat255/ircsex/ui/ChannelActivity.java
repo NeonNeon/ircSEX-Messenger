@@ -2,7 +2,6 @@ package se.chalmers.dat255.ircsex.ui;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -51,6 +50,8 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     private CharSequence mTitle;
     private IrcChannelSelector ircChannelSelector;
     private boolean drawerOpen;
+    private ChatFragment fragment;
+    private String channelName;
 
     private Session session;
     private ProgressDialog serverConnectProgressDialog;
@@ -235,7 +236,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
 
     private void selectItem(int position) {
         // update the channel_main content by replacing fragments
-        Fragment fragment = new ChatFragment();
+        fragment = new ChatFragment();
         Bundle args = new Bundle();
         args.putInt(ChatFragment.ARG_CHANNEL_INDEX, position);
         fragment.setArguments(args);
@@ -245,7 +246,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
 
         // update selected item and title, then close the drawer
         leftDrawer.setItemChecked(position, true);
-        String channelName = ircChannelSelector.getItem(position).getText();
+        channelName = ircChannelSelector.getItem(position).getText();
         setTitle(channelName);
         session.setActiveChannel(channelName);
         drawerLayout.closeDrawer(leftDrawer);
@@ -368,6 +369,14 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
 
     @Override
     public void onChannelMessage(String host, String channel, IrcMessage message) {
+        fragment.addItems();
+        if (channel == channelName) {
+            fragment.addMessage(message);
+        }
+    }
+
+    @Override
+    public void onSentMessage(String host, String channel, IrcMessage message) {
 
     }
 

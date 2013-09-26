@@ -3,13 +3,14 @@ package se.chalmers.dat255.ircsex.ui;
 import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ListView;
 
 import se.chalmers.dat255.ircsex.R;
+import se.chalmers.dat255.ircsex.model.IrcMessage;
 import se.chalmers.dat255.ircsex.model.MessageArrayAdapter;
 
 public class ChatFragment extends Fragment {
@@ -41,28 +42,18 @@ public class ChatFragment extends Fragment {
 
     public void addItems() {
         messageArrayAdapter.add(new SentChatBubble("GO TO BED PLS"));
-        messageArrayAdapter.add(new ReceivedChatBubble("Alkohest", "ne :PPPPPPPPPPPPPPPPPPPPPPPP du är hyb asdjh asdjhas dasdas dasd asd asd asd asd s s XD \n pls gib \n ur money"));
         messageArrayAdapter.add(new SentChatBubble("XDDDDDDDDDDDDDD"));
         messageArrayAdapter.add(new SentChatBubble("ogm"));
-        messageArrayAdapter.add(new ReceivedChatBubble("Mormor", "pls"));
-        messageArrayAdapter.add(new ReceivedChatBubble("Alkohest", "ne :PPPPPPPPPPPPPPPPPPPPPPPP du är hyb asdjh asdjhas dasdas dasd asd asd asd asd s s XD \n pls gib \n ur money"));
-        messageArrayAdapter.add(new ReceivedChatBubble("Mormor", "pls"));
-        messageArrayAdapter.add(new ReceivedChatBubble("Mormor", "pls"));
-        messageArrayAdapter.add(new ReceivedChatBubble("Arnold", "JAG FATTAR NOLL :("));
-        messageArrayAdapter.add(new ReceivedChatBubble("Mormor", "vad är felet"));
-        messageArrayAdapter.add(new ReceivedChatBubble("Heißmann", "ogm"));
-        messageArrayAdapter.add(new ReceivedChatBubble("oéd", "money"));
-        messageArrayAdapter.add(new ReceivedChatBubble("oedd", "asdjh asdjhas dasdas dasd"));
-        messageArrayAdapter.add(new ReceivedChatBubble("oed", "Nationalensykolpedin"));
-        messageArrayAdapter.add(new ReceivedChatBubble("joed", "Nationalensykolpedin"));
-        messageArrayAdapter.add(new ReceivedChatBubble("Mormor", "Nationalensykolpedin"));
-        messageArrayAdapter.add(new ReceivedChatBubble("Mormor", "Nationalensykolpedin"));
-        messageArrayAdapter.add(new ReceivedChatBubble("Mormor", "XDDDDDDDDDDDDDD"));
         messageArrayAdapter.add(new SentChatBubble("uuuh i lajk your style"));
     }
 
-    public void sendMessage(View view) {
-        String message = ((EditText) getView().findViewById(R.id.activity_channel_main_message)).getText().toString();
-        messageArrayAdapter.add(new SentChatBubble(message));
+    public void addMessage(IrcMessage ircMessage) {
+        Log.d("IRC", ircMessage.getMessage());
+        messageArrayAdapter.add(new ReceivedChatBubble(ircMessage));
+        messageList.invalidate();
+    }
+
+    public void stuff() {
+        Log.d("IRC", "detta funkar ju iaf");
     }
 }

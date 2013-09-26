@@ -27,6 +27,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:hint="@string/sendMessage"
             android:layout_marginTop="4dp"
             android:layout_marginLeft="4dp"
             android:layout_marginRight="4dp"
@@ -34,13 +35,14 @@
             android:id="@+id/activity_channel_main_message"
             android:layout_gravity="left|bottom" />
 
-        <Button
+        <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="4dp"
             android:layout_marginBottom="4dp"
-            android:text=">>"
+            android:src="@drawable/social_send_now"
             android:onClick="sendMessage"
+            android:background="@null"
             android:id="@+id/button"
             android:layout_gravity="right|bottom" />
     </LinearLayout>
