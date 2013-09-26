@@ -63,11 +63,13 @@ public class ChatFragment extends Fragment {
 
     private void sendMessage() {
         String message = messageEditText.getText().toString();
-        messageSendListener.userSentMessage(message);
-        messageArrayAdapter.add(new SentChatBubble(message));
-        messageList.invalidate();
-        messageEditText.setText("");
-        scrollToBottom();
+        if (!message.equals("")) {
+            messageSendListener.userSentMessage(message);
+            messageArrayAdapter.add(new SentChatBubble(message));
+            messageList.invalidate();
+            messageEditText.setText("");
+            scrollToBottom();
+        }
     }
 
     public void addMessage(IrcMessage ircMessage) {
