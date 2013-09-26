@@ -26,6 +26,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.awt.Button;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -78,6 +79,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         rightDrawer = (ListView) findViewById(R.id.right_drawer);
         users = new ArrayList<IrcUser>();
         userArrayAdapter = new ArrayAdapter<IrcUser>(this, R.layout.drawer_list_item, android.R.id.text1, users);
+
         rightDrawer.setAdapter(userArrayAdapter);
 
         getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -364,6 +366,13 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
             this.users.add(user);
         }
         userArrayAdapter.notifyDataSetChanged();
+    }
+
+    public void userInfo(View view) {
+        View view1 = (View) view.getParent().getParent();
+        String user = ((TextView) view1.findViewById(android.R.id.text1)).getText().toString();
+
+        session.getActiveServer().whois(user);
     }
 
     @Override

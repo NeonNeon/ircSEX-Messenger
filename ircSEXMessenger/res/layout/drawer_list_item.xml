@@ -33,6 +33,7 @@
             android:background="@null"
             android:padding="5dp"
             android:id="@+id/userInfoButton"
-            android:src="@drawable/ic_drawer" />
+            android:src="@drawable/ic_drawer"
+            android:onClick="userInfo"/>
     </LinearLayout>
 </LinearLayout>
