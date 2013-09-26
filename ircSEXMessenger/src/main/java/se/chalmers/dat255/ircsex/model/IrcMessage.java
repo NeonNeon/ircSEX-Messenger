@@ -9,12 +9,12 @@ import java.text.SimpleDateFormat;
  */
 public class IrcMessage {
 
-    private final String user;
+    private final IrcUser user;
     private final String message;
     private final long timestamp;
     private boolean read;
 
-    public IrcMessage(String user, String message) {
+    public IrcMessage(IrcUser user, String message) {
         this.user = user;
         this.message = message;
         this.timestamp = System.currentTimeMillis()/1000L;
@@ -41,7 +41,7 @@ public class IrcMessage {
         return message;
     }
 
-    public String getUser() {
+    public IrcUser getUser() {
         return user;
     }
 

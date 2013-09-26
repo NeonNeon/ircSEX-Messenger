@@ -116,7 +116,7 @@ public class IrcChannel {
      */
     public IrcMessage newMessage(String user, String message) {
         user = IrcUser.extractUserName(user);
-        IrcMessage ircMessage = new IrcMessage(user, message);
+        IrcMessage ircMessage = new IrcMessage(users.get(user), message);
         messages.add(ircMessage);
         return ircMessage;
     }
