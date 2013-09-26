@@ -73,4 +73,18 @@ class IrcProtocolAdapterEventsTest extends Specification {
         newNick << ["tord", "hestpojken", "OXi"]
 
     }
+
+    def "test whoisRealname event sent"() {
+        when:
+        def command1 = ":irc.chalmers.it 311 tord "
+        def command2 = " ~anon smurf-BA46BB40.edstud.chalmers.se * :"
+        ipa.handleReply(command1 + nick + command2 + realname)
+
+        then:
+        1 * subscriber.whoisRealname(nick, realname)
+
+        where:
+        nick << ["oed", "Heissman", "Rascal"]
+        realname << ["Joel Torstensson", "Jonathan Hedman", "Oskar Nyberg"]
+    }
 }

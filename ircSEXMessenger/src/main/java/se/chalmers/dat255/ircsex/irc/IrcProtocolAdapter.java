@@ -24,8 +24,8 @@ public class IrcProtocolAdapter implements Runnable {
     private BufferedReader input;
     private BufferedWriter output;
 
-    private String host;
-    private int port;
+    private final String host;
+    private final int port;
 
     private IrcProtocolListener listener;
 
@@ -102,6 +102,12 @@ public class IrcProtocolAdapter implements Runnable {
             index = reply.indexOf(':', 1);
 
             listener.usersInChannel(channel, Arrays.asList(reply.substring(index + 1).split(" ")));
+        }
+        else if ((index = reply.indexOf("311 ")) != -1) {
+            int index2 = reply.indexOf(" ", index + 5) + 1;
+            String nick = reply.substring(index2, reply.indexOf(" ", index2));
+            String realname = reply.substring(reply.lastIndexOf(':') + 1);
+            listener.whoisRealname(nick, realname);
         }
 
         // Numeric replies - should be after everything else
