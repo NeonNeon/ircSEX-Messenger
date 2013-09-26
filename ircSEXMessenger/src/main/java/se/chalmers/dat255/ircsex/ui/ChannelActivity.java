@@ -400,8 +400,9 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
                 if (whois == null) {
                     showWhoisDialog();
                 }
-                ((TextView) whois.findViewById(R.id.dialog_whois_channels)).setText("Connected to "+
-                        channels.toString().replace("[", "").replace("]", ""));
+                ((TextView) whois.findViewById(R.id.dialog_whois_channels)).setText(
+                        getApplication().getString(R.string.dialog_whois_channels)
+                                +": "+ channels.toString().replace("[", "").replace("]", ""));
             }
         });
     }
@@ -414,7 +415,9 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
                 if (whois == null) {
                     showWhoisDialog();
                 }
-                ((TextView) whois.findViewById(R.id.dialog_whois_realname)).setText(realname);
+                ((TextView) whois.findViewById(R.id.dialog_whois_realname)).setText(
+                        getApplication().getString(R.string.dialog_whois_realname)
+                                +": "+ realname);
             }
         });
     }
@@ -427,9 +430,33 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
                 if (whois == null) {
                     showWhoisDialog();
                 }
-                ((TextView) whois.findViewById(R.id.dialog_whois_idle)).setText(Integer.toString(seconds));
+                ((TextView) whois.findViewById(R.id.dialog_whois_idle)).setText(
+                        getApplication().getString(R.string.dialog_whois_idle)
+                                +": "+ formatIdleTime(seconds));
             }
         });
+    }
+
+    private String formatIdleTime(int time) {
+        int seconds = time % 60;
+        time /= 60;
+        int minutes = time % 60;
+        time /= 60;
+        int hours = time % 24;
+        int days = time / 24;
+
+        String idle = "";
+        if (days > 0) {
+            idle += " " + days + "d";
+        } if (hours > 0) {
+            idle += " " + hours + "h";
+        } if (minutes > 0) {
+            idle += " " + minutes + "m";
+        } if (seconds > 0) {
+            idle += " " + seconds + "s";
+        }
+
+        return idle.trim();
     }
 
     private void showWhoisDialog() {

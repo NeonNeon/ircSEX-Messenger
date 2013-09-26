@@ -24,4 +24,7 @@
     <string name="dialog_connect_reconnect">Reconnecting to servers</string>
     <string name="dialog_connect_connecting">Connecting to</string>
     <string name="dialog_whois_title">Whois</string>
+    <string name="dialog_whois_realname">Realname</string>
+    <string name="dialog_whois_idle">Idle time</string>
+    <string name="dialog_whois_channels">Connected to</string>
 </resources>
