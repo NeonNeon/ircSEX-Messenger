@@ -104,10 +104,17 @@ public class IrcProtocolAdapter implements Runnable {
             listener.usersInChannel(channel, Arrays.asList(reply.substring(index + 1).split(" ")));
         }
         else if ((index = reply.indexOf("311 ")) != -1) {
-            int index2 = reply.indexOf(" ", index + 5) + 1;
-            String nick = reply.substring(index2, reply.indexOf(" ", index2));
+            int index2 = reply.indexOf(' ', index + 5) + 1;
+            String nick = reply.substring(index2, reply.indexOf(' ', index2));
             String realname = reply.substring(reply.lastIndexOf(':') + 1);
             listener.whoisRealname(nick, realname);
+        }
+        else if ((index = reply.indexOf("319 ")) != -1) {
+            int index2 = reply.indexOf(' ', index + 5) + 1;
+            String nick = reply.substring(index2, reply.indexOf(' ', index2));
+            String channels = reply.substring(reply.lastIndexOf(':') + 1);
+            System.out.println(nick+"|"+channels);
+            listener.whoisChannels(nick, Arrays.asList(channels.split(" ")));
         }
 
         // Numeric replies - should be after everything else

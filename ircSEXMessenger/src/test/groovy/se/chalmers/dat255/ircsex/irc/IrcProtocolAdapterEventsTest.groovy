@@ -87,4 +87,19 @@ class IrcProtocolAdapterEventsTest extends Specification {
         nick << ["oed", "Heissman", "Rascal"]
         realname << ["Joel Torstensson", "Jonathan Hedman", "Oskar Nyberg"]
     }
+
+    def "test whoisChannels event sent"() {
+        when:
+        def command1 = ":irc.chalmers.it 319 tord "
+        def command2 = " :"
+        ipa.handleReply(command1 + nick + command2+ channels)
+
+        then:
+        1 * subscriber.whoisChannels(nick, channelsList)
+
+        where:
+        nick << ["oed"]
+        channels << ["#Rascal #Hultner #SEproject @#oed #opk #olämpligphadder +#br0st #a-laget #haqKIT #!ordfITs +#ircsex #sommar13 @#ircSEX-asp #it13 @#prit @#prit13 #bättre13 #sektionsmöte #hookit #idol11 @#it12 #itstud"]
+        channelsList << [["#Rascal", "#Hultner", "#SEproject", "@#oed", "#opk", "#olämpligphadder", "+#br0st", "#a-laget", "#haqKIT", "#!ordfITs", "+#ircsex", "#sommar13", "@#ircSEX-asp", "#it13", "@#prit", "@#prit13", "#bättre13", "#sektionsmöte", "#hookit", "#idol11", "@#it12", "#itstud"]]
+    }
 }
