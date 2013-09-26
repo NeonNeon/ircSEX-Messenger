@@ -171,6 +171,16 @@ public class IrcServer implements IrcProtocolListener {
         sessionListeners.remove(listener);
     }
 
+    /**
+     * Sends whois command.
+     *
+     * @param user Username to lookup
+     */
+    public void whois(String user) {
+        user = IrcUser.extractUserName(user);
+        protocol.whois(user);
+    }
+
     @Override
     public void serverConnected() {
         protocol.connect(nick, login, realName);
