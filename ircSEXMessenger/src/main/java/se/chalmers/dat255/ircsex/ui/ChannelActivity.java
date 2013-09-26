@@ -402,7 +402,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
                 }
                 ((TextView) whois.findViewById(R.id.dialog_whois_channels)).setText(
                         getApplication().getString(R.string.dialog_whois_channels)
-                                +": "+ channels.toString().replace("[", "").replace("]", ""));
+                                +":\n"+ channels.toString().replace("[", "").replace("]", ""));
             }
         });
     }
@@ -417,7 +417,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
                 }
                 ((TextView) whois.findViewById(R.id.dialog_whois_realname)).setText(
                         getApplication().getString(R.string.dialog_whois_realname)
-                                + ": " + realname);
+                                + ":\n" + realname);
             }
         });
     }
@@ -432,7 +432,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
                 }
                 ((TextView) whois.findViewById(R.id.dialog_whois_idle)).setText(
                         getApplication().getString(R.string.dialog_whois_idle)
-                                +": "+ formatIdleTime(seconds));
+                                +":\n"+ formatIdleTime(seconds));
             }
         });
     }
