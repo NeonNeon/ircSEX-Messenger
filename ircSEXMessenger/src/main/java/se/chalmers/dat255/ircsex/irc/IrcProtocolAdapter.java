@@ -184,6 +184,10 @@ public class IrcProtocolAdapter implements Runnable {
         write("NAMES " + channel);
     }
 
+    /**
+     * Send request to get whois info.
+     * @param nick - the nick to get info for
+     */
     public void whois(String nick) {
         write("WHOIS " + nick);
     }
