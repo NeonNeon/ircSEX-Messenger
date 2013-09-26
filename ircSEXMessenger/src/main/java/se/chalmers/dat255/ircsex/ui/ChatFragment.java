@@ -7,7 +7,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
@@ -47,6 +46,7 @@ public class ChatFragment extends Fragment {
                 messageArrayAdapter.add(new SentChatBubble(message));
                 messageList.invalidate();
                 messageEditText.setText("");
+                scrollToBottom();
             }
         });
         return rootView;
@@ -56,6 +56,11 @@ public class ChatFragment extends Fragment {
         Log.d("IRC", ircMessage.getMessage());
         messageArrayAdapter.add(new ReceivedChatBubble(ircMessage));
         messageList.invalidate();
+        scrollToBottom();
+    }
+
+    public void scrollToBottom() {
+        messageList.setSelection(messageArrayAdapter.getCount()-1);
     }
 
     public interface ChatMessageSendListener {
