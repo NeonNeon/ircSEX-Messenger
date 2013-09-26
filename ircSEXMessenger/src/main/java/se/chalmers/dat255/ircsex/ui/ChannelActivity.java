@@ -368,11 +368,15 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     }
 
     @Override
-    public void onChannelMessage(String host, String channel, IrcMessage message) {
-        fragment.addItems();
-        if (channel == channelName) {
-            fragment.addMessage(message);
-        }
+    public void onChannelMessage(String host, final String channel, final IrcMessage message) {
+        ChannelActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (channel.equals(channelName)) {
+                    fragment.addMessage(message);
+                }
+            }
+        });
     }
 
     @Override

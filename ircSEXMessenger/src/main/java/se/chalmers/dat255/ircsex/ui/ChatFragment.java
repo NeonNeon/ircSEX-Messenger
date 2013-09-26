@@ -35,16 +35,7 @@ public class ChatFragment extends Fragment {
         int i = getArguments().getInt(ARG_CHANNEL_INDEX);
         messageList = (ListView) rootView.findViewById(R.id.chat_message_list);
         messageList.setAdapter(messageArrayAdapter);
-
-        addItems();
         return rootView;
-    }
-
-    public void addItems() {
-        messageArrayAdapter.add(new SentChatBubble("GO TO BED PLS"));
-        messageArrayAdapter.add(new SentChatBubble("XDDDDDDDDDDDDDD"));
-        messageArrayAdapter.add(new SentChatBubble("ogm"));
-        messageArrayAdapter.add(new SentChatBubble("uuuh i lajk your style"));
     }
 
     public void addMessage(IrcMessage ircMessage) {
