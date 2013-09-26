@@ -24,11 +24,10 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import java.awt.Button;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import se.chalmers.dat255.ircsex.R;
@@ -55,6 +54,9 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
 
     private Session session;
     private ProgressDialog serverConnectProgressDialog;
+    private AlertDialog whoisProgressDialog;
+    private AlertDialog whoisResultDialog;
+    private View whois;
     private int selected = -1;
     private ChannelListOnClickListener channelDrawerOnClickListener;
 
@@ -373,6 +375,11 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         String user = ((TextView) view1.findViewById(android.R.id.text1)).getText().toString();
 
         session.getActiveServer().whois(user);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        whoisProgressDialog = builder.setTitle(R.string.dialog_whois_title)
+                .setView(new ProgressBar(this))
+                .create();
+        whoisProgressDialog.show();
     }
 
     @Override
@@ -386,17 +393,57 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     }
 
     @Override
-    public void whoisChannels(String nick, List<String> channels) {
-
+    public void whoisChannels(String nick, final List<String> channels) {
+        ChannelActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (whois == null) {
+                    showWhoisDialog();
+                }
+                ((TextView) whois.findViewById(R.id.dialog_whois_channels)).setText(channels.toString());
+            }
+        });
     }
 
     @Override
-    public void whoisRealname(String nick, String Realname) {
-
+    public void whoisRealname(String nick, final String realname) {
+        ChannelActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (whois == null) {
+                    showWhoisDialog();
+                }
+                ((TextView) whois.findViewById(R.id.dialog_whois_realname)).setText(realname);
+            }
+        });
     }
 
     @Override
-    public void whoisIdleTime(String nick, int seconds) {
+    public void whoisIdleTime(String nick, final int seconds) {
+        ChannelActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (whois == null) {
+                    showWhoisDialog();
+                }
+                ((TextView) whois.findViewById(R.id.dialog_whois_idle)).setText(seconds);
+            }
+        });
+    }
 
+    private void showWhoisDialog() {
+        whoisProgressDialog.dismiss();
+        ChannelActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                LayoutInflater inflater = getLayoutInflater();
+                whois = inflater.inflate(R.layout.dialog_whois, null);
+                AlertDialog.Builder builder = new AlertDialog.Builder(ChannelActivity.this);
+                whoisResultDialog = builder.setTitle(R.string.dialog_whois_title)
+                        .setView(whois)
+                        .create();
+                whoisResultDialog.show();
+            }
+        });
     }
 }

@@ -84,7 +84,7 @@ public interface SessionListener {
      * @param nick
      * @param Realname
      */
-    public void whoisRealname(String nick, String Realname);
+    public void whoisRealname(String nick, String realname);
 
     /**
      * This method sends the nicks idletime as a whois request resopnse.
