@@ -102,4 +102,18 @@ class IrcProtocolAdapterEventsTest extends Specification {
         channels << ["#Rascal #Hultner #SEproject @#oed #opk #olämpligphadder +#br0st #a-laget #haqKIT #!ordfITs +#ircsex #sommar13 @#ircSEX-asp #it13 @#prit @#prit13 #bättre13 #sektionsmöte #hookit #idol11 @#it12 #itstud"]
         channelsList << [["#Rascal", "#Hultner", "#SEproject", "@#oed", "#opk", "#olämpligphadder", "+#br0st", "#a-laget", "#haqKIT", "#!ordfITs", "+#ircsex", "#sommar13", "@#ircSEX-asp", "#it13", "@#prit", "@#prit13", "#bättre13", "#sektionsmöte", "#hookit", "#idol11", "@#it12", "#itstud"]]
     }
+
+    def "test whoisIdleTime event sent"() {
+        when:
+        def command1 = ":irc.chalmers.it 317 tord "
+        def command2 = " 1371050325 :seconds idle, signon time"
+        ipa.handleReply(command1 + nick + " " + time + command2)
+
+        then:
+        1 * subscriber.whoisIdleTime(nick, time)
+
+        where:
+        nick << ["oed", "Heissman", "Rascal"]
+        time << [14495, 20, 23423523]
+    }
 }
