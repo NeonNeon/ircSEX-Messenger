@@ -65,4 +65,6 @@ public interface SessionListener {
     public void onNickChange(String host, String oldNick, String newNick);
 
     public void onChannelMessage(String host, String channel, IrcMessage message);
+
+    public void onSentMessage(String host, String channel, IrcMessage message);
 }
