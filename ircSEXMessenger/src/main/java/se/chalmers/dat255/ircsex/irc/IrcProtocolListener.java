@@ -47,6 +47,14 @@ public interface IrcProtocolListener {
      */
     public void userParted(String channelName, String nick);
 
+    /**
+     * Sent when a message is received from the server.
+     * @param channel - the channel that the message was sent to
+     * @param user - the user that sent the message
+     * @param message - the message sent
+     */
+    public void messageReceived(String channel, String user, String message);
+
     // ERRORS
 
     /**
@@ -60,5 +68,4 @@ public interface IrcProtocolListener {
      */
     public void serverDisconnected();
 
-    public void messageReceived(String channel, String user, String message, long timestamp);
 }

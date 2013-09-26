@@ -5,50 +5,44 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
-        android:id="@+id/center_container"
+    <ListView
+        android:id="@+id/chat_message_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:divider="@null"
+        android:dividerHeight="10dp"
+        android:padding="8dp"
         android:layout_weight="1"
-        android:orientation="vertical">
-
-        <ListView
-            android:id="@+id/chat_message_list"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:divider="@null"
-            android:dividerHeight="20dp"/>
-
-        <View
-            style="@style/headingDivider"
-            android:background="#BEBEBE"/>
-    </LinearLayout>
+        android:background="#FFe6e6e6"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="0"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:background="#FFFFFFFF"
+        android:paddingTop="4dp">
 
         <EditText
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:hint="@string/sendMessage"
             android:layout_marginTop="4dp"
             android:layout_marginLeft="4dp"
             android:layout_marginRight="4dp"
             android:layout_marginBottom="4dp"
-            android:id="@+id/activity_channel_main_message"
+            android:id="@+id/fragment_chat_message"
             android:layout_gravity="left|bottom" />
 
-        <Button
+        <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:id="@+id/fragment_chat_send"
             android:layout_marginRight="4dp"
             android:layout_marginBottom="4dp"
-            android:text=">>"
-            android:onClick="sendMessage"
-            android:id="@+id/button"
+            android:src="@drawable/social_send_now"
+            android:background="@null"
             android:layout_gravity="right|bottom" />
     </LinearLayout>
 

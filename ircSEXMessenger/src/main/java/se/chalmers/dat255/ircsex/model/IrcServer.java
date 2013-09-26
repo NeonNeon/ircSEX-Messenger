@@ -171,6 +171,15 @@ public class IrcServer implements IrcProtocolListener {
         sessionListeners.remove(listener);
     }
 
+    /**
+     * Sends a message to the active channel.
+     *
+     * @param message Message to send
+     */
+    public void sendMessage(String channel, String message) {
+        protocol.sendChannelMessage(channel, message);
+    }
+
     @Override
     public void serverConnected() {
         protocol.connect(nick, login, realName);
@@ -261,7 +270,17 @@ public class IrcServer implements IrcProtocolListener {
     }
 
     @Override
-    public void messageReceived(String channel, String user, String message, long timestamp) {
-        connectedChannels.get(channel).newMessage(user, message, timestamp);
+    public void messageReceived(String channel, String user, String message) {
+        user = IrcUser.extractUserName(user);
+        IrcMessage ircMessage = connectedChannels.get(channel).newMessage(user, message);
+        if (user.equals(nick)) {
+            for (SessionListener listener : sessionListeners) {
+                listener.onSentMessage(host, channel, ircMessage);
+            }
+        } else {
+            for (SessionListener listener : sessionListeners) {
+                listener.onChannelMessage(host, channel, ircMessage);
+            }
+        }
     }
 }

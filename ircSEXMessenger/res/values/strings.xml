@@ -23,4 +23,5 @@
     <string name="dialog_nick_hint">New nickname on</string>
     <string name="dialog_connect_reconnect">Reconnecting to servers</string>
     <string name="dialog_connect_connecting">Connecting to</string>
+    <string name="sendMessage">Send a message</string>
 </resources>

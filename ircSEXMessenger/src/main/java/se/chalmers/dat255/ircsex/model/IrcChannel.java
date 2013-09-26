@@ -112,11 +112,13 @@ public class IrcChannel {
      *
      * @param user User who sent the message
      * @param message Message to add
-     * @param timestamp Time when message was sent
+     * @return The IrcMessage created from the message string and user string
      */
-    public void newMessage(String user, String message, long timestamp) {
+    public IrcMessage newMessage(String user, String message) {
         user = IrcUser.extractUserName(user);
-        messages.add(new IrcMessage(user, message, timestamp));
+        IrcMessage ircMessage = new IrcMessage(users.get(user), message);
+        messages.add(ircMessage);
+        return ircMessage;
     }
 
     /**

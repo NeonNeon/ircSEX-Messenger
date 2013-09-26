@@ -57,18 +57,28 @@ public interface SessionListener {
     public void onChannelUserChange(String host, String channel, List<IrcUser> users);
 
     /**
-     *
-     * @param host
-     * @param channel
-     * @param message
-     */
-    public void onChannelMessage(String host, String channel, String message);
-
-    /**
      * Notifies the ui when a user has changed nick.
      *
      * @param oldNick
      * @param newNick
      */
     public void onNickChange(String host, String oldNick, String newNick);
+
+    /**
+     * Receiving a message from another user.
+     *
+     * @param host
+     * @param channel
+     * @param message
+     */
+    public void onChannelMessage(String host, String channel, IrcMessage message);
+
+    /**
+     * Receiving message as confirmation of a sent message.
+     *
+     * @param host
+     * @param channel
+     * @param message
+     */
+    public void onSentMessage(String host, String channel, IrcMessage message);
 }

@@ -2,7 +2,6 @@ package se.chalmers.dat255.ircsex.ui;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -27,10 +26,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import se.chalmers.dat255.ircsex.R;
+import se.chalmers.dat255.ircsex.model.IrcMessage;
 import se.chalmers.dat255.ircsex.model.IrcUser;
 import se.chalmers.dat255.ircsex.model.Session;
 import se.chalmers.dat255.ircsex.model.SessionListener;
@@ -39,7 +38,8 @@ import se.chalmers.dat255.ircsex.ui.dialog.ServerConnectDialogFragment;
 import se.chalmers.dat255.ircsex.view.IrcChannelItem;
 import se.chalmers.dat255.ircsex.view.IrcServerHeader;
 
-public class ChannelActivity extends FragmentActivity implements SessionListener, JoinChannelDialogFragment.DialogListener {
+public class ChannelActivity extends FragmentActivity implements SessionListener,
+        JoinChannelDialogFragment.DialogListener, ChatFragment.ChatMessageSendListener {
     private DrawerLayout drawerLayout;
     private ListView leftDrawer;
     private ListView rightDrawer;
@@ -51,6 +51,8 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     private CharSequence mTitle;
     private IrcChannelSelector ircChannelSelector;
     private boolean drawerOpen;
+    private ChatFragment fragment;
+    private String channelName;
 
     private Session session;
     private ProgressDialog serverConnectProgressDialog;
@@ -235,19 +237,18 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
 
     private void selectItem(int position) {
         // update the channel_main content by replacing fragments
-        Fragment fragment = new ChatFragment();
+        channelName = ircChannelSelector.getItem(position).getText();
+        session.setActiveChannel(channelName);
+        fragment = new ChatFragment(this);
         Bundle args = new Bundle();
         args.putInt(ChatFragment.ARG_CHANNEL_INDEX, position);
         fragment.setArguments(args);
-
         FragmentManager fragmentManager = getFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.channel_layout, fragment).commit();
 
         // update selected item and title, then close the drawer
         leftDrawer.setItemChecked(position, true);
-        String channelName = ircChannelSelector.getItem(position).getText();
         setTitle(channelName);
-        session.setActiveChannel(channelName);
         drawerLayout.closeDrawer(leftDrawer);
         selected = position;
         updateUserList(session.getActiveChannel().getUsers());
@@ -367,12 +368,28 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     }
 
     @Override
-    public void onChannelMessage(String host, String channel, String message) {
+    public void onChannelMessage(String host, final String channel, final IrcMessage message) {
+        ChannelActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (channel.equals(channelName)) {
+                    fragment.addMessage(message);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onSentMessage(String host, String channel, IrcMessage message) {
+
+    }
+
+    public void onNickChange(String host, String oldNick, String newNick) {
 
     }
 
     @Override
-    public void onNickChange(String host, String oldNick, String newNick) {
-
+    public void userSentMessage(String string) {
+        session.getActiveServer().sendMessage(session.getActiveChannel().getChannelName(), string);
     }
 }
