@@ -1,5 +1,10 @@
 package se.chalmers.dat255.ircsex.model;
 
+import android.graphics.Color;
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 /**
  * Created by Oskar on 2013-09-24.
  */
@@ -12,6 +17,8 @@ public class IrcUser implements Comparable<IrcUser> {
     private boolean halfOp;
     private boolean voice;
 
+    private int color;
+
     public static final char OWNER = '~';
     public static final char OP = '@';
     public static final char HALF_OP = '%';
@@ -21,10 +28,36 @@ public class IrcUser implements Comparable<IrcUser> {
     public IrcUser(String user, char status) {
         this.nick = user;
         this.status = status;
+
         owner = status == OWNER;
         op = status == OP;
         voice = status == VOICE;
         halfOp = status == HALF_OP;
+
+        generateColor();
+    }
+
+    private void generateColor() {
+        float hue;
+        try {
+            hue = generateHue();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            hue = 0;
+        }
+        float[] hsv = {hue, 0.05f, 0.99f};
+        color = Color.HSVToColor(hsv);
+    }
+
+    private float generateHue() throws NoSuchAlgorithmException {
+        byte[] bytes;
+        MessageDigest md5 = MessageDigest.getInstance("MD5");
+        bytes = md5.digest(nick.getBytes());
+        float sum = 0;
+        for (byte value : bytes) {
+            sum += Math.abs(value);
+        }
+        return sum % 360;
     }
 
     /**
@@ -54,6 +87,7 @@ public class IrcUser implements Comparable<IrcUser> {
 
     public void changeNick(String nick) {
         this.nick = nick;
+        generateColor();
     }
 
     @Override
@@ -74,6 +108,10 @@ public class IrcUser implements Comparable<IrcUser> {
         } else {
             return nick.toLowerCase().compareTo(ircUser.getNick().toLowerCase());
         }
+    }
+
+    public int getColor() {
+        return color;
     }
 
     /**
