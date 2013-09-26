@@ -1,7 +1,14 @@
 package se.chalmers.dat255.ircsex.ui;
 
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.view.Gravity;
+
+import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Random;
 
 import se.chalmers.dat255.ircsex.R;
 
@@ -26,8 +33,37 @@ public class ReceivedChatBubble extends ChatBubble {
     }
 
     @Override
-    public int getBackgroundColor() {
-        return Color.GRAY;
+    public Rect getPadding() {
+        return new Rect(30, 20, 40, 30);
+    }
+
+    @Override
+    public int getColor() {
+        float hue;
+        try {
+            hue = generateHue();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            hue = 0;
+        }
+        float[] hsv = {hue, 0.15f, 0.8f};
+        return Color.HSVToColor(hsv);
+    }
+
+    private float generateHue() throws NoSuchAlgorithmException {
+        byte[] bytes;
+        MessageDigest md5 = MessageDigest.getInstance("MD5");
+        bytes = md5.digest(nick.getBytes());
+        float steklek = 0;
+        for (byte value : bytes) {
+            steklek += value;
+        }
+        return steklek % 360;
+    }
+
+    @Override
+    public int getNinePatchID() {
+        return R.drawable.left_chat_bubble;
     }
 
     @Override

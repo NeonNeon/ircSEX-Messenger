@@ -1,6 +1,7 @@
 package se.chalmers.dat255.ircsex.ui;
 
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.view.Gravity;
 
 import se.chalmers.dat255.ircsex.R;
@@ -19,8 +20,18 @@ public class SentChatBubble extends ChatBubble {
     }
 
     @Override
-    public int getBackgroundColor() {
-        return Color.GREEN;
+    public Rect getPadding() {
+        return new Rect(40, 20, 30, 30);
+    }
+
+    @Override
+    public int getColor() {
+        return Color.rgb(195, 229, 183);
+    }
+
+    @Override
+    public int getNinePatchID() {
+        return R.drawable.right_chat_bubble;
     }
 
     @Override
