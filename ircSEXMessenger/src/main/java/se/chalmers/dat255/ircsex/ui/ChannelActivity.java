@@ -2,8 +2,6 @@ package se.chalmers.dat255.ircsex.ui;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -15,44 +13,56 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import se.chalmers.dat255.ircsex.R;
+import se.chalmers.dat255.ircsex.model.IrcMessage;
+import se.chalmers.dat255.ircsex.model.IrcUser;
 import se.chalmers.dat255.ircsex.model.Session;
 import se.chalmers.dat255.ircsex.model.SessionListener;
 import se.chalmers.dat255.ircsex.ui.dialog.JoinChannelDialogFragment;
 import se.chalmers.dat255.ircsex.ui.dialog.ServerConnectDialogFragment;
+import se.chalmers.dat255.ircsex.view.IrcChannelItem;
+import se.chalmers.dat255.ircsex.view.IrcServerHeader;
 
-public class ChannelActivity extends FragmentActivity implements SessionListener, /*ServerConnectDialogFragment.DialogListener,*/ JoinChannelDialogFragment.DialogListener {
-    public static final String IRC_CHALMERS_IT = "irc.chalmers.it";
-    private DrawerLayout mDrawerLayout;
-    private ViewGroup leftDrawer;
-    private ListView channelList;
+public class ChannelActivity extends FragmentActivity implements SessionListener,
+        JoinChannelDialogFragment.DialogListener, ChatFragment.ChatMessageSendListener {
+    private DrawerLayout drawerLayout;
+    private ListView leftDrawer;
     private ListView rightDrawer;
     private ActionBarDrawerToggle mDrawerToggle;
+    private ArrayAdapter<IrcUser> userArrayAdapter;
+    private List<IrcUser> users;
 
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
-    private List<String> connectedChannels;
+    private IrcChannelSelector ircChannelSelector;
     private boolean drawerOpen;
+    private ChatFragment fragment;
+    private String channelName;
 
     private Session session;
-    private ArrayAdapter<String> channelListArrayAdapter;
     private ProgressDialog serverConnectProgressDialog;
+    private AlertDialog whoisProgressDialog;
+    private AlertDialog whoisResultDialog;
+    private View whois;
+    private int selected = -1;
+    private ChannelListOnClickListener channelDrawerOnClickListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,56 +70,61 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         setContentView(R.layout.activity_channel_main);
 
         mTitle = mDrawerTitle = getTitle();
-        connectedChannels = new ArrayList<String>();
-        channelListArrayAdapter = new ArrayAdapter<String>(this, R.layout.drawer_list_item, connectedChannels);
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        leftDrawer = (ViewGroup) findViewById(R.id.left_drawer);
+        ircChannelSelector = new IrcChannelSelector(this);
+        channelDrawerOnClickListener = new ChannelListOnClickListener();
+
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
+        drawerLayout.setDrawerShadow(R.drawable.drawer_shadow_right, GravityCompat.END);
+
+        leftDrawer = (ListView) findViewById(R.id.left_drawer);
+        leftDrawer.setAdapter(ircChannelSelector.getArrayAdapter());
+        leftDrawer.setItemsCanFocus(false);
+        leftDrawer.setOnItemClickListener(channelDrawerOnClickListener);
+        leftDrawer.setItemsCanFocus(false);
         rightDrawer = (ListView) findViewById(R.id.right_drawer);
-        View.inflate(this, R.layout.drawer_left, leftDrawer);
+        users = new ArrayList<IrcUser>();
+        userArrayAdapter = new ArrayAdapter<IrcUser>(this, R.layout.drawer_list_item, android.R.id.text1, users);
 
+        rightDrawer.setAdapter(userArrayAdapter);
 
-        channelList = (ListView) leftDrawer.findViewById(R.id.channel_list);
-        // set a custom shadow that overlays the channel_main content when the drawer opens
-        mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
-        mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow_right, GravityCompat.END);
-        // set up the drawer's list view with items and click listener
-        channelList.setAdapter(channelListArrayAdapter);
-        channelList.setOnItemClickListener(new DrawerItemClickListener());
-
-        // enable ActionBar app icon to behave as action to toggle nav drawer
         getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setHomeButtonEnabled(true);
-
-        // ActionBarDrawerToggle ties together the the proper interactions
-        // between the sliding drawer and the action bar app icon
         mDrawerToggle = new ActionBarDrawerToggle(
-                this,                  /* host Activity */
-                mDrawerLayout,         /* DrawerLayout object */
-                R.drawable.ic_drawer,  /* nav drawer image to replace 'Up' caret */
-                R.string.drawer_open,  /* "open drawer" description for accessibility */
-                R.string.drawer_close  /* "close drawer" description for accessibility */
-        ) {
+                this,
+                drawerLayout,
+                R.drawable.ic_drawer,
+                R.string.drawer_open,
+                R.string.drawer_close) {
+            @Override
             public void onDrawerClosed(View view) {
                 setTitle(mTitle);
-                getActionBar().setSubtitle(IRC_CHALMERS_IT);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
 
+            @Override
             public void onDrawerOpened(View drawerView) {
-                mDrawerLayout.closeDrawer(drawerView == rightDrawer ? leftDrawer : rightDrawer);
+                drawerLayout.closeDrawer(drawerView == rightDrawer ? leftDrawer : rightDrawer);
                 getActionBar().setTitle(mDrawerTitle);
                 getActionBar().setSubtitle(null);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
         };
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
+        drawerLayout.setDrawerListener(mDrawerToggle);
 
-        if (savedInstanceState == null) {
-            // Annan typ av check för persistence
+        session = new Session(this, this);
+        if (!session.containsServers()) {
             startNoServersActivity();
-            session = new Session(this);
-            session.setActiveServer(IRC_CHALMERS_IT);
+        } else {
+            showConnectionDialog(getString(R.string.dialog_connect_reconnect));
         }
+    }
+
+    private void showConnectionDialog(String message) {
+        serverConnectProgressDialog = new ProgressDialog(this);
+        serverConnectProgressDialog.setIndeterminate(true);
+        serverConnectProgressDialog.setMessage(message);
+        serverConnectProgressDialog.show();
     }
 
     @Override
@@ -128,7 +143,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         // If the nav drawer is open, hide action items related to the content view
-        drawerOpen = (mDrawerLayout.isDrawerOpen(leftDrawer) || mDrawerLayout.isDrawerOpen(rightDrawer));
+        drawerOpen = (drawerLayout.isDrawerOpen(leftDrawer) || drawerLayout.isDrawerOpen(rightDrawer));
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -153,24 +168,26 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
                 leaveActiveChannel();
                 break;
 //            case R.id.action_user_list:
-//                mDrawerLayout.openDrawer(Gravity.END);
+//                drawerLayout.openDrawer(Gravity.END);
 //                drawerOpen = true;
 //                break;
             case R.id.action_settings:
-                AlertDialog.Builder fest = new AlertDialog.Builder(this);
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 LayoutInflater inflater = getLayoutInflater();
-                final View view = inflater.inflate(R.layout.dialog_change_nick, null);
-                fest.setTitle("Change nickname")
+                View view = inflater.inflate(R.layout.dialog_change_nick, null);
+                final EditText nickEditText = (EditText) view.findViewById(android.R.id.text1);
+                nickEditText.setHint(getString(R.string.dialog_nick_hint) + " " + session.getActiveServer().getHost());
+                builder.setTitle(R.string.dialog_nick_title)
                         .setView(view)
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        .setPositiveButton(getString(R.string.dialog_generic_ok), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                String newNick = ((EditText) view.findViewById(android.R.id.text1)).getText().toString();
+                                String newNick = nickEditText.getText().toString();
                                 Log.e("IRCDEBUG", "Change nickname to " + newNick);
                                 session.changeNick(newNick);
                             }
                         })
-                        .setNegativeButton(R.string.hint_cancel, null)
+                        .setNegativeButton(R.string.dialog_generic_cancel, null)
                         .create().show();
                 break;
             default:
@@ -188,45 +205,59 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     private void leaveActiveChannel() {
         String channelName = session.getActiveChannel().getChannelName();
         session.partChannel(session.getActiveServer().getHost(), channelName);
-        connectedChannels.remove(channelName);
-        channelListArrayAdapter.notifyDataSetChanged();
-        selectItem(connectedChannels.size()-1);
+        int newPosition = ircChannelSelector.removeChannel(selected);
+        if (ircChannelSelector.isIndexHeading(newPosition)) {
+            newPosition = ircChannelSelector.removeServer(newPosition);
+            session.removeServer(session.getActiveServer().getHost());
+            if (newPosition == IrcChannelSelector.NO_SERVERS_CONNECTED) {
+                startNoServersActivity();
+                return;
+            }
+        }
+        selectItem(newPosition);
     }
 
-    /* The click listner for ListView in the navigation drawer */
-    private class DrawerItemClickListener implements ListView.OnItemClickListener {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            selectItem(position);
-        }
+    public void disconnectServer(View view) {
+        ircChannelSelector.disconnect(0);
     }
 
     private void startNoServersActivity() {
         startActivityForResult(new Intent(this, NoServersActivity.class), NoServersActivity.REQUEST_SERVER);
     }
 
-    private void selectItem(int position) {
-        if (position < 0) {
-            session.removeServer(IRC_CHALMERS_IT);
-            startNoServersActivity();
-            return;
+    /**
+     *  The click listener for ListView in the left drawer, the Channel List.
+     */
+    private class ChannelListOnClickListener implements ListView.OnItemClickListener {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            if (!ircChannelSelector.isIndexHeading(position)) {
+                selectItem(position);
+            }
+            else {
+//                ircChannelSelector.expandHeader(0); Enable once model/backend supports it.
+                leftDrawer.setItemChecked(selected, true);
+            }
         }
+    }
+
+    private void selectItem(int position) {
         // update the channel_main content by replacing fragments
-        Fragment fragment = new ChatFragment();
+        channelName = ircChannelSelector.getItem(position).getText();
+        session.setActiveChannel(channelName);
+        fragment = new ChatFragment(this);
         Bundle args = new Bundle();
         args.putInt(ChatFragment.ARG_CHANNEL_INDEX, position);
         fragment.setArguments(args);
-
         FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
+        fragmentManager.beginTransaction().replace(R.id.channel_layout, fragment).commit();
 
         // update selected item and title, then close the drawer
-        channelList.setItemChecked(position, true);
-        String channelName = connectedChannels.get(position);
+        leftDrawer.setItemChecked(position, true);
         setTitle(channelName);
-        getActionBar().setSubtitle(IRC_CHALMERS_IT);
-        session.setActiveChannel(channelName);
-        mDrawerLayout.closeDrawer(leftDrawer);
+        drawerLayout.closeDrawer(leftDrawer);
+        selected = position;
+        updateUserList(session.getActiveChannel().getUsers());
     }
 
     @Override
@@ -248,16 +279,14 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
 
     private void startServer(String server, int port, String nickname) {
         session.addServer(server, port, nickname, this);
-        serverConnectProgressDialog = new ProgressDialog(this);
-        serverConnectProgressDialog.setIndeterminate(true);
-        serverConnectProgressDialog.setMessage("Connecting to " + server);
-        serverConnectProgressDialog.show();
+        showConnectionDialog(getString(R.string.dialog_connect_connecting) + " " + server);
     }
 
     @Override
     public void setTitle(CharSequence title) {
         mTitle = title;
         getActionBar().setTitle(mTitle);
+        getActionBar().setSubtitle(session.getActiveServer().getHost());
     }
 
     /**
@@ -284,10 +313,21 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     }
 
     @Override
-    public void onRegistrationCompleted(String host) {
+    public void onRegistrationCompleted(final String host) {
         Log.e("IRCDEBUG", "Registration completed");
         serverConnectProgressDialog.dismiss();
-        session.setActiveServer(IRC_CHALMERS_IT);
+        session.setActiveServer(host);
+        ChannelActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ircChannelSelector.addHeader(new IrcServerHeader(host));
+            }
+        });
+    }
+
+    @Override
+    public void onDisconnect(String host) {
+
     }
 
     @Override
@@ -296,14 +336,13 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     }
 
     @Override
-    public void onServerJoin(String host, String channelName) {
+    public void onServerJoin(final String host, final String channelName) {
         Log.e("IRCDEBUG", "Joined channel " + channelName);
-        connectedChannels.add(channelName);
         ChannelActivity.this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                channelListArrayAdapter.notifyDataSetChanged();
-                selectItem(connectedChannels.size()-1);
+                int channelIndex = ircChannelSelector.addChannel(host, new IrcChannelItem(channelName));
+                selectItem(channelIndex);
             }
         });
     }
@@ -314,17 +353,148 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     }
 
     @Override
-    public void onChannelJoin(String host, String channel, String message) {
+    public void onChannelUserChange(String host, String channel, final List<IrcUser> users) {
+        if (session.getActiveChannel() != null && session.getActiveChannel().getChannelName().equals(channel)) {
+            ChannelActivity.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    updateUserList(users);
+                    userArrayAdapter.notifyDataSetChanged();
+                }
+            });
+        }
+    }
+
+    private void updateUserList(List<IrcUser> users) {
+        this.users.clear();
+        for (IrcUser user : users) {
+            this.users.add(user);
+        }
+        userArrayAdapter.notifyDataSetChanged();
+    }
+
+    public void userInfo(View view) {
+        View view1 = (View) view.getParent().getParent();
+        String user = ((TextView) view1.findViewById(android.R.id.text1)).getText().toString();
+
+        session.getActiveServer().whois(user);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        whoisProgressDialog = builder.setTitle(R.string.dialog_whois_title)
+                .setView(new ProgressBar(this))
+                .create();
+        whoisProgressDialog.show();
+    }
+
+    @Override
+    public void onChannelMessage(String host, final String channel, final IrcMessage message) {
+        ChannelActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (channel.equals(channelName)) {
+                    fragment.addMessage(message);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onSentMessage(String host, String channel, IrcMessage message) {
+
+    }
+
+    public void onNickChange(String host, String oldNick, String newNick) {
 
     }
 
     @Override
-    public void onChannelPart(String host, String channel, String message) {
-
+    public void userSentMessage(String string) {
+        session.getActiveServer().sendMessage(session.getActiveChannel().getChannelName(), string);
     }
 
     @Override
-    public void onChannelMessage(String host, String channel, String message) {
+    public void whoisChannels(final String nick, final List<String> channels) {
+        ChannelActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (whois == null) {
+                    showWhoisDialog(nick);
+                }
+                TextView textView = ((TextView) whois.findViewById(R.id.dialog_whois_channels));
+                textView.setText(
+                        channels.toString().replace("[", "").replace("]", "").replace(", ", "\n"));
+                textView.setMovementMethod(new ScrollingMovementMethod());
+            }
+        });
+    }
 
+    @Override
+    public void whoisRealname(final String nick, final String realname) {
+        ChannelActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (whois == null) {
+                    showWhoisDialog(nick);
+                }
+                ((TextView) whois.findViewById(R.id.dialog_whois_realname)).setText(realname);
+            }
+        });
+    }
+
+    @Override
+    public void whoisIdleTime(final String nick, final int seconds) {
+        ChannelActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (whois == null) {
+                    showWhoisDialog(nick);
+                }
+                ((TextView) whois.findViewById(R.id.dialog_whois_idle)).setText(formatIdleTime(seconds));
+            }
+        });
+    }
+
+    private String formatIdleTime(int time) {
+        int seconds = time % 60;
+        time /= 60;
+        int minutes = time % 60;
+        time /= 60;
+        int hours = time % 24;
+        int days = time / 24;
+
+        String idle = "";
+        if (days > 0) {
+            idle += " " + days + "d";
+        } if (hours > 0) {
+            idle += " " + hours + "h";
+        } if (minutes > 0) {
+            idle += " " + minutes + "m";
+        } if (seconds > 0) {
+            idle += " " + seconds + "s";
+        }
+
+        return idle.trim();
+    }
+
+    private void showWhoisDialog(final String nick) {
+        whoisProgressDialog.dismiss();
+        LayoutInflater inflater = getLayoutInflater();
+        whois = inflater.inflate(R.layout.dialog_whois, null);
+        AlertDialog.Builder builder = new AlertDialog.Builder(ChannelActivity.this);
+        whoisResultDialog = builder.setTitle(getApplication().getString(R.string.dialog_whois_title) +" - "+ nick)
+                .setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialogInterface) {
+                whois = null;
+            }
+        }).setView(whois)
+                .setNegativeButton(R.string.dialog_generic_close, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        whois = null;
+                    }
+                })
+                .create();
+
+        whoisResultDialog.show();
     }
 }

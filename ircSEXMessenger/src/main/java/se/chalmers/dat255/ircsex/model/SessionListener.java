@@ -1,5 +1,9 @@
 package se.chalmers.dat255.ircsex.model;
 
+import java.util.List;
+
+import java.util.Collection;
+
 /**
  * Created by Wilhelm on 2013-09-19.
  */
@@ -15,6 +19,13 @@ public interface SessionListener {
      * @param host Host on which the registration was completed.
      */
     public void onRegistrationCompleted(String host);
+
+    /**
+     * User disconnected the server.
+     *
+     * @param host server adress
+     */
+    public void onDisconnect(String host);
 
     /**
      *
@@ -41,23 +52,54 @@ public interface SessionListener {
      * Another user joined the channel.
      * @param host
      * @param channel
-     * @param message
+     * @param users
      */
-    public void onChannelJoin(String host, String channel, String message);
+    public void onChannelUserChange(String host, String channel, List<IrcUser> users);
 
     /**
-     * Another user parted the channel.
-     * @param host
-     * @param channel
-     * @param message
+     * Notifies the ui when a user has changed nick.
+     *
+     * @param oldNick
+     * @param newNick
      */
-    public void onChannelPart(String host, String channel, String message);
+    public void onNickChange(String host, String oldNick, String newNick);
 
     /**
+     * Receiving a message from another user.
      *
      * @param host
      * @param channel
      * @param message
      */
-    public void onChannelMessage(String host, String channel, String message);
+    public void onChannelMessage(String host, String channel, IrcMessage message);
+
+    /**
+     * Receiving message as confirmation of a sent message.
+     *
+     * @param host
+     * @param channel
+     * @param message
+     */
+    public void onSentMessage(String host, String channel, IrcMessage message);
+
+    /**
+     * This method sends a list of connected channels as a whois request resopnse.
+     * @param nick - the nick of the requested whois
+     * @param channels - the channels the nick is connected to
+     */
+    public void whoisChannels(String nick, List<String> channels);
+
+    /**
+     * This method sends the nicks realname as a whois request resopnse.
+     * @param nick
+     * @param realname
+     */
+    public void whoisRealname(String nick, String realname);
+
+    /**
+     * This method sends the nicks idletime as a whois request resopnse.
+     * @param nick
+     * @param seconds
+     */
+    public void whoisIdleTime(String nick, int seconds);
 }

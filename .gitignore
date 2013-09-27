@@ -6,6 +6,7 @@ proguard/
 out/
 gen/
 build/
+target/
 
 *.iml
 .idea/

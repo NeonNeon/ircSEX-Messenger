@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -17,15 +18,16 @@ import java.util.List;
  * Created by oed on 9/16/13.
  */
 public class IrcProtocolAdapter implements Runnable {
+
     private boolean running = true;
     private Socket socket;
     private BufferedReader input;
     private BufferedWriter output;
 
-    private String host;
-    private int port;
+    private final String host;
+    private final int port;
 
-    private List<IrcProtocolServerListener> ircProtocolServerListeners;
+    private IrcProtocolListener listener;
 
     /**
      * Creates a socket connection to the specified server.
@@ -33,26 +35,38 @@ public class IrcProtocolAdapter implements Runnable {
      * @param host - the server to connect to
      * @param port - the port to use
      */
-    public IrcProtocolAdapter(String host, int port) {
+    public IrcProtocolAdapter(String host, int port, IrcProtocolListener listener) {
         this.host = host;
         this.port = port;
-        ircProtocolServerListeners = new ArrayList<IrcProtocolServerListener>();
+        this.listener = listener;
     }
 
     public void run() {
         createBuffers(host, port);
         String line = "";
         do {
-            handleReply(line);
             Log.e("IRC", line);
+            handleReply(line);
             try {
                 line = input.readLine();
                 // TODO: Resolve nullpointerexception
             } catch (IOException e) {
                 e.printStackTrace();
-                propagateMessage(MessageType.ERROR, ErrorMessages.IOError);
+                listener.serverDisconnected();
             }
         } while(running && line != null);
+    }
+
+    private void createBuffers(String host, int port) {
+        try {
+            socket = new Socket(host, port);
+            input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            output = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+        } catch (IOException e) {
+            e.printStackTrace();
+            listener.serverDisconnected();
+        }
+        listener.serverConnected();
     }
 
     /**
@@ -63,23 +77,65 @@ public class IrcProtocolAdapter implements Runnable {
         //TODO - handle more cases
         System.out.println(reply);
         int index;
-        if (reply.startsWith("PING ")) {
+        if ((index = reply.indexOf("PRIVMSG")) != -1) {
+            String nick = reply.substring(1, reply.indexOf('!'));
+            int msgIndex = reply.indexOf(':', 1);
+            String channel = reply.substring(index + 8, msgIndex - 1);
+            String message = reply.substring(msgIndex + 1);
+
+            listener.messageReceived(channel, nick, message);
+        }
+        else if (reply.startsWith("PING ")) {
             write("PONG " + reply.substring(5));
         }
         else if ((index = reply.indexOf("JOIN")) != -1) {
-            propagateMessage(MessageType.JOIN, reply.substring(index + 6));
+            listener.userJoined(reply.substring(index + 6),
+                    reply.substring(1, reply.indexOf('!')));
         }
         else if ((index = reply.indexOf("PART")) != -1) {
-            propagateMessage(MessageType.PART, reply.substring(index + 5));
+            listener.userParted(reply.substring(index + 5),
+                    reply.substring(1, reply.indexOf('!')));
         }
-        else if (reply.contains("MODE")) {
-            propagateMessage(MessageType.SERVER_REGISTERED, null);
+        else if ((index = reply.indexOf("NICK ")) != -1) {
+            listener.nickChanged(reply.substring(reply.indexOf(':') + 1, reply.indexOf('!')),
+                    reply.substring(index + 6));
+        }
+        else if (reply.contains(":+wx")) { // TODO: This is hardcoded.
+            listener.serverRegistered();
+        }
+        else if (reply.contains(host + " 353")) {
+            index = reply.indexOf("=");
+            String channel = reply.substring(index + 2, reply.indexOf(" ", index + 2));
+
+            index = reply.indexOf(':', 1);
+
+            listener.usersInChannel(channel, Arrays.asList(reply.substring(index + 1).split(" ")));
+        }
+        else if ((index = reply.indexOf("311 ")) != -1) {
+            int index2 = reply.indexOf(' ', index + 5) + 1;
+            String nick = reply.substring(index2, reply.indexOf(' ', index2));
+            String realname = reply.substring(reply.lastIndexOf(':') + 1);
+            listener.whoisRealname(nick, realname);
+        }
+        else if ((index = reply.indexOf("319 ")) != -1) {
+            int index2 = reply.indexOf(' ', index + 5) + 1;
+            String nick = reply.substring(index2, reply.indexOf(' ', index2));
+            String channels = reply.substring(reply.lastIndexOf(':') + 1);
+            listener.whoisChannels(nick, Arrays.asList(channels.split(" ")));
+        }
+        else if ((index = reply.indexOf("317 ")) != -1) {
+            int index2 = reply.indexOf(' ', index + 5) + 1;
+            int index3 = reply.indexOf(' ', index2);
+            String nick = reply.substring(index2, index3);
+            int idleTime = Integer.parseInt(reply.substring(index3 + 1, reply.indexOf(' ', index3 + 1)));
+            System.out.println(nick+"|"+idleTime);
+            listener.whoisIdleTime(nick, idleTime);
         }
 
         // Numeric replies - should be after everything else
         // Should maybe be implemented safer.
         else if (reply.contains("433")) {
-            propagateMessage(MessageType.ERROR, ErrorMessages.NICK_IN_USE);
+            listener.nickChangeError();
         }
     }
 
@@ -148,16 +204,29 @@ public class IrcProtocolAdapter implements Runnable {
         write("NICK " + nick);
     }
 
-    private void createBuffers(String host, int port) {
-        try {
-            socket = new Socket(host, port);
-            input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            output = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-        } catch (IOException e) {
-            e.printStackTrace();
-            propagateMessage(MessageType.ERROR, ErrorMessages.IOError);
-        }
-        propagateMessage(MessageType.NORMAL, Messages.IOConnected);
+    /**
+     * Sends a message to the server.
+     * @param channel - the channel to send message to
+     * @param message - the message to send.
+     */
+    public void sendChannelMessage(String channel, String message) {
+        write("PRIVMSG " + channel + " :" + message);
+    }
+
+    /**
+     * Send request to list the users in the given channel.
+     * @param channel - the channel to check
+     */
+    public void getUsers(String channel) {
+        write("NAMES " + channel);
+    }
+
+    /**
+     * Send request to get whois info.
+     * @param nick - the nick to get info for
+     */
+    public void whois(String nick) {
+        write("WHOIS " + nick);
     }
 
     private synchronized void write(String string) {
@@ -167,46 +236,9 @@ public class IrcProtocolAdapter implements Runnable {
             output.flush();
         } catch (IOException e) {
             e.printStackTrace();
-            propagateMessage(MessageType.ERROR, ErrorMessages.IOError);
+            listener.serverDisconnected();
         }
     }
-
-    private void propagateChannelMessage(MessageType type, String channel, String message) {
-        for (IrcProtocolServerListener listener : ircProtocolServerListeners) {
-            listener.fireChannelEvent(type, channel, message);
-        }
-    }
-
-    private void propagateMessage(MessageType type, String message) {
-        for (IrcProtocolServerListener listener : ircProtocolServerListeners) {
-            listener.fireEvent(type, message);
-        }
-    }
-    public void addIrcProtocolServerListener(IrcProtocolServerListener listener) {
-        ircProtocolServerListeners.add(listener);
-    }
-
-    public void removeIrcProtocolServerListener(IrcProtocolServerListener listener) {
-        ircProtocolServerListeners.remove(listener);
-    }
-
-    public enum MessageType {NORMAL, ERROR, SERVER_REGISTERED, JOIN, PART}
-
-    public static class ErrorMessages {
-        public static final String IOError = "Socket disconnected";
-        public static final String NICK_IN_USE = "Nick already in use";
-    }
-
-    public static class Messages {
-        public static final String IOConnected = "Socket created";
-    }
-
-    /**
-     * An interface that listens to events that are relevant to the IRC Server.
-     */
-    public interface IrcProtocolServerListener {
-        public void fireEvent(MessageType type, String message);
-        public void fireChannelEvent(MessageType type, String channel, String message);
-    }
-
 }
+
+
