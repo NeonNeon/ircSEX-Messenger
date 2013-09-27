@@ -23,12 +23,20 @@
             android:layout_marginRight="4dp"
             android:layout_marginBottom="4dp" />
     <TextView
-            android:id="@+id/dialog_whois_channels"
-            android:text=""
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:text="Connected to:"
             android:textSize="16dp"
             android:layout_marginTop="6dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="4dp" />
+    <TextView
+            android:id="@+id/dialog_whois_channels"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxHeight="106dp"
+            android:scrollbars="vertical"
+            android:textSize="16dp"
             android:layout_marginLeft="15dp"
             android:layout_marginRight="4dp"
             android:layout_marginBottom="16dp" />

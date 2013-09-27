@@ -14,6 +14,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -393,27 +394,28 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     }
 
     @Override
-    public void whoisChannels(String nick, final List<String> channels) {
+    public void whoisChannels(final String nick, final List<String> channels) {
         ChannelActivity.this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 if (whois == null) {
-                    showWhoisDialog();
+                    showWhoisDialog(nick);
                 }
-                ((TextView) whois.findViewById(R.id.dialog_whois_channels)).setText(
-                        getApplication().getString(R.string.dialog_whois_channels)
-                                +":\n"+ channels.toString().replace("[", "").replace("]", ""));
+                TextView textView = ((TextView) whois.findViewById(R.id.dialog_whois_channels));
+                textView.setText(
+                        channels.toString().replace("[", "").replace("]", "").replace(", ", "\n"));
+                textView.setMovementMethod(new ScrollingMovementMethod());
             }
         });
     }
 
     @Override
-    public void whoisRealname(String nick, final String realname) {
+    public void whoisRealname(final String nick, final String realname) {
         ChannelActivity.this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 if (whois == null) {
-                    showWhoisDialog();
+                    showWhoisDialog(nick);
                 }
                 ((TextView) whois.findViewById(R.id.dialog_whois_realname)).setText(
                         getApplication().getString(R.string.dialog_whois_realname)
@@ -423,12 +425,12 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     }
 
     @Override
-    public void whoisIdleTime(String nick, final int seconds) {
+    public void whoisIdleTime(final String nick, final int seconds) {
         ChannelActivity.this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 if (whois == null) {
-                    showWhoisDialog();
+                    showWhoisDialog(nick);
                 }
                 ((TextView) whois.findViewById(R.id.dialog_whois_idle)).setText(
                         getApplication().getString(R.string.dialog_whois_idle)
@@ -459,30 +461,26 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         return idle.trim();
     }
 
-    private void showWhoisDialog() {
+    private void showWhoisDialog(final String nick) {
         whoisProgressDialog.dismiss();
-        ChannelActivity.this.runOnUiThread(new Runnable() {
+        LayoutInflater inflater = getLayoutInflater();
+        whois = inflater.inflate(R.layout.dialog_whois, null);
+        AlertDialog.Builder builder = new AlertDialog.Builder(ChannelActivity.this);
+        whoisResultDialog = builder.setTitle(getApplication().getString(R.string.dialog_whois_title) +" - "+ nick)
+                .setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
-            public void run() {
-                LayoutInflater inflater = getLayoutInflater();
-                whois = inflater.inflate(R.layout.dialog_whois, null);
-                AlertDialog.Builder builder = new AlertDialog.Builder(ChannelActivity.this);
-                whoisResultDialog = builder.setTitle(R.string.dialog_whois_title).setOnCancelListener(new DialogInterface.OnCancelListener() {
+            public void onCancel(DialogInterface dialogInterface) {
+                whois = null;
+            }
+        }).setView(whois)
+                .setNegativeButton(R.string.dialog_generic_close, new DialogInterface.OnClickListener() {
                     @Override
-                    public void onCancel(DialogInterface dialogInterface) {
+                    public void onClick(DialogInterface dialogInterface, int i) {
                         whois = null;
                     }
-                }).setView(whois)
-                        .setNegativeButton(R.string.dialog_generic_close, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                whois = null;
-                            }
-                        })
-                        .create();
+                })
+                .create();
 
-                whoisResultDialog.show();
-            }
-        });
+        whoisResultDialog.show();
     }
 }
