@@ -417,9 +417,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
                 if (whois == null) {
                     showWhoisDialog(nick);
                 }
-                ((TextView) whois.findViewById(R.id.dialog_whois_realname)).setText(
-                        getApplication().getString(R.string.dialog_whois_realname)
-                                + ":\n" + realname);
+                ((TextView) whois.findViewById(R.id.dialog_whois_realname)).setText(realname);
             }
         });
     }
@@ -432,9 +430,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
                 if (whois == null) {
                     showWhoisDialog(nick);
                 }
-                ((TextView) whois.findViewById(R.id.dialog_whois_idle)).setText(
-                        getApplication().getString(R.string.dialog_whois_idle)
-                                +":\n"+ formatIdleTime(seconds));
+                ((TextView) whois.findViewById(R.id.dialog_whois_idle)).setText(formatIdleTime(seconds));
             }
         });
     }
