@@ -41,6 +41,7 @@ public class ChatFragment extends Fragment {
         messageList = (ListView) rootView.findViewById(R.id.chat_message_list);
         messageList.setAdapter(messageArrayAdapter);
         messageEditText = (EditText) rootView.findViewById(R.id.fragment_chat_message);
+        messageEditText.requestFocus();
         ((EditText) rootView.findViewById(R.id.fragment_chat_message)).setOnEditorActionListener(
                 new TextView.OnEditorActionListener() {
             @Override
