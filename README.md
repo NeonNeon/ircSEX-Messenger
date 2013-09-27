@@ -24,15 +24,29 @@ need for change - and we’re here to do it!
 - Groovy - 1.8.6
 - Spock Framework - 0.6-groovy-1.8
 
-All dependencies are declared in full in the `pom.xml`.
+All dependencies are declared in full in the `pom.xml`. They will be downloaded and set up automagically by Maven.
 
 ##Get it now!
 The project uses Maven.
 
-To generate the project `.apk`, simply run
+To generate the project `.apk`, simply run the Maven phases `clean` and `install`. 
 
     mvn clean install
 
-Unit tests are run with
+To only run the unit tests, execute the Maven phase `test`.
 
     mvn test
+
+
+##License
+THE BEER-WARE LICENSE (Revision π):
+Five students at a technical university wrote this code.
+As long as you retain this notice you can do whatever you want 
+with it. If we meet some day, and you think this stuff is 
+worth it, you are more than welcome to buy us a beer or two.
+
+Wilhelm Hedman
+Joel Thorstensson
+Oskar Nyberg
+Johan Magnusson
+Alexander Hultnér
