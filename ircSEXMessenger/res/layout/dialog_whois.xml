@@ -8,7 +8,7 @@
     <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Real name:"
+            android:text="@string/dialog_whois_real_name"
             android:textSize="16dp"
             android:textColor="#888888"
             android:layout_marginTop="16dp"
@@ -26,7 +26,7 @@
     <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Idle time:"
+            android:text="@string/dialog_whois_idle_time"
             android:textSize="16dp"
             android:textColor="#888888"
             android:layout_marginTop="6dp"
@@ -44,7 +44,7 @@
     <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Connected to:"
+            android:text="@string/dialog_whois_connected_to"
             android:textSize="16dp"
             android:textColor="#888888"
             android:layout_marginTop="6dp"
