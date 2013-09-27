@@ -39,14 +39,14 @@ To only run the unit tests, execute the Maven phase `test`.
 
 
 ##License
-THE BEER-WARE LICENSE (Revision π):
-Five students at a technical university wrote this code.
-As long as you retain this notice you can do whatever you want 
-with it. If we meet some day, and you think this stuff is 
+THE BEER-WARE LICENSE (Revision π):  
+Five students at a technical university wrote this code.  
+As long as you retain this notice you can do whatever you want
+with it. If we meet some day, and you think this stuff is
 worth it, you are more than welcome to buy us a beer or two.
 
-Wilhelm Hedman
-Joel Thorstensson
-Oskar Nyberg
-Johan Magnusson
-Alexander Hultnér
+Wilhelm Hedman  
+Joel Thorstensson  
+Oskar Nyberg  
+Johan Magnusson  
+Alexander Hultnér  
