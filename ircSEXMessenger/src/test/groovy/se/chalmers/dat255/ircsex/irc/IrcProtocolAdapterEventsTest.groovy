@@ -87,4 +87,47 @@ class IrcProtocolAdapterEventsTest extends Specification {
         nick << ["oed", "Heissman", "Rascal"]
         message << ["hejhej", "fulefan", "Nej men.."]
     }
+
+    def "test whoisRealname event sent"() {
+        when:
+        def command1 = ":irc.chalmers.it 311 tord "
+        def command2 = " ~anon smurf-BA46BB40.edstud.chalmers.se * :"
+        ipa.handleReply(command1 + nick + command2 + realname)
+
+        then:
+        1 * subscriber.whoisRealname(nick, realname)
+
+        where:
+        nick << ["oed", "Heissman", "Rascal"]
+        realname << ["Joel Torstensson", "Jonathan Hedman", "Oskar Nyberg"]
+    }
+
+    def "test whoisChannels event sent"() {
+        when:
+        def command1 = ":irc.chalmers.it 319 tord "
+        def command2 = " :"
+        ipa.handleReply(command1 + nick + command2+ channels)
+
+        then:
+        1 * subscriber.whoisChannels(nick, channelsList)
+
+        where:
+        nick << ["oed"]
+        channels << ["#Rascal #Hultner #SEproject @#oed #opk #olämpligphadder +#br0st #a-laget #haqKIT #!ordfITs +#ircsex #sommar13 @#ircSEX-asp #it13 @#prit @#prit13 #bättre13 #sektionsmöte #hookit #idol11 @#it12 #itstud"]
+        channelsList << [["#Rascal", "#Hultner", "#SEproject", "@#oed", "#opk", "#olämpligphadder", "+#br0st", "#a-laget", "#haqKIT", "#!ordfITs", "+#ircsex", "#sommar13", "@#ircSEX-asp", "#it13", "@#prit", "@#prit13", "#bättre13", "#sektionsmöte", "#hookit", "#idol11", "@#it12", "#itstud"]]
+    }
+
+    def "test whoisIdleTime event sent"() {
+        when:
+        def command1 = ":irc.chalmers.it 317 tord "
+        def command2 = " 1371050325 :seconds idle, signon time"
+        ipa.handleReply(command1 + nick + " " + time + command2)
+
+        then:
+        1 * subscriber.whoisIdleTime(nick, time)
+
+        where:
+        nick << ["oed", "Heissman", "Rascal"]
+        time << [14495, 20, 23423523]
+    }
 }

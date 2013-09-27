@@ -52,4 +52,15 @@ class IrcProtocolAdapterTest extends Specification {
         channel << ["#fest", "#svinstia", "#party"]
         message << ["Jag kommer fan med", "HAH, aldrig!", "men jag vill :(:(:("]
     }
+
+    def "test whois"() {
+        when:
+        ipa.whois(nick)
+
+        then:
+        mockIrcServer.readLine().equals("WHOIS " + nick + "\r\n")
+
+        where:
+        nick << ["Heissman", "Rascal", "oed"]
+    }
 }

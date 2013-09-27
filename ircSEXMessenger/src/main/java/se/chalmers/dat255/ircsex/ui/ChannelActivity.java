@@ -13,6 +13,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -23,6 +24,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -56,6 +58,9 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
 
     private Session session;
     private ProgressDialog serverConnectProgressDialog;
+    private AlertDialog whoisProgressDialog;
+    private AlertDialog whoisResultDialog;
+    private View whois;
     private int selected = -1;
     private ChannelListOnClickListener channelDrawerOnClickListener;
 
@@ -80,6 +85,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         rightDrawer = (ListView) findViewById(R.id.right_drawer);
         users = new ArrayList<IrcUser>();
         userArrayAdapter = new ArrayAdapter<IrcUser>(this, R.layout.drawer_list_item, android.R.id.text1, users);
+
         rightDrawer.setAdapter(userArrayAdapter);
 
         getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -367,6 +373,18 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         userArrayAdapter.notifyDataSetChanged();
     }
 
+    public void userInfo(View view) {
+        View view1 = (View) view.getParent().getParent();
+        String user = ((TextView) view1.findViewById(android.R.id.text1)).getText().toString();
+
+        session.getActiveServer().whois(user);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        whoisProgressDialog = builder.setTitle(R.string.dialog_whois_title)
+                .setView(new ProgressBar(this))
+                .create();
+        whoisProgressDialog.show();
+    }
+
     @Override
     public void onChannelMessage(String host, final String channel, final IrcMessage message) {
         ChannelActivity.this.runOnUiThread(new Runnable() {
@@ -391,5 +409,92 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     @Override
     public void userSentMessage(String string) {
         session.getActiveServer().sendMessage(session.getActiveChannel().getChannelName(), string);
+    }
+
+    @Override
+    public void whoisChannels(final String nick, final List<String> channels) {
+        ChannelActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (whois == null) {
+                    showWhoisDialog(nick);
+                }
+                TextView textView = ((TextView) whois.findViewById(R.id.dialog_whois_channels));
+                textView.setText(
+                        channels.toString().replace("[", "").replace("]", "").replace(", ", "\n"));
+                textView.setMovementMethod(new ScrollingMovementMethod());
+            }
+        });
+    }
+
+    @Override
+    public void whoisRealname(final String nick, final String realname) {
+        ChannelActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (whois == null) {
+                    showWhoisDialog(nick);
+                }
+                ((TextView) whois.findViewById(R.id.dialog_whois_realname)).setText(realname);
+            }
+        });
+    }
+
+    @Override
+    public void whoisIdleTime(final String nick, final int seconds) {
+        ChannelActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (whois == null) {
+                    showWhoisDialog(nick);
+                }
+                ((TextView) whois.findViewById(R.id.dialog_whois_idle)).setText(formatIdleTime(seconds));
+            }
+        });
+    }
+
+    private String formatIdleTime(int time) {
+        int seconds = time % 60;
+        time /= 60;
+        int minutes = time % 60;
+        time /= 60;
+        int hours = time % 24;
+        int days = time / 24;
+
+        String idle = "";
+        if (days > 0) {
+            idle += " " + days + "d";
+        } if (hours > 0) {
+            idle += " " + hours + "h";
+        } if (minutes > 0) {
+            idle += " " + minutes + "m";
+        } if (seconds > 0) {
+            idle += " " + seconds + "s";
+        }
+
+        return idle.trim();
+    }
+
+    private void showWhoisDialog(final String nick) {
+        whoisProgressDialog.dismiss();
+        LayoutInflater inflater = getLayoutInflater();
+        whois = inflater.inflate(R.layout.dialog_whois, null);
+        AlertDialog.Builder builder = new AlertDialog.Builder(ChannelActivity.this);
+        whoisResultDialog = builder.setTitle(getApplication().getString(R.string.dialog_whois_title) +" - "+ nick)
+                .setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialogInterface) {
+                whois = null;
+            }
+        }).setView(whois)
+                .setNegativeButton(R.string.dialog_generic_close, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        whois = null;
+                    }
+                })
+                .create();
+
+        whoisResultDialog.show();
     }
 }

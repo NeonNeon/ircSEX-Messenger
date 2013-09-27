@@ -137,10 +137,6 @@ public class IrcUser implements Comparable<IrcUser> {
      */
     public static String extractUserName(String username) {
         char status = extractUserStatus(username);
-        if (status != NO_STATUS) {
-            return username.substring(1);
-        } else {
-            return username;
-        }
+        return username.replace(Character.toString(status), "");
     }
 }

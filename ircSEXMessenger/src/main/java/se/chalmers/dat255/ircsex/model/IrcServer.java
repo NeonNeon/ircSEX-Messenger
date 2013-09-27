@@ -180,6 +180,16 @@ public class IrcServer implements IrcProtocolListener {
         protocol.sendChannelMessage(channel, message);
     }
 
+    /**
+     * Sends whois command.
+     *
+     * @param user Username to lookup
+     */
+    public void whois(String user) {
+        user = IrcUser.extractUserName(user);
+        protocol.whois(user);
+    }
+
     @Override
     public void serverConnected() {
         protocol.connect(nick, login, realName);
@@ -256,6 +266,27 @@ public class IrcServer implements IrcProtocolListener {
             for (SessionListener listener : sessionListeners) {
                 listener.onChannelUserChange(host, channelName, connectedChannels.get(channelName).getUsers());
             }
+        }
+    }
+
+    @Override
+    public void whoisChannels(String nick, List<String> channels) {
+        for (SessionListener listener : sessionListeners) {
+            listener.whoisChannels(nick, channels);
+        }
+    }
+
+    @Override
+    public void whoisRealname(String nick, String realname) {
+        for (SessionListener listener : sessionListeners) {
+            listener.whoisRealname(nick, realname);
+        }
+    }
+
+    @Override
+    public void whoisIdleTime(String nick, int seconds) {
+        for (SessionListener listener : sessionListeners) {
+            listener.whoisIdleTime(nick, seconds);
         }
     }
 

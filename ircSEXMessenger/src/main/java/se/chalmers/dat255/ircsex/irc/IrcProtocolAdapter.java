@@ -24,8 +24,8 @@ public class IrcProtocolAdapter implements Runnable {
     private BufferedReader input;
     private BufferedWriter output;
 
-    private String host;
-    private int port;
+    private final String host;
+    private final int port;
 
     private IrcProtocolListener listener;
 
@@ -110,6 +110,26 @@ public class IrcProtocolAdapter implements Runnable {
             index = reply.indexOf(':', 1);
 
             listener.usersInChannel(channel, Arrays.asList(reply.substring(index + 1).split(" ")));
+        }
+        else if ((index = reply.indexOf("311 ")) != -1) {
+            int index2 = reply.indexOf(' ', index + 5) + 1;
+            String nick = reply.substring(index2, reply.indexOf(' ', index2));
+            String realname = reply.substring(reply.lastIndexOf(':') + 1);
+            listener.whoisRealname(nick, realname);
+        }
+        else if ((index = reply.indexOf("319 ")) != -1) {
+            int index2 = reply.indexOf(' ', index + 5) + 1;
+            String nick = reply.substring(index2, reply.indexOf(' ', index2));
+            String channels = reply.substring(reply.lastIndexOf(':') + 1);
+            listener.whoisChannels(nick, Arrays.asList(channels.split(" ")));
+        }
+        else if ((index = reply.indexOf("317 ")) != -1) {
+            int index2 = reply.indexOf(' ', index + 5) + 1;
+            int index3 = reply.indexOf(' ', index2);
+            String nick = reply.substring(index2, index3);
+            int idleTime = Integer.parseInt(reply.substring(index3 + 1, reply.indexOf(' ', index3 + 1)));
+            System.out.println(nick+"|"+idleTime);
+            listener.whoisIdleTime(nick, idleTime);
         }
 
         // Numeric replies - should be after everything else
@@ -199,6 +219,14 @@ public class IrcProtocolAdapter implements Runnable {
      */
     public void getUsers(String channel) {
         write("NAMES " + channel);
+    }
+
+    /**
+     * Send request to get whois info.
+     * @param nick - the nick to get info for
+     */
+    public void whois(String nick) {
+        write("WHOIS " + nick);
     }
 
     private synchronized void write(String string) {

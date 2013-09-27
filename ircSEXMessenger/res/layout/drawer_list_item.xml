@@ -1,17 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
+              android:orientation="horizontal"
               android:layout_width="match_parent"
               android:layout_height="wrap_content">
-    <TextView
-            android:id="@android:id/text1"
-            android:layout_width="match_parent"
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent">
+
+        <TextView
+                android:id="@android:id/text1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceListItemSmall"
+                android:textColor="@drawable/drawer_textcolor"
+                android:background="?android:attr/activatedBackgroundIndicator"
+                android:gravity="center_vertical"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:minHeight="?android:attr/listPreferredItemHeightSmall"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:gravity="right">
+
+        <ImageButton
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceListItemSmall"
-            android:textColor="@drawable/drawer_textcolor"
-            android:background="?android:attr/activatedBackgroundIndicator"
-            android:gravity="center_vertical"
-            android:paddingLeft="@dimen/activity_horizontal_margin"
-            android:minHeight="?android:attr/listPreferredItemHeightSmall"/>
+            android:layout_gravity="center_vertical"
+            android:background="@null"
+            android:padding="5dp"
+            android:id="@+id/userInfoButton"
+            android:src="@drawable/action_about"
+            android:onClick="userInfo"/>
+    </LinearLayout>
 </LinearLayout>

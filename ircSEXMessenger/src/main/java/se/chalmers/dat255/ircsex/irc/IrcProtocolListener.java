@@ -55,6 +55,27 @@ public interface IrcProtocolListener {
      */
     public void messageReceived(String channel, String user, String message);
 
+    /**
+     * This method sends a list of connected channels as a whois request resopnse.
+     * @param nick - the nick of the requested whois
+     * @param channels - the channels the nick is connected to
+     */
+    public void whoisChannels(String nick, List<String> channels);
+
+    /**
+     * This method sends the nicks realname as a whois request resopnse.
+     * @param nick
+     * @param realname
+     */
+    public void whoisRealname(String nick, String realname);
+
+    /**
+     * This method sends the nicks idletime in seconds as a whois request resopnse.
+     * @param nick
+     * @param seconds
+     */
+    public void whoisIdleTime(String nick, int seconds);
+
     // ERRORS
 
     /**
