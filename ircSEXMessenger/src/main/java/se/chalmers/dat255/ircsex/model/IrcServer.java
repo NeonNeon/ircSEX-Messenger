@@ -270,7 +270,7 @@ public class IrcServer implements IrcProtocolListener {
     @Override
     public void whoisRealname(String nick, String realname) {
         for (SessionListener listener : sessionListeners) {
-            listener.whoisRealname(nick, realName);
+            listener.whoisRealname(nick, realname);
         }
     }
 
