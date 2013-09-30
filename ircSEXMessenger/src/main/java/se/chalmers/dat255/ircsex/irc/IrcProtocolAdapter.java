@@ -230,12 +230,12 @@ public class IrcProtocolAdapter implements Runnable {
     }
 
     /**
-     * Invites a user to a channel.
-     * @param user User to inviteUser
-     * @param channel Channel to inviteUser user to
+     * Invite a user to a channel.
+     * @param nick
+     * @param channel
      */
-    public void inviteUser(String user, String channel) {
-        write("INVITE " + user + " " + channel);
+    public void invite(String nick, String channel) {
+        write("INVITE " + nick + " " + channel);
     }
 
     private synchronized void write(String string) {

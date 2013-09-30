@@ -63,4 +63,16 @@ class IrcProtocolAdapterTest extends Specification {
         where:
         nick << ["Heissman", "Rascal", "oed"]
     }
+
+    def "test invite"() {
+        when:
+        ipa.invite(nick, channel)
+
+        then:
+        mockIrcServer.readLine().equals("INVITE " + nick + " " + channel + "\r\n")
+
+        where:
+        nick << ["Heissman", "Rascal", "oed"]
+        channel << ["#fest", "#svinstia", "#party"]
+    }
 }
