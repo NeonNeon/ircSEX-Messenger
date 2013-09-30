@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * This class represents an IrcChannel and handles messages sent in it.
@@ -24,7 +25,7 @@ public class IrcChannel {
      */
     public IrcChannel(String channelName) {
         this.channelName = channelName;
-        this.users = new HashMap<String, IrcUser>();
+        this.users = new ConcurrentHashMap<String, IrcUser>();
         messages = new ArrayList<IrcMessage>();
     }
 

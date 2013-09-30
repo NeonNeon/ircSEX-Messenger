@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import se.chalmers.dat255.ircsex.irc.IrcProtocolAdapter;
 import se.chalmers.dat255.ircsex.irc.IrcProtocolListener;
@@ -69,8 +70,8 @@ public class IrcServer implements IrcProtocolListener {
         datasource = new ChannelDatabaseAdapter();
         datasource.open();
 
-        channels = new HashMap<String, IrcChannel>();
-        connectedChannels = new HashMap<String, IrcChannel>();
+        channels = new ConcurrentHashMap<String, IrcChannel>();
+        connectedChannels = new ConcurrentHashMap<String, IrcChannel>();
     }
 
     private void restoreChannels() {

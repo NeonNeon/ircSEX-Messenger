@@ -2,6 +2,7 @@ package se.chalmers.dat255.ircsex.model.database;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -102,7 +103,7 @@ public class ServerDatabaseAdapter {
      * @return Servers as a Map with address as key and server as value
      */
     public Map<String, IrcServer> getAllIrcServers() {
-        Map<String, IrcServer> servers = new HashMap<String, IrcServer>();
+        Map<String, IrcServer> servers = new ConcurrentHashMap<String, IrcServer>();
 
         Cursor cursor = database.query(DatabaseHelper.TABLE_SERVERS,
                 allColumns, null, null, null, null, null);
