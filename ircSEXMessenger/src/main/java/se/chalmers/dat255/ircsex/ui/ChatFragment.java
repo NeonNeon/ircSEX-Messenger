@@ -13,7 +13,11 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import se.chalmers.dat255.ircsex.R;
+import se.chalmers.dat255.ircsex.model.IrcChannel;
 import se.chalmers.dat255.ircsex.model.IrcMessage;
 import se.chalmers.dat255.ircsex.model.MessageArrayAdapter;
 
@@ -23,15 +27,21 @@ public class ChatFragment extends Fragment {
     private MessageArrayAdapter messageArrayAdapter;
     private EditText messageEditText;
     private final ChatMessageSendListener messageSendListener;
+    private final IrcChannel channel;
 
-    public ChatFragment(ChatMessageSendListener messageSendListener) {
+    public ChatFragment(ChatMessageSendListener messageSendListener, IrcChannel channel) {
         this.messageSendListener = messageSendListener;
+        this.channel = channel;
     }
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        messageArrayAdapter = new MessageArrayAdapter(getActivity());
+        List<ChatBubble> backlog = new ArrayList<ChatBubble>(channel.getMessages().size());
+        for (IrcMessage message : channel.getMessages()) {
+            backlog.add(new ReceivedChatBubble(message));
+        }
+        messageArrayAdapter = new MessageArrayAdapter(getActivity(), backlog);
     }
 
     @Override
