@@ -13,8 +13,8 @@
             android:layout_marginRight="4dp"
             android:layout_marginBottom="4dp"
             android:hint="@string/hint_server"
-            android:text="irc.chalmers.it"
-            android:inputType="textVisiblePassword" />
+            android:inputType="textVisiblePassword"
+            android:enabled="false" />
     <EditText
             android:id="@+id/dialog_serverconnect_port"
             android:layout_width="match_parent"
@@ -25,8 +25,8 @@
             android:layout_marginBottom="4dp"
             android:fontFamily="sans-serif"
             android:hint="@string/hint_port"
-            android:text="6667"
-            android:inputType="number" />
+            android:inputType="number"
+            android:enabled="false" />
     <EditText
             android:id="@+id/dialog_serverconnect_nickname"
             android:layout_width="match_parent"
