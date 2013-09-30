@@ -408,6 +408,11 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         whoisProgressDialog.show();
     }
 
+    public void queryUser(View view) {
+        String user = ((TextView) view).getText().toString();
+
+    }
+
     @Override
     public void onChannelMessage(String host, final String channel, final IrcMessage message) {
         ChannelActivity.this.runOnUiThread(new Runnable() {

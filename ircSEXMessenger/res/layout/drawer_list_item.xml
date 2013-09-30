@@ -18,7 +18,9 @@
                 android:background="?android:attr/activatedBackgroundIndicator"
                 android:gravity="center_vertical"
                 android:paddingLeft="@dimen/activity_horizontal_margin"
-                android:minHeight="?android:attr/listPreferredItemHeightSmall"/>
+                android:minHeight="?android:attr/listPreferredItemHeightSmall"
+                android:onClick="queryUser"
+                android:clickable="true"/>
     </LinearLayout>
 
     <LinearLayout
