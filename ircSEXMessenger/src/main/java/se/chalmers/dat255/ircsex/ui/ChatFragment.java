@@ -74,14 +74,17 @@ public class ChatFragment extends Fragment {
     }
 
     public void addMessage(IrcMessage ircMessage) {
-        Log.d("IRC", ircMessage.getMessage());
+        Log.d("IRCDEBUG", ircMessage.getMessage());
         messageArrayAdapter.add(new ReceivedChatBubble(ircMessage));
         messageList.invalidate();
         scrollToBottom();
     }
 
     public void scrollToBottom() {
-        messageList.setSelection(messageArrayAdapter.getCount()-1);
+        Log.e("IRCDEBUG", "Last visible: " + messageList.getLastVisiblePosition() + " Count: " + messageArrayAdapter.getCount());
+        if (messageList.getLastVisiblePosition() == messageArrayAdapter.getCount()-2) {
+            messageList.setSelection(messageArrayAdapter.getCount()-1);
+        }
     }
 
     public interface ChatMessageSendListener {
