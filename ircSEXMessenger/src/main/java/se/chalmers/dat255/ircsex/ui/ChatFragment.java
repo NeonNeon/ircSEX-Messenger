@@ -2,6 +2,7 @@ package se.chalmers.dat255.ircsex.ui;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -12,6 +13,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,6 +52,7 @@ public class ChatFragment extends Fragment {
         int i = getArguments().getInt(ARG_CHANNEL_INDEX);
         messageList = (ListView) rootView.findViewById(R.id.chat_message_list);
         messageList.setAdapter(messageArrayAdapter);
+        scrollToBottom();
         messageEditText = (EditText) rootView.findViewById(R.id.fragment_chat_message);
         messageEditText.requestFocus();
         ((EditText) rootView.findViewById(R.id.fragment_chat_message)).setOnEditorActionListener(
@@ -87,14 +90,18 @@ public class ChatFragment extends Fragment {
         Log.d("IRCDEBUG", ircMessage.getMessage());
         messageArrayAdapter.add(new ReceivedChatBubble(ircMessage));
         messageList.invalidate();
-        scrollToBottom();
+        scrollWhenNoBacklog();
     }
 
-    public void scrollToBottom() {
+    public void scrollWhenNoBacklog() {
         Log.e("IRCDEBUG", "Last visible: " + messageList.getLastVisiblePosition() + " Count: " + messageArrayAdapter.getCount());
         if (messageList.getLastVisiblePosition() == messageArrayAdapter.getCount()-2) {
-            messageList.setSelection(messageArrayAdapter.getCount()-1);
+            scrollToBottom();
         }
+    }
+
+    private void scrollToBottom() {
+        messageList.setSelection(messageArrayAdapter.getCount()-1);
     }
 
     public interface ChatMessageSendListener {
