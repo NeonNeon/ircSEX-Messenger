@@ -15,6 +15,7 @@
     <string name="hint_port">Port</string>
     <string name="hint_nickname">Nickname</string>
     <string name="action_leave_channel">Leave channel</string>
+    <string name="action_invite_user">Invite user</string>
     <string name="join_channel">Join channel</string>
     <string name="hint_channel_name">Channel name</string>
     <string name="hint_join">Join</string>
@@ -29,4 +30,6 @@
     <string name="dialog_whois_idle_time">Idle time</string>
     <string name="dialog_whois_connected_to">Connected to</string>
     <string name="sendMessage">Send a message</string>
+    <string name="dialog_invite_hint">User to invite</string>
+    <string name="dialog_invite_title">Invite user</string>
 </resources>

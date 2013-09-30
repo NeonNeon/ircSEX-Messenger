@@ -190,6 +190,16 @@ public class IrcServer implements IrcProtocolListener {
         protocol.whois(user);
     }
 
+    /**
+     * Invites the specified user to the specified channel.
+     *
+     * @param user User to inviteUser
+     * @param channel Channel to which the user will be invited
+     */
+    public void inviteUser(String user, IrcChannel channel) {
+        protocol.inviteUser(user, channel.getChannelName());
+    }
+
     @Override
     public void serverConnected() {
         protocol.connect(nick, login, realName);

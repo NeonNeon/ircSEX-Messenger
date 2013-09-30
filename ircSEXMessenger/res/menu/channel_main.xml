@@ -9,4 +9,6 @@
           <!--android:title="@string/action_userlist"/>-->
     <item android:id="@+id/action_settings"
         android:title="@string/action_settings"/>
+    <item android:id="@+id/action_invite_user"
+          android:title="@string/action_invite_user"/>
 </menu>
