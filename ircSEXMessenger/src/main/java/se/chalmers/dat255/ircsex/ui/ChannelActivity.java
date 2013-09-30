@@ -195,7 +195,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         String user = userToInvite.getText().toString();
-                        session.getActiveServer().invite(session.getActiveChannel(), user);
+                        session.getActiveServer().inviteUser(user, session.getActiveChannel());
                     }
                 })
                 .setNegativeButton(R.string.dialog_generic_cancel, null)

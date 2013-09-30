@@ -229,6 +229,15 @@ public class IrcProtocolAdapter implements Runnable {
         write("WHOIS " + nick);
     }
 
+    /**
+     * Invites a user to a channel.
+     * @param user User to inviteUser
+     * @param channel Channel to inviteUser user to
+     */
+    public void inviteUser(String user, String channel) {
+        write("INVITE " + user + " " + channel);
+    }
+
     private synchronized void write(String string) {
         System.out.println(string);
         try {
