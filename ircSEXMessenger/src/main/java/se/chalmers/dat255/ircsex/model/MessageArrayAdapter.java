@@ -30,8 +30,11 @@ public class MessageArrayAdapter extends ArrayAdapter<ChatBubble> {
     private List<ChatBubble> chatBubbles = new ArrayList<ChatBubble>();
     private RelativeLayout wrapper;
 
-    public MessageArrayAdapter(Context context) {
+    public MessageArrayAdapter(Context context, List<ChatBubble> backlog) {
         super(context, R.layout.received_chat_bubble);
+        for (ChatBubble bubble : backlog) {
+            add(bubble);
+        }
         this.context = context;
     }
 

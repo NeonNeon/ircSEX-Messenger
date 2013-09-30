@@ -242,17 +242,14 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     }
 
     private void selectItem(int position) {
-        // update the channel_main content by replacing fragments
         channelName = ircChannelSelector.getItem(position).getText();
         session.setActiveChannel(channelName);
-        fragment = new ChatFragment(this);
+        fragment = new ChatFragment(this, session.getActiveChannel());
         Bundle args = new Bundle();
         args.putInt(ChatFragment.ARG_CHANNEL_INDEX, position);
         fragment.setArguments(args);
         FragmentManager fragmentManager = getFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.channel_layout, fragment).commit();
-
-        // update selected item and title, then close the drawer
         leftDrawer.setItemChecked(position, true);
         setTitle(channelName);
         drawerLayout.closeDrawer(leftDrawer);
