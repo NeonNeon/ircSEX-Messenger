@@ -189,7 +189,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         View view = inflater.inflate(R.layout.dialog_invite_user, null);
         final EditText userToInvite = (EditText) view.findViewById(android.R.id.text1);
         userToInvite.setHint(getString(R.string.dialog_invite_hint));
-        builder.setTitle(R.string.dialog_nick_title)
+        builder.setTitle(R.string.dialog_invite_title)
                 .setView(view)
                 .setPositiveButton(getString(R.string.dialog_generic_ok), new DialogInterface.OnClickListener() {
                     @Override
