@@ -46,7 +46,7 @@ public class Session {
      * @param port - Server port
      * @param nick - Nickname
      */
-    public void addServer(String host, int port, String nick, se.chalmers.dat255.ircsex.model.SessionListener sessionListener) {gi
+    public void addServer(String host, int port, String nick, se.chalmers.dat255.ircsex.model.SessionListener sessionListener) {
         addServer(host, port, "banned", nick, sessionListener); // TODO: Should not be banned before release.
     }
 
