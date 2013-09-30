@@ -200,6 +200,14 @@ public class IrcServer implements IrcProtocolListener {
         protocol.inviteUser(user, channel.getChannelName());
     }
 
+    /**
+     * Opens a private chat.
+     * @param user User to chat with
+     */
+    public void queryUser(String user) {
+        userJoined(user, nick);
+    }
+
     @Override
     public void serverConnected() {
         protocol.connect(nick, login, realName);
@@ -313,6 +321,7 @@ public class IrcServer implements IrcProtocolListener {
     @Override
     public void messageReceived(String channel, String user, String message) {
         user = IrcUser.extractUserName(user);
+
         IrcMessage ircMessage = connectedChannels.get(channel).newMessage(user, message);
         if (user.equals(nick)) {
             for (SessionListener listener : sessionListeners) {

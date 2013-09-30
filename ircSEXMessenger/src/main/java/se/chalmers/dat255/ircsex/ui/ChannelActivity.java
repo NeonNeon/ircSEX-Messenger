@@ -410,7 +410,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
 
     public void queryUser(View view) {
         String user = ((TextView) view).getText().toString();
-
+        session.getActiveServer().queryUser(IrcUser.extractUserName(user));
     }
 
     @Override
