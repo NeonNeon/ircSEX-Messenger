@@ -172,28 +172,54 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
 //                drawerOpen = true;
 //                break;
             case R.id.action_settings:
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                LayoutInflater inflater = getLayoutInflater();
-                View view = inflater.inflate(R.layout.dialog_change_nick, null);
-                final EditText nickEditText = (EditText) view.findViewById(android.R.id.text1);
-                nickEditText.setHint(getString(R.string.dialog_nick_hint) + " " + session.getActiveServer().getHost());
-                builder.setTitle(R.string.dialog_nick_title)
-                        .setView(view)
-                        .setPositiveButton(getString(R.string.dialog_generic_ok), new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                String newNick = nickEditText.getText().toString();
-                                Log.e("IRCDEBUG", "Change nickname to " + newNick);
-                                session.changeNick(newNick);
-                            }
-                        })
-                        .setNegativeButton(R.string.dialog_generic_cancel, null)
-                        .create().show();
+                changeNick();
+                break;
+            case R.id.action_invite_user:
+                inviteUser();
                 break;
             default:
                 return super.onOptionsItemSelected(item);
         }
         return true;
+    }
+
+    private void inviteUser() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = getLayoutInflater();
+        View view = inflater.inflate(R.layout.dialog_invite_user, null);
+        final EditText userToInvite = (EditText) view.findViewById(android.R.id.text1);
+        userToInvite.setHint(getString(R.string.dialog_invite_hint));
+        builder.setTitle(R.string.dialog_nick_title)
+                .setView(view)
+                .setPositiveButton(getString(R.string.dialog_generic_ok), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        String user = userToInvite.getText().toString();
+                        session.getActiveServer().invite(session.getActiveChannel(), user);
+                    }
+                })
+                .setNegativeButton(R.string.dialog_generic_cancel, null)
+                .create().show();
+    }
+
+    private void changeNick() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = getLayoutInflater();
+        View view = inflater.inflate(R.layout.dialog_change_nick, null);
+        final EditText nickEditText = (EditText) view.findViewById(android.R.id.text1);
+        nickEditText.setHint(getString(R.string.dialog_nick_hint) + " " + session.getActiveServer().getHost());
+        builder.setTitle(R.string.dialog_nick_title)
+                .setView(view)
+                .setPositiveButton(getString(R.string.dialog_generic_ok), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        String newNick = nickEditText.getText().toString();
+                        Log.e("IRCDEBUG", "Change nickname to " + newNick);
+                        session.changeNick(newNick);
+                    }
+                })
+                .setNegativeButton(R.string.dialog_generic_cancel, null)
+                .create().show();
     }
 
     @Override
