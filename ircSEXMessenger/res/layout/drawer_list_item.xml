@@ -2,16 +2,16 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="horizontal"
-              android:layout_width="match_parent"
+              android:layout_width="fill_parent"
               android:layout_height="wrap_content">
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="fill_parent">
 
-        <TextView
+        <Button
                 android:id="@android:id/text1"
-                android:layout_width="wrap_content"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceListItemSmall"
                 android:textColor="@drawable/drawer_textcolor"
@@ -19,8 +19,7 @@
                 android:gravity="center_vertical"
                 android:paddingLeft="@dimen/activity_horizontal_margin"
                 android:minHeight="?android:attr/listPreferredItemHeightSmall"
-                android:onClick="queryUser"
-                android:clickable="true"/>
+                android:onClick="queryUser"/>
     </LinearLayout>
 
     <LinearLayout
