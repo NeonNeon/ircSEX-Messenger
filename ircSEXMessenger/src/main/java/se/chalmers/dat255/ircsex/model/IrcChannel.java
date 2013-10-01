@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * This class represents an IrcChannel and handles messages sent in it.
@@ -14,7 +16,7 @@ import java.util.Map;
 public class IrcChannel {
 
     private final String channelName;
-    private Map<String, IrcUser> users;
+    private ConcurrentMap<String, IrcUser> users;
     private final List<IrcMessage> messages;
 
     /**
@@ -24,7 +26,7 @@ public class IrcChannel {
      */
     public IrcChannel(String channelName) {
         this.channelName = channelName;
-        this.users = new HashMap<String, IrcUser>();
+        this.users = new ConcurrentHashMap<String, IrcUser>();
         messages = new ArrayList<IrcMessage>();
     }
 
@@ -38,12 +40,29 @@ public class IrcChannel {
     }
 
     /**
+     * Empties and sets the list of users.
+     *
+     * @param users - A list with the users
+     */
+    public void addUsers(List<String> users) {
+        synchronized (users) {
+            for (String user : users) {
+                char status = IrcUser.extractUserStatus(user);
+                user = IrcUser.extractUserName(user);
+                this.users.put(user, new IrcUser(user, status));
+            }
+        }
+    }
+
+    /**
      * Adds a user to the list of users.
      *
      * @param user - The user who joined
      */
     public void userJoined(IrcUser user) {
-        users.put(user.getNick(), user);
+        synchronized (users) {
+            users.put(user.getNick(), user);
+        }
     }
 
     /**
@@ -68,8 +87,10 @@ public class IrcChannel {
      * @param user - The user who left
      */
     public void userParted(String user) {
-        user = IrcUser.extractUserName(user);
-        users.remove(user);
+        synchronized (users) {
+            user = IrcUser.extractUserName(user);
+            users.remove(user);
+        }
     }
 
     /**
@@ -78,9 +99,11 @@ public class IrcChannel {
      * @return - A list with all users
      */
     public List<IrcUser> getUsers() {
-        List<IrcUser> users = new ArrayList<IrcUser>(this.users.values());
-        Collections.sort(users);
-        return users;
+        synchronized (users) {
+            List<IrcUser> users = new ArrayList<IrcUser>(this.users.values());
+            Collections.sort(users);
+            return users;
+        }
     }
 
     /**
@@ -89,7 +112,9 @@ public class IrcChannel {
      * @return The messages in this channel
      */
     public List<IrcMessage> getMessages() {
-        return messages;
+        synchronized (messages) {
+            return messages;
+        }
     }
 
     /**
@@ -100,10 +125,12 @@ public class IrcChannel {
      * @return The IrcMessage created from the message string and user string
      */
     public IrcMessage newMessage(String user, String message) {
-        user = IrcUser.extractUserName(user);
-        IrcMessage ircMessage = new IrcMessage(users.get(user), message);
-        messages.add(ircMessage);
-        return ircMessage;
+        synchronized (messages) {
+            user = IrcUser.extractUserName(user);
+            IrcMessage ircMessage = new IrcMessage(users.get(user), message);
+            messages.add(ircMessage);
+            return ircMessage;
+        }
     }
 
     /**
