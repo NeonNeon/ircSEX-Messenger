@@ -92,7 +92,7 @@ public class IrcUser implements Comparable<IrcUser> {
 
     @Override
     public String toString() {
-        return (status == NO_STATUS ? "" : status) + nick;
+        return (self ? "$" : "") + (status == NO_STATUS ? "" : status) + nick;
     }
 
     @Override
@@ -150,5 +150,19 @@ public class IrcUser implements Comparable<IrcUser> {
 
     public void setSelf() {
         this.self = true;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        IrcUser ircUser = (IrcUser) o;
+        return nick.equals(ircUser.nick);
+    }
+
+    @Override
+    public int hashCode() {
+        return nick.hashCode();
     }
 }

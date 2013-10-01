@@ -251,7 +251,17 @@ public class IrcServer implements IrcProtocolListener {
 
     @Override
     public void usersInChannel(String channelName, List<String> users) {
-        connectedChannels.get(channelName).addUsers(users);
+        for (String nick : users) {
+            char status = IrcUser.extractUserStatus(nick);
+            nick = IrcUser.extractUserName(nick);
+            IrcUser user = new IrcUser(nick, status);
+            if (user.equals(this.user)) {
+                user.setSelf();
+            }
+            connectedChannels.get(channelName).userJoined(user);
+        }
+
+
         for (SessionListener listener : sessionListeners) {
             listener.onChannelUserChange(host, channelName, connectedChannels.get(channelName).getUsers());
         }
@@ -267,7 +277,13 @@ public class IrcServer implements IrcProtocolListener {
                 listener.onServerJoin(host, channelName);
             }
         } else {
-            connectedChannels.get(channelName).userJoined(nick);
+            char status = IrcUser.extractUserStatus(nick);
+            IrcUser ircUser = new IrcUser(IrcUser.extractUserName(nick), status);
+            if (ircUser.equals(this.user)) {
+                ircUser.setSelf();
+            }
+
+            connectedChannels.get(channelName).userJoined(ircUser);
             for (SessionListener listener : sessionListeners) {
                 listener.onChannelUserChange(host, channelName, connectedChannels.get(channelName).getUsers());
             }
