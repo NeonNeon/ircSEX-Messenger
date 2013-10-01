@@ -22,7 +22,7 @@ public class IrcServer implements IrcProtocolListener {
     private final String host;
     private final int port;
     private final String login;
-    private String nick;
+    private final IrcUser user;
     private final String realName;
     private boolean connected = false;
 
@@ -57,7 +57,7 @@ public class IrcServer implements IrcProtocolListener {
         this.host = host;
         this.port = port;
         this.login = login;
-        this.nick = nick;
+        this.user = new IrcUser(nick, IrcUser.NO_STATUS);
         this.realName = realName;
 
         sessionListeners = new ArrayList<SessionListener>();
@@ -178,7 +178,7 @@ public class IrcServer implements IrcProtocolListener {
      */
     public void sendMessage(String channel, String message) {
         protocol.sendChannelMessage(channel, message);
-        IrcMessage ircMessage = new IrcMessage(new IrcUser(nick, IrcUser.NO_STATUS), message); // TODO: Rascal ska fixa.
+        IrcMessage ircMessage = new IrcMessage(user, message);
         for (SessionListener listener : sessionListeners) {
             listener.onSentMessage(host, channel, ircMessage);
         }
@@ -204,9 +204,17 @@ public class IrcServer implements IrcProtocolListener {
         protocol.invite(user, channel.getChannelName());
     }
 
+    /**
+     * Returns the IrcUser for the user on this server.
+     * @return The user
+     */
+    public IrcUser getUser() {
+        return user;
+    }
+
     @Override
     public void serverConnected() {
-        protocol.connect(nick, login, realName);
+        protocol.connect(user.getNick(), login, realName);
         for (SessionListener listener : sessionListeners) {
             listener.onConnectionEstablished(host);
         }
@@ -223,8 +231,8 @@ public class IrcServer implements IrcProtocolListener {
 
     @Override
     public void nickChanged(String oldNick, String newNick) {
-        if (oldNick.equals(this.nick)) {
-            nick = newNick;
+        if (user.isNamed(oldNick)) {
+            user.changeNick(newNick);
             serverDatasource.updateNickname(host, newNick);
             for (SessionListener listener : sessionListeners) {
                 listener.onNickChange(host, oldNick, newNick);
@@ -252,7 +260,7 @@ public class IrcServer implements IrcProtocolListener {
 
     @Override
     public void userJoined(String channelName, String nick) {
-        if (this.nick.equals(nick)) {
+        if (this.user.getNick().equals(nick)) {
             IrcChannel channel = new IrcChannel(channelName);
             connectedChannels.put(channelName, channel);
             datasource.addChannel(host, channelName);
@@ -269,7 +277,7 @@ public class IrcServer implements IrcProtocolListener {
 
     @Override
     public void userParted(String channelName, String nick) {
-        if (this.nick.equals(nick)) {
+        if (user.isNamed(nick)) {
             connectedChannels.remove(channelName);
             datasource.removeChannel(channelName);
             for (SessionListener listener : sessionListeners) {
@@ -318,7 +326,7 @@ public class IrcServer implements IrcProtocolListener {
     public void messageReceived(String channel, String user, String message) {
         user = IrcUser.extractUserName(user);
         IrcMessage ircMessage = connectedChannels.get(channel).newMessage(user, message);
-        if (user.equals(nick)) {
+        if (this.user.isNamed(user)) {
             for (SessionListener listener : sessionListeners) {
                 listener.onSentMessage(host, channel, ircMessage);
             }

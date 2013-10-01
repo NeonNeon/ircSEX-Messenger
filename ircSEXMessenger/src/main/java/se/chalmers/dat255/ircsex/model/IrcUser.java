@@ -114,6 +114,10 @@ public class IrcUser implements Comparable<IrcUser> {
         return color;
     }
 
+    public boolean isNamed(String name) {
+        return nick.equals(name);
+    }
+
     /**
      * Extracts the status sign in a username.
      *
