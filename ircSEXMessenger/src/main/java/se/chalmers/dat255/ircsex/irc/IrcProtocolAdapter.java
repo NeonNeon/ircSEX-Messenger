@@ -83,7 +83,12 @@ public class IrcProtocolAdapter implements Runnable {
             String channel = reply.substring(index + 8, msgIndex - 1);
             String message = reply.substring(msgIndex + 1);
 
-            listener.messageReceived(channel, nick, message);
+            if (channel.contains("#")) {
+                listener.channelMessageReceived(channel, nick, message);
+            }
+            else {
+                listener.queryMessageReceived(nick, message);
+            }
         }
         else if (reply.startsWith("PING ")) {
             write("PONG " + reply.substring(5));

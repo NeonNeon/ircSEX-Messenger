@@ -319,7 +319,7 @@ public class IrcServer implements IrcProtocolListener {
     }
 
     @Override
-    public void messageReceived(String channel, String user, String message) {
+    public void channelMessageReceived(String channel, String user, String message) {
         user = IrcUser.extractUserName(user);
 
         IrcMessage ircMessage = connectedChannels.get(channel).newMessage(user, message);
@@ -332,5 +332,10 @@ public class IrcServer implements IrcProtocolListener {
                 listener.onChannelMessage(host, channel, ircMessage);
             }
         }
+    }
+
+    @Override
+    public void queryMessageReceived(String user, String message) {
+
     }
 }
