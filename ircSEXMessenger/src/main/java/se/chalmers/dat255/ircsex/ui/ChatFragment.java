@@ -93,7 +93,11 @@ public class ChatFragment extends Fragment {
 
     public void addInfoMessage(String infoMessage) {
         Log.d("IRCDEBUG", infoMessage);
-        messageArrayAdapter.add(new InfoMessage(infoMessage));
+        try {
+            messageArrayAdapter.add(new InfoMessage(infoMessage));
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
         messageList.invalidate();
         scrollWhenNoBacklog();
     }

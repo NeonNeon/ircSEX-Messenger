@@ -38,7 +38,7 @@ public class DayChangeMessage implements ChannelItem {
 
     @Override
     public int getNinePatchID() {
-        return R.drawable.left_chat_bubble;
+        return R.drawable.message_item;
     }
 
     @Override

@@ -38,7 +38,7 @@ public class InfoMessage implements ChannelItem {
 
     @Override
     public int getNinePatchID() {
-        return R.drawable.right_chat_bubble;
+        return R.drawable.message_item;
     }
 
     @Override
