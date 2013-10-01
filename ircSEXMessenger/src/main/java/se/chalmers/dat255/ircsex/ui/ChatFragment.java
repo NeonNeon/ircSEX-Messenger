@@ -41,7 +41,11 @@ public class ChatFragment extends Fragment {
         super.onAttach(activity);
         List<ChatBubble> backlog = new ArrayList<ChatBubble>(channel.getMessages().size());
         for (IrcMessage message : channel.getMessages()) {
-            backlog.add(new ReceivedChatBubble(message));
+            if (message.getUser() == null) { // TODO: Jämför inte med null, jämför med self user
+                backlog.add(new SentChatBubble(message.getMessage()));
+            } else {
+                backlog.add(new ReceivedChatBubble(message));
+            }
         }
         messageArrayAdapter = new MessageArrayAdapter(getActivity(), backlog);
     }
@@ -79,10 +83,6 @@ public class ChatFragment extends Fragment {
         String message = messageEditText.getText().toString();
         if (!message.equals("")) {
             messageSendListener.userSentMessage(message);
-            messageArrayAdapter.add(new SentChatBubble(message));
-            messageList.invalidate();
-            messageEditText.setText("");
-            scrollToBottom();
         }
     }
 
@@ -91,6 +91,13 @@ public class ChatFragment extends Fragment {
         messageArrayAdapter.add(new ReceivedChatBubble(ircMessage));
         messageList.invalidate();
         scrollWhenNoBacklog();
+    }
+
+    public void addSentMessage(IrcMessage ircMessage) {
+        messageArrayAdapter.add(new SentChatBubble(ircMessage.getMessage()));
+        messageList.invalidate();
+        messageEditText.setText("");
+        scrollToBottom();
     }
 
     public void scrollWhenNoBacklog() {

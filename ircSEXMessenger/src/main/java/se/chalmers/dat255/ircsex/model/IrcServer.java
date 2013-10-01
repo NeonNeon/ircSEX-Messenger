@@ -178,6 +178,10 @@ public class IrcServer implements IrcProtocolListener {
      */
     public void sendMessage(String channel, String message) {
         protocol.sendChannelMessage(channel, message);
+        IrcMessage ircMessage = new IrcMessage(new IrcUser(nick, IrcUser.NO_STATUS), message); // TODO: Rascal ska fixa.
+        for (SessionListener listener : sessionListeners) {
+            listener.onSentMessage(host, channel, ircMessage);
+        }
     }
 
     /**
