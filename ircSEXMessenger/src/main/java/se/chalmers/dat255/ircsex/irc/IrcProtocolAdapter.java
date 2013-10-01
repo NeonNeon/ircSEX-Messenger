@@ -226,6 +226,10 @@ public class IrcProtocolAdapter implements Runnable {
         write("NAMES " + channel);
     }
 
+    public void getChannelsOnServer() {
+        write("LIST");
+    }
+
     /**
      * Send request to get whois info.
      * @param nick - the nick to get info for
