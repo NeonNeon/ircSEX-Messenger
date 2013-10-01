@@ -136,7 +136,11 @@ public class IrcServer implements IrcProtocolListener {
      * @param channel - Name of channel to leave
      */
     public void partChannel(String channel) {
-        protocol.partChannel(channel);
+        if (channel.contains("#")) {
+            protocol.partChannel(channel);
+        } else {
+            userParted(channel, nick);
+        }
     }
 
     /**
