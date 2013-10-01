@@ -142,7 +142,7 @@ public class IrcServer implements IrcProtocolListener {
         if (channel.contains("#")) {
             protocol.partChannel(channel);
         } else {
-            userParted(channel, nick);
+            userParted(channel, user.getNick());
         }
     }
 
@@ -230,7 +230,7 @@ public class IrcServer implements IrcProtocolListener {
      */
     public void queryUser(String user) {
         if (!connectedChannels.containsKey(user)) {
-            userJoined(user, nick);
+            userJoined(user, this.user.getNick());
         }
     }
 
@@ -295,8 +295,8 @@ public class IrcServer implements IrcProtocolListener {
         if (this.user.getNick().equals(nick)) {
             IrcChannel channel = new IrcChannel(channelName);
             if (!channelName.contains("#")) {
-                channel.userJoined(nick);
-                channel.userJoined(channelName);
+                channel.userJoined(user);
+                channel.userJoined(new IrcUser(channelName, IrcUser.NO_STATUS));
             }
             connectedChannels.put(channelName, channel);
             datasource.addChannel(host, channelName);
