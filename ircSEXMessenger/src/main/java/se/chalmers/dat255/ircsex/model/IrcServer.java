@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import se.chalmers.dat255.ircsex.irc.IrcProtocolAdapter;
 import se.chalmers.dat255.ircsex.irc.IrcProtocolListener;
@@ -30,8 +31,8 @@ public class IrcServer implements IrcProtocolListener {
     private final ChannelDatabaseAdapter datasource;
     private final ServerDatabaseAdapter serverDatasource;
 
-    private final Map<String, IrcChannel> channels;
-    private final Map<String, IrcChannel> connectedChannels;
+    private final ConcurrentMap<String, IrcChannel> channels;
+    private final ConcurrentMap<String, IrcChannel> connectedChannels;
 
     private IrcProtocolAdapter protocol;
 
