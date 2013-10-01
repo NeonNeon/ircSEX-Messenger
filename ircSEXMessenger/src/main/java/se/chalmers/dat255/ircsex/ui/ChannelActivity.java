@@ -7,6 +7,7 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.DialogFragment;
@@ -24,6 +25,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -410,7 +412,8 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     }
 
     public void queryUser(View view) {
-        String user = ((TextView) view).getText().toString();
+        view = ((LinearLayout) view).getChildAt(0);
+        String user = ((TextView) ((LinearLayout) view).getChildAt(0)).getText().toString();
         session.getActiveServer().queryUser(IrcUser.extractUserName(user));
         drawerLayout.closeDrawer(Gravity.END);
     }
