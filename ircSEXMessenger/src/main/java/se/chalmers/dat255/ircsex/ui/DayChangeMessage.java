@@ -9,10 +9,10 @@ import se.chalmers.dat255.ircsex.R;
 /**
  * Created by Johan on 2013-10-01.
  */
-public class InfoMessage implements ChannelItem {
+public class DayChangeMessage implements ChannelItem {
     private final String message;
 
-    public InfoMessage(String message) {
+    public DayChangeMessage(String message) {
         this.message = message;
     }
 
@@ -38,11 +38,11 @@ public class InfoMessage implements ChannelItem {
 
     @Override
     public int getNinePatchID() {
-        return R.drawable.right_chat_bubble;
+        return R.drawable.left_chat_bubble;
     }
 
     @Override
     public int getLayoutID() {
-        return R.layout.info_message;
+        return R.layout.day_change_message;
     }
 }

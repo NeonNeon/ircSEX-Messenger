@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.NinePatchDrawable;
 import android.os.Build;
+import android.text.format.Time;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,11 +17,14 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.text.DateFormatSymbols;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import se.chalmers.dat255.ircsex.R;
 import se.chalmers.dat255.ircsex.ui.ChannelItem;
+import se.chalmers.dat255.ircsex.ui.DayChangeMessage;
 import se.chalmers.dat255.ircsex.ui.ReceivedChatBubble;
 import se.chalmers.dat255.ircsex.ui.SentChatBubble;
 
@@ -35,6 +39,8 @@ public class MessageArrayAdapter extends ArrayAdapter<ChannelItem> {
     private List<ChannelItem> channelItems = new ArrayList<ChannelItem>();
     private RelativeLayout wrapper;
     private boolean animate = true;
+    private Time time;
+    private int dayOfMonth;
 
     public MessageArrayAdapter(Context context, List<ChannelItem> backlog) {
         super(context, R.layout.received_chat_bubble);
@@ -42,13 +48,31 @@ public class MessageArrayAdapter extends ArrayAdapter<ChannelItem> {
             add(item);
         }
         this.context = context;
+        time = new Time();
+        time.setToNow();
+        dayOfMonth = time.monthDay;
     }
 
     @Override
     public void add(ChannelItem channelItem) {
+        checkForDateChange();
         channelItems.add(channelItem);
         super.add(channelItem);
         animate = true;
+    }
+
+    private void checkForDateChange() {
+        time.setToNow();
+        if (time.monthDay != dayOfMonth) {
+            dayOfMonth = time.monthDay;
+            DayChangeMessage dayChangeMessage = new DayChangeMessage(time.monthDay + " " + getMonth(time.month));
+            channelItems.add(dayChangeMessage);
+            super.add(dayChangeMessage);
+        }
+    }
+
+    private String getMonth(int month) {
+        return DateFormatSymbols.getInstance(Locale.getDefault()).getMonths()[month];
     }
 
     @Override
