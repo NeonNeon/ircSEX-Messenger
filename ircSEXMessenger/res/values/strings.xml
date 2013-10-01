@@ -8,7 +8,7 @@
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
     <string name="action_settings">Change nickname</string>
-    <string name="no_servers_connected">You\'re not connected to any servers yet :(</string>
+    <string name="noservers_not_connected">You\'re not connected to any servers yet :(</string>
     <string name="action_userlist">View users</string>
     <string name="add_server">Add server</string>
     <string name="hint_server">Server</string>
@@ -32,4 +32,5 @@
     <string name="sendMessage">Send a message</string>
     <string name="dialog_invite_hint">User to invite</string>
     <string name="dialog_invite_title">Invite user</string>
+    <string name="noservers_connect_button">Connect to a server</string>
 </resources>

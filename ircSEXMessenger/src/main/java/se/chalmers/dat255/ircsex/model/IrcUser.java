@@ -2,6 +2,8 @@ package se.chalmers.dat255.ircsex.model;
 
 import android.graphics.Color;
 
+import com.sun.istack.internal.NotNull;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -98,13 +100,13 @@ public class IrcUser implements Comparable<IrcUser> {
     @Override
     public int compareTo(IrcUser ircUser) {
         if (owner != ircUser.isOwner()) {
-            return Boolean.valueOf(ircUser.isOwner()).compareTo(Boolean.valueOf(owner));
+            return Boolean.valueOf(ircUser.isOwner()).compareTo(owner);
         } else if (op != ircUser.isOp()) {
-            return Boolean.valueOf(ircUser.isOp()).compareTo(Boolean.valueOf(op));
+            return Boolean.valueOf(ircUser.isOp()).compareTo(op);
         } else if (halfOp != ircUser.isHalfOp()) {
-            return Boolean.valueOf(ircUser.isHalfOp()).compareTo(Boolean.valueOf(halfOp));
+            return Boolean.valueOf(ircUser.isHalfOp()).compareTo(halfOp);
         } else if (voice != ircUser.isVoice()) {
-            return Boolean.valueOf(ircUser.isVoice()).compareTo(Boolean.valueOf(voice));
+            return Boolean.valueOf(ircUser.isVoice()).compareTo(voice);
         } else {
             return nick.toLowerCase().compareTo(ircUser.getNick().toLowerCase());
         }
