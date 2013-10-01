@@ -425,8 +425,13 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
 
     }
 
-    public void onNickChange(String host, String oldNick, String newNick) {
-
+    public void onNickChange(String host, final String oldNick, final String newNick) {
+        ChannelActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                fragment.addInfoMessage(oldNick + " is now known as " + newNick);
+            }
+        });
     }
 
     @Override

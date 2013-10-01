@@ -2,7 +2,6 @@ package se.chalmers.dat255.ircsex.ui;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -13,7 +12,6 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +37,7 @@ public class ChatFragment extends Fragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        List<ChatBubble> backlog = new ArrayList<ChatBubble>(channel.getMessages().size());
+        List<ChannelItem> backlog = new ArrayList<ChannelItem>(channel.getMessages().size());
         for (IrcMessage message : channel.getMessages()) {
             backlog.add(new ReceivedChatBubble(message));
         }
@@ -89,6 +87,13 @@ public class ChatFragment extends Fragment {
     public void addMessage(IrcMessage ircMessage) {
         Log.d("IRCDEBUG", ircMessage.getMessage());
         messageArrayAdapter.add(new ReceivedChatBubble(ircMessage));
+        messageList.invalidate();
+        scrollWhenNoBacklog();
+    }
+
+    public void addInfoMessage(String infoMessage) {
+        Log.d("IRCDEBUG", infoMessage);
+        messageArrayAdapter.add(new InfoMessage(infoMessage));
         messageList.invalidate();
         scrollWhenNoBacklog();
     }

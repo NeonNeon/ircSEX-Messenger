@@ -20,8 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import se.chalmers.dat255.ircsex.R;
-import se.chalmers.dat255.ircsex.ui.ChatBubble;
+import se.chalmers.dat255.ircsex.ui.ChannelItem;
 import se.chalmers.dat255.ircsex.ui.ReceivedChatBubble;
+import se.chalmers.dat255.ircsex.ui.SentChatBubble;
 
 /**
  * @author Johan Magnusson
@@ -29,56 +30,59 @@ import se.chalmers.dat255.ircsex.ui.ReceivedChatBubble;
  *
  *
  */
-public class MessageArrayAdapter extends ArrayAdapter<ChatBubble> {
+public class MessageArrayAdapter extends ArrayAdapter<ChannelItem> {
     private Context context;
-    private List<ChatBubble> chatBubbles = new ArrayList<ChatBubble>();
+    private List<ChannelItem> channelItems = new ArrayList<ChannelItem>();
     private RelativeLayout wrapper;
     private boolean animate = true;
 
-    public MessageArrayAdapter(Context context, List<ChatBubble> backlog) {
+    public MessageArrayAdapter(Context context, List<ChannelItem> backlog) {
         super(context, R.layout.received_chat_bubble);
-        for (ChatBubble bubble : backlog) {
-            add(bubble);
+        for (ChannelItem item : backlog) {
+            add(item);
         }
         this.context = context;
     }
 
     @Override
-    public void add(ChatBubble chatBubble) {
-        chatBubbles.add(chatBubble);
-        super.add(chatBubble);
+    public void add(ChannelItem channelItem) {
+        channelItems.add(channelItem);
+        super.add(channelItem);
         animate = true;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        ChatBubble chatBubble = getItem(position);
+        ChannelItem channelItem = getItem(position);
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View rowView = inflater.inflate(chatBubble.getLayoutID(), parent, false);
-        wrapper = (RelativeLayout) rowView.findViewById(R.id.chat_bubble_wrapper);
-        TextView messageView = (TextView) rowView.findViewById(R.id.chat_bubble_message);
+        View rowView = inflater.inflate(channelItem.getLayoutID(), parent, false);
+        wrapper = (RelativeLayout) rowView.findViewById(R.id.channel_item_wrapper);
+        TextView messageView = (TextView) rowView.findViewById(R.id.channel_item_message);
         android.view.animation.Animation animation;
-        if (chatBubble instanceof ReceivedChatBubble) {
+        if (channelItem instanceof ReceivedChatBubble) {
             TextView nickView = (TextView) rowView.findViewById(R.id.chat_bubble_nick);
             TextView timestampView = (TextView) rowView.findViewById(R.id.chat_bubble_timestamp);
-            nickView.setText(((ReceivedChatBubble) chatBubble).getNick());
-            timestampView.setText(chatBubble.getTimestamp());
+            nickView.setText(((ReceivedChatBubble) channelItem).getNick());
+            timestampView.setText(((ReceivedChatBubble)channelItem).getTimestamp());
             animation = AnimationUtils.loadAnimation(context, R.anim.left_to_right);
         }
-        else {
+        else if (channelItem instanceof SentChatBubble){
             animation = AnimationUtils.loadAnimation(context, R.anim.right_to_left);
         }
-        messageView.setText(chatBubble.getMessage());
-        wrapper.setGravity(chatBubble.getGravity());
+        else {
+            animation = AnimationUtils.loadAnimation(context, android.R.anim.fade_in);
+        }
+        messageView.setText(channelItem.getMessage());
+        wrapper.setGravity(channelItem.getGravity());
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
-        params.gravity = chatBubble.getGravity();
+        params.gravity = channelItem.getGravity();
         wrapper.setLayoutParams(params);
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-            wrapper.setBackgroundDrawable(createNinePatchDrawable(chatBubble));
+            wrapper.setBackgroundDrawable(createNinePatchDrawable(channelItem));
         }
         else {
-            wrapper.setBackground(createNinePatchDrawable(chatBubble));
+            wrapper.setBackground(createNinePatchDrawable(channelItem));
         }
         if (animate) {
             rowView.startAnimation(animation);
@@ -88,17 +92,17 @@ public class MessageArrayAdapter extends ArrayAdapter<ChatBubble> {
     }
 
     @Override
-    public ChatBubble getItem(int index) {
-        return chatBubbles.get(index);
+    public ChannelItem getItem(int index) {
+        return channelItems.get(index);
     }
 
-    private NinePatchDrawable createNinePatchDrawable(ChatBubble chatBubble) {
+    private NinePatchDrawable createNinePatchDrawable(ChannelItem channelItem) {
         Resources resources = context.getResources();
-        Bitmap bitmap = BitmapFactory.decodeResource(resources, chatBubble.getNinePatchID());
+        Bitmap bitmap = BitmapFactory.decodeResource(resources, channelItem.getNinePatchID());
         byte[] chunk = bitmap.getNinePatchChunk();
 //        NinePatch ninePatch = new NinePatch(bitmap, chunk, null);
-        NinePatchDrawable ninePatchDrawable = new NinePatchDrawable(resources, bitmap, chunk, chatBubble.getPadding(), null);
-        ninePatchDrawable.setColorFilter(chatBubble.getColor(), PorterDuff.Mode.MULTIPLY);
+        NinePatchDrawable ninePatchDrawable = new NinePatchDrawable(resources, bitmap, chunk, channelItem.getPadding(), null);
+        ninePatchDrawable.setColorFilter(channelItem.getColor(), PorterDuff.Mode.MULTIPLY);
         return ninePatchDrawable;
     }
 }

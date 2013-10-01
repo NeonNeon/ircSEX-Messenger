@@ -6,7 +6,7 @@
     android:layout_height="wrap_content">
 
     <RelativeLayout
-        android:id="@+id/chat_bubble_wrapper"
+        android:id="@+id/channel_item_wrapper"
         style="@style/chatBubbleLayout"
         android:background="@drawable/right_chat_bubble"
         android:paddingRight="20dp"
@@ -15,6 +15,6 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/chat_bubble_message" />
+            android:id="@+id/channel_item_message" />
     </RelativeLayout>
 </LinearLayout>
