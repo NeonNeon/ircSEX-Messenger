@@ -78,7 +78,11 @@ public class IrcServer implements IrcProtocolListener {
 
     private void restoreChannels() {
         for (String channel : datasource.getIrcChannelsByServer(host)) {
-            joinChannel(channel);
+            if (channel.contains("#")) {
+                joinChannel(channel);
+            } else {
+                queryUser(channel);
+            }
         }
     }
 
@@ -135,7 +139,11 @@ public class IrcServer implements IrcProtocolListener {
      * @param channel - Name of channel to leave
      */
     public void partChannel(String channel) {
-        protocol.partChannel(channel);
+        if (channel.contains("#")) {
+            protocol.partChannel(channel);
+        } else {
+            userParted(channel, nick);
+        }
     }
 
     /**
@@ -216,6 +224,16 @@ public class IrcServer implements IrcProtocolListener {
         return user;
     }
 
+    /**
+     * Opens a private chat.
+     * @param user User to chat with
+     */
+    public void queryUser(String user) {
+        if (!connectedChannels.containsKey(user)) {
+            userJoined(user, nick);
+        }
+    }
+
     @Override
     public void serverConnected() {
         protocol.connect(user.getNick(), login, realName);
@@ -276,6 +294,10 @@ public class IrcServer implements IrcProtocolListener {
     public void userJoined(String channelName, String nick) {
         if (this.user.getNick().equals(nick)) {
             IrcChannel channel = new IrcChannel(channelName);
+            if (!channelName.contains("#")) {
+                channel.userJoined(nick);
+                channel.userJoined(channelName);
+            }
             connectedChannels.put(channelName, channel);
             datasource.addChannel(host, channelName);
             for (SessionListener listener : sessionListeners) {
@@ -343,12 +365,22 @@ public class IrcServer implements IrcProtocolListener {
     }
 
     @Override
-    public void messageReceived(String channel, String user, String message) {
+    public void channelMessageReceived(String channel, String user, String message) {
         user = IrcUser.extractUserName(user);
+
         IrcMessage ircMessage = connectedChannels.get(channel).newMessage(user, message);
 
         for (SessionListener listener : sessionListeners) {
             listener.onChannelMessage(host, channel, ircMessage);
+        }
+    }
+
+    @Override
+    public void queryMessageReceived(String user, String message) {
+        user = IrcUser.extractUserName(user);
+        IrcMessage ircMessage = connectedChannels.get(user).newMessage(user, message);
+        for (SessionListener listener : sessionListeners) {
+            listener.onChannelMessage(host, user, ircMessage);
         }
     }
 }

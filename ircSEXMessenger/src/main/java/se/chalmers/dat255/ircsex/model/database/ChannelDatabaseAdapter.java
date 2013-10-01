@@ -87,7 +87,7 @@ public class ChannelDatabaseAdapter {
         Set<String> channels = new HashSet<String>();
 
         Cursor cursor = database.query(DatabaseHelper.TABLE_CHANNELS,
-                allColumns, DatabaseHelper.CHANNEL_SERVER + " = '" + server +"'", null, null, null, null);
+                allColumns, DatabaseHelper.CHANNEL_SERVER + " = '" + server +"'", null, null, null, DatabaseHelper.CHANNEL_ID);
 
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {

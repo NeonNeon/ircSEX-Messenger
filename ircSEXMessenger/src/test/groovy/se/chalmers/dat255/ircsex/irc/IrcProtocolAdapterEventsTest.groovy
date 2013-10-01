@@ -74,16 +74,30 @@ class IrcProtocolAdapterEventsTest extends Specification {
 
     }
 
-    def "test messageReceived event sent"() {
+    def "test channelMessageReceived event sent"() {
         when:
         def command = "!~anon@smurf-BA46BB40.edstud.chalmers.se PRIVMSG "
         ipa.handleReply(":" + nick + command + channel + " :" + message)
 
         then:
-        1* subscriber.messageReceived(channel, nick, message)
+        1* subscriber.channelMessageReceived(channel, nick, message)
 
         where:
         channel << ["#fest", "#svinstia", "#party"]
+        nick << ["oed", "Heissman", "Rascal"]
+        message << ["hejhej", "fulefan", "Nej men.."]
+    }
+
+    def "test queryMessageReceived event sent"() {
+        when:
+        def command = "!~anon@smurf-BA46BB40.edstud.chalmers.se PRIVMSG "
+        ipa.handleReply(":" + nick + command + channel + " :" + message)
+
+        then:
+        1* subscriber.queryMessageReceived(nick, message)
+
+        where:
+        channel << ["tord", "OXI", "hestpojken"]
         nick << ["oed", "Heissman", "Rascal"]
         message << ["hejhej", "fulefan", "Nej men.."]
     }

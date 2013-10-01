@@ -48,12 +48,19 @@ public interface IrcProtocolListener {
     public void userParted(String channelName, String nick);
 
     /**
-     * Sent when a message is received from the server.
+     * Sent when a channel message is received from the server.
      * @param channel - the channel that the message was sent to
      * @param user - the user that sent the message
      * @param message - the message sent
      */
-    public void messageReceived(String channel, String user, String message);
+    public void channelMessageReceived(String channel, String user, String message);
+
+    /**
+     * Sent when a query message is received from the server.
+     * @param user - the user that sent the message
+     * @param message - the message sent
+     */
+    public void queryMessageReceived(String user, String message);
 
     /**
      * This method sends a list of connected channels as a whois request resopnse.

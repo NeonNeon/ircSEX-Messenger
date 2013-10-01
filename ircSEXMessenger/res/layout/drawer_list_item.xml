@@ -2,8 +2,11 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="horizontal"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content">
+              android:layout_width="fill_parent"
+              android:layout_height="wrap_content"
+              android:clickable="true"
+              android:onClick="queryUser"
+              android:background="@drawable/drawer_user_click">
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -11,7 +14,7 @@
 
         <TextView
                 android:id="@android:id/text1"
-                android:layout_width="wrap_content"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceListItemSmall"
                 android:textColor="@drawable/drawer_textcolor"

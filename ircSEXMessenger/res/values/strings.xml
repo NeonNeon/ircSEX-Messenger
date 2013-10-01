@@ -33,4 +33,6 @@
     <string name="dialog_invite_hint">User to invite</string>
     <string name="dialog_invite_title">Invite user</string>
     <string name="noservers_connect_button">Connect to a server</string>
+    <string name="dialog_query_user_title">Send message to</string>
+    <string name="dialog_query_user_hint">Recipient</string>
 </resources>
