@@ -205,7 +205,9 @@ public class IrcServer implements IrcProtocolListener {
      * @param user User to chat with
      */
     public void queryUser(String user) {
-        userJoined(user, nick);
+        if (!connectedChannels.containsKey(user)) {
+            userJoined(user, nick);
+        }
     }
 
     @Override
@@ -258,6 +260,9 @@ public class IrcServer implements IrcProtocolListener {
     public void userJoined(String channelName, String nick) {
         if (this.nick.equals(nick)) {
             IrcChannel channel = new IrcChannel(channelName);
+            if (!channelName.contains("#")) {
+                channel.userJoined(channelName);
+            }
             connectedChannels.put(channelName, channel);
             datasource.addChannel(host, channelName);
             for (SessionListener listener : sessionListeners) {
@@ -336,6 +341,10 @@ public class IrcServer implements IrcProtocolListener {
 
     @Override
     public void queryMessageReceived(String user, String message) {
-
+        user = IrcUser.extractUserName(user);
+        IrcMessage ircMessage = connectedChannels.get(user).newMessage(user, message);
+        for (SessionListener listener : sessionListeners) {
+            listener.onChannelMessage(host, user, ircMessage);
+        }
     }
 }

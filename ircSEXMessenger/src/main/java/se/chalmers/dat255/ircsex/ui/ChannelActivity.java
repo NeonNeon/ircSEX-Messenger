@@ -15,6 +15,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -411,6 +412,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     public void queryUser(View view) {
         String user = ((TextView) view).getText().toString();
         session.getActiveServer().queryUser(IrcUser.extractUserName(user));
+        drawerLayout.closeDrawer(Gravity.END);
     }
 
     @Override
