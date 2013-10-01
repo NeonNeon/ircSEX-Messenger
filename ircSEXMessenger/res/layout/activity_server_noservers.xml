@@ -8,14 +8,14 @@
     <TextView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="@string/no_servers_connected"
+            android:text="@string/noservers_not_connected"
             android:gravity="center"
-            android:textSize="35dp"
+            android:textSize="35sp"
             android:padding="25dp"/>
     <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Connect to a server"
+            android:text="@string/noservers_connect_button"
             android:id="@+id/button"
             android:layout_gravity="center"
             android:singleLine="false"
