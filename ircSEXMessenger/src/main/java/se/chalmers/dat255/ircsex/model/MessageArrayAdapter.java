@@ -10,6 +10,7 @@ import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -23,12 +24,16 @@ import se.chalmers.dat255.ircsex.ui.ChatBubble;
 import se.chalmers.dat255.ircsex.ui.ReceivedChatBubble;
 
 /**
- * Created by Johan on 2013-09-24.
+ * @author Johan Magnusson
+ * Created: 2013-09-24
+ *
+ *
  */
 public class MessageArrayAdapter extends ArrayAdapter<ChatBubble> {
     private Context context;
     private List<ChatBubble> chatBubbles = new ArrayList<ChatBubble>();
     private RelativeLayout wrapper;
+    private boolean animate = true;
 
     public MessageArrayAdapter(Context context, List<ChatBubble> backlog) {
         super(context, R.layout.received_chat_bubble);
@@ -42,6 +47,7 @@ public class MessageArrayAdapter extends ArrayAdapter<ChatBubble> {
     public void add(ChatBubble chatBubble) {
         chatBubbles.add(chatBubble);
         super.add(chatBubble);
+        animate = true;
     }
 
     @Override
@@ -51,11 +57,16 @@ public class MessageArrayAdapter extends ArrayAdapter<ChatBubble> {
         View rowView = inflater.inflate(chatBubble.getLayoutID(), parent, false);
         wrapper = (RelativeLayout) rowView.findViewById(R.id.chat_bubble_wrapper);
         TextView messageView = (TextView) rowView.findViewById(R.id.chat_bubble_message);
+        android.view.animation.Animation animation;
         if (chatBubble instanceof ReceivedChatBubble) {
             TextView nickView = (TextView) rowView.findViewById(R.id.chat_bubble_nick);
             TextView timestampView = (TextView) rowView.findViewById(R.id.chat_bubble_timestamp);
             nickView.setText(((ReceivedChatBubble) chatBubble).getNick());
             timestampView.setText(chatBubble.getTimestamp());
+            animation = AnimationUtils.loadAnimation(context, R.anim.left_to_right);
+        }
+        else {
+            animation = AnimationUtils.loadAnimation(context, R.anim.right_to_left);
         }
         messageView.setText(chatBubble.getMessage());
         wrapper.setGravity(chatBubble.getGravity());
@@ -68,6 +79,10 @@ public class MessageArrayAdapter extends ArrayAdapter<ChatBubble> {
         }
         else {
             wrapper.setBackground(createNinePatchDrawable(chatBubble));
+        }
+        if (animate) {
+            rowView.startAnimation(animation);
+            animate = false;
         }
         return rowView;
     }
