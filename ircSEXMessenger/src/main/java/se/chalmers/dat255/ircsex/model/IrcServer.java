@@ -75,7 +75,11 @@ public class IrcServer implements IrcProtocolListener {
 
     private void restoreChannels() {
         for (String channel : datasource.getIrcChannelsByServer(host)) {
-            joinChannel(channel);
+            if (channel.contains("#")) {
+                joinChannel(channel);
+            } else {
+                queryUser(channel);
+            }
         }
     }
 
@@ -261,6 +265,7 @@ public class IrcServer implements IrcProtocolListener {
         if (this.nick.equals(nick)) {
             IrcChannel channel = new IrcChannel(channelName);
             if (!channelName.contains("#")) {
+                channel.userJoined(nick);
                 channel.userJoined(channelName);
             }
             connectedChannels.put(channelName, channel);
