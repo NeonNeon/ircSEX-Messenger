@@ -9,13 +9,13 @@ import java.security.NoSuchAlgorithmException;
  * Created by Oskar on 2013-09-24.
  */
 public class IrcUser implements Comparable<IrcUser> {
-
     private String nick;
     private char status;
     private boolean owner;
     private boolean op;
     private boolean halfOp;
     private boolean voice;
+    private boolean self;
 
     private int color;
 
@@ -92,7 +92,7 @@ public class IrcUser implements Comparable<IrcUser> {
 
     @Override
     public String toString() {
-        return (status == NO_STATUS ? "" : status) + nick;
+        return (self ? "$" : "") + (status == NO_STATUS ? "" : status) + nick;
     }
 
     @Override
@@ -112,6 +112,10 @@ public class IrcUser implements Comparable<IrcUser> {
 
     public int getColor() {
         return color;
+    }
+
+    public boolean isNamed(String name) {
+        return nick.equals(name);
     }
 
     /**
@@ -138,5 +142,27 @@ public class IrcUser implements Comparable<IrcUser> {
     public static String extractUserName(String username) {
         char status = extractUserStatus(username);
         return username.replace(Character.toString(status), "");
+    }
+
+    public boolean isSelf() {
+        return self;
+    }
+
+    public void setSelf() {
+        this.self = true;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        IrcUser ircUser = (IrcUser) o;
+        return nick.equals(ircUser.nick);
+    }
+
+    @Override
+    public int hashCode() {
+        return nick.hashCode();
     }
 }

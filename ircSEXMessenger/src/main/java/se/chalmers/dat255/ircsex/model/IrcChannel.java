@@ -38,27 +38,12 @@ public class IrcChannel {
     }
 
     /**
-     * Empties and sets the list of users.
-     *
-     * @param users - A list with the users
-     */
-    public void addUsers(List<String> users) {
-        for (String user : users) {
-            char status = IrcUser.extractUserStatus(user);
-            user = IrcUser.extractUserName(user);
-            this.users.put(user, new IrcUser(user, status));
-        }
-    }
-
-    /**
      * Adds a user to the list of users.
      *
      * @param user - The user who joined
      */
-    public void userJoined(String user) {
-        char status = IrcUser.extractUserStatus(user);
-        user = IrcUser.extractUserName(user);
-        users.put(user, new IrcUser(user, status));
+    public void userJoined(IrcUser user) {
+        users.put(user.getNick(), user);
     }
 
     /**
