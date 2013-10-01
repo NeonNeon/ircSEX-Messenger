@@ -41,7 +41,7 @@ public class ChatFragment extends Fragment {
         super.onAttach(activity);
         List<ChatBubble> backlog = new ArrayList<ChatBubble>(channel.getMessages().size());
         for (IrcMessage message : channel.getMessages()) {
-            if (message.getUser() == null) { // TODO: Jämför inte med null, jämför med self user
+            if (message.getUser().isSelf()) {
                 backlog.add(new SentChatBubble(message.getMessage()));
             } else {
                 backlog.add(new ReceivedChatBubble(message));

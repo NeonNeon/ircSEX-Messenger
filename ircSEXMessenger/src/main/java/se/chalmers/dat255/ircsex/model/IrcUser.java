@@ -9,13 +9,13 @@ import java.security.NoSuchAlgorithmException;
  * Created by Oskar on 2013-09-24.
  */
 public class IrcUser implements Comparable<IrcUser> {
-
     private String nick;
     private char status;
     private boolean owner;
     private boolean op;
     private boolean halfOp;
     private boolean voice;
+    private boolean self;
 
     private int color;
 
@@ -142,5 +142,13 @@ public class IrcUser implements Comparable<IrcUser> {
     public static String extractUserName(String username) {
         char status = extractUserStatus(username);
         return username.replace(Character.toString(status), "");
+    }
+
+    public boolean isSelf() {
+        return self;
+    }
+
+    public void setSelf() {
+        this.self = true;
     }
 }

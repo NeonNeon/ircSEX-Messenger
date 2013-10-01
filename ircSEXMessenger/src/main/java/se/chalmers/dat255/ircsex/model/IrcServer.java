@@ -1,7 +1,5 @@
 package se.chalmers.dat255.ircsex.model;
 
-import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -58,6 +56,7 @@ public class IrcServer implements IrcProtocolListener {
         this.port = port;
         this.login = login;
         this.user = new IrcUser(nick, IrcUser.NO_STATUS);
+        this.user.setSelf();
         this.realName = realName;
 
         sessionListeners = new ArrayList<SessionListener>();
