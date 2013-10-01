@@ -2,8 +2,6 @@ package se.chalmers.dat255.ircsex.model;
 
 import android.graphics.Color;
 
-import com.sun.istack.internal.NotNull;
-
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
