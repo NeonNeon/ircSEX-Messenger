@@ -1,9 +1,12 @@
 package se.chalmers.dat255.ircsex.model;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.util.Log;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import se.chalmers.dat255.ircsex.model.database.ContextManager;
