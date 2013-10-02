@@ -378,16 +378,6 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     @Override
     public void onChannelUserChange(String host, String channel, final List<IrcUser> users) {
         if (session.getActiveChannel() != null && session.getActiveChannel().getChannelName().equals(channel)) {
-            for (IrcUser user : users) {
-                if (!this.users.contains(user)) {
-                    addInfoMessage(user + " has joined the channel");
-                }
-            }
-            for (IrcUser user : this.users) {
-                if (!users.contains(user)) {
-                    addInfoMessage(user + " has left the channel");
-                }
-            }
             ChannelActivity.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -395,6 +385,20 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
                     userArrayAdapter.notifyDataSetChanged();
                 }
             });
+        }
+    }
+
+    @Override
+    public void onChannelUserJoin(String host, String channel, IrcUser user) {
+        if (session.getActiveChannel() != null && session.getActiveChannel().getChannelName().equals(channel)) {
+            addInfoMessage(user + " has joined the channel");
+        }
+    }
+
+    @Override
+    public void onChannelUserPart(String host, String channel, String nick) {
+        if (session.getActiveChannel() != null && session.getActiveChannel().getChannelName().equals(channel)) {
+            addInfoMessage(nick + " has left the channel");
         }
     }
 

@@ -98,6 +98,10 @@ public class IrcChannel {
         return users;
     }
 
+    public IrcUser getUser(String nick) {
+        return users.get(nick);
+    }
+
     /**
      * Return all messages.
      *

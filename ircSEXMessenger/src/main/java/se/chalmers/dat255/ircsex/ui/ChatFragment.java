@@ -55,15 +55,15 @@ public class ChatFragment extends Fragment {
         messageEditText.requestFocus();
         ((EditText) rootView.findViewById(R.id.fragment_chat_message)).setOnEditorActionListener(
                 new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
-                if (i == EditorInfo.IME_ACTION_DONE) {
-                    sendMessage();
-                    return true;
-                }
-                return false;
-            }
-        });
+                    @Override
+                    public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                        if (i == EditorInfo.IME_ACTION_DONE) {
+                            sendMessage();
+                            return true;
+                        }
+                        return false;
+                    }
+                });
         rootView.findViewById(R.id.fragment_chat_send).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -93,11 +93,7 @@ public class ChatFragment extends Fragment {
 
     public void addInfoMessage(String infoMessage) {
         Log.d("IRCDEBUG", infoMessage);
-        try {
-            messageArrayAdapter.add(new InfoMessage(infoMessage));
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-        }
+        messageArrayAdapter.add(new InfoMessage(infoMessage));
         messageList.invalidate();
         scrollWhenNoBacklog();
     }

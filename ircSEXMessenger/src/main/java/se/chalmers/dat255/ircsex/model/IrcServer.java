@@ -1,7 +1,5 @@
 package se.chalmers.dat255.ircsex.model;
 
-import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -259,6 +257,7 @@ public class IrcServer implements IrcProtocolListener {
             connectedChannels.get(channelName).userJoined(nick);
             for (SessionListener listener : sessionListeners) {
                 listener.onChannelUserChange(host, channelName, connectedChannels.get(channelName).getUsers());
+                listener.onChannelUserJoin(host, channelName, connectedChannels.get(channelName).getUser(nick));
             }
         }
     }
@@ -274,6 +273,7 @@ public class IrcServer implements IrcProtocolListener {
         } else {
             connectedChannels.get(channelName).userParted(nick);
             for (SessionListener listener : sessionListeners) {
+                listener.onChannelUserPart(host, channelName, nick);
                 listener.onChannelUserChange(host, channelName, connectedChannels.get(channelName).getUsers());
             }
         }

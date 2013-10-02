@@ -44,13 +44,13 @@ public class MessageArrayAdapter extends ArrayAdapter<ChannelItem> {
 
     public MessageArrayAdapter(Context context, List<ChannelItem> backlog) {
         super(context, R.layout.received_chat_bubble);
+        time = new Time();
+        time.setToNow();
+        dayOfMonth = time.monthDay;
         for (ChannelItem item : backlog) {
             add(item);
         }
         this.context = context;
-        time = new Time();
-        time.setToNow();
-        dayOfMonth = time.monthDay;
     }
 
     @Override
