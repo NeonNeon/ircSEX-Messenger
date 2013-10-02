@@ -2,7 +2,6 @@ package se.chalmers.dat255.ircsex.ui;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -13,7 +12,6 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,8 +26,12 @@ public class ChatFragment extends Fragment {
     private ListView messageList;
     private MessageArrayAdapter messageArrayAdapter;
     private EditText messageEditText;
-    private final ChatMessageSendListener messageSendListener;
-    private final IrcChannel channel;
+    private ChatMessageSendListener messageSendListener;
+    private IrcChannel channel;
+
+    public ChatFragment() {
+
+    }
 
     public ChatFragment(ChatMessageSendListener messageSendListener, IrcChannel channel) {
         this.messageSendListener = messageSendListener;
@@ -39,15 +41,19 @@ public class ChatFragment extends Fragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        List<ChatBubble> backlog = new ArrayList<ChatBubble>(channel.getMessages().size());
-        for (IrcMessage message : channel.getMessages()) {
-            if (message.getUser().isSelf()) {
-                backlog.add(new SentChatBubble(message.getMessage()));
-            } else {
-                backlog.add(new ReceivedChatBubble(message));
+        if (channel != null) {
+            List<ChatBubble> backlog = new ArrayList<ChatBubble>(channel.getMessages().size());
+            for (IrcMessage message : channel.getMessages()) {
+                if (message.getUser().isSelf()) {
+                    backlog.add(new SentChatBubble(message.getMessage()));
+                } else {
+                    backlog.add(new ReceivedChatBubble(message));
+                }
             }
+            messageArrayAdapter = new MessageArrayAdapter(getActivity(), backlog);
+        } else {
+            messageArrayAdapter = new MessageArrayAdapter(getActivity(), new ArrayList<ChatBubble>());
         }
-        messageArrayAdapter = new MessageArrayAdapter(getActivity(), backlog);
     }
 
     @Override

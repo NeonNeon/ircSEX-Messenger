@@ -59,7 +59,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     private ChatFragment fragment;
     private String channelName;
 
-    private Session session;
+    private static Session session;
     private ProgressDialog serverConnectProgressDialog;
     private AlertDialog whoisProgressDialog;
     private AlertDialog whoisResultDialog;
@@ -115,7 +115,9 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         };
         drawerLayout.setDrawerListener(mDrawerToggle);
 
-        session = new Session(this, this);
+        if (session == null) {
+            session = new Session(this, this);
+        }
         if (!session.containsServers()) {
             startNoServersActivity();
         } else {
