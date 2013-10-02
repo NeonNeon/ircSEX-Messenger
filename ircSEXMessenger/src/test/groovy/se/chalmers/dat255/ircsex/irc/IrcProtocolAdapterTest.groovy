@@ -78,7 +78,7 @@ class IrcProtocolAdapterTest extends Specification {
 
     def "test getChannelsOnServer"() {
         when:
-        ipa.getChannelsOnServer()
+        ipa.listChannels()
 
         then:
         mockIrcServer.readLine().equals("LIST\r\n")

@@ -355,6 +355,11 @@ public class IrcServer implements IrcProtocolListener {
     }
 
     @Override
+    public void channelListResponse(String name, String topic) {
+
+    }
+
+    @Override
     public void nickChangeError() {
 
     }

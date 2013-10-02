@@ -136,6 +136,12 @@ public class IrcProtocolAdapter implements Runnable {
             System.out.println(nick+"|"+idleTime);
             listener.whoisIdleTime(nick, idleTime);
         }
+        else if (reply.contains("322 ")) {
+            String channel = reply.substring(reply.indexOf("#"), reply.indexOf(":", 1) - 1);
+            String topic = reply.substring(reply.indexOf("] ") + 2);
+            System.out.println(channel+"|"+topic);
+            listener.channelListResponse(channel, topic);
+        }
 
         // Numeric replies - should be after everything else
         // Should maybe be implemented safer.
@@ -229,7 +235,7 @@ public class IrcProtocolAdapter implements Runnable {
     /**
      * Send a request to get all channels on the server.
      */
-    public void getChannelsOnServer() {
+    public void listChannels() {
         write("LIST");
     }
 
