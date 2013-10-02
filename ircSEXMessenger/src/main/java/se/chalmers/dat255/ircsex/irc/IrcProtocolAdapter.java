@@ -226,6 +226,9 @@ public class IrcProtocolAdapter implements Runnable {
         write("NAMES " + channel);
     }
 
+    /**
+     * Send a request to get all channels on the server.
+     */
     public void getChannelsOnServer() {
         write("LIST");
     }
