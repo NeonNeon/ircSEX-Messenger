@@ -92,7 +92,7 @@ public class IrcUser implements Comparable<IrcUser> {
 
     @Override
     public String toString() {
-        return (self ? "$" : "") + (status == NO_STATUS ? "" : status) + nick;
+        return (status == NO_STATUS ? "" : status) + nick;
     }
 
     @Override
