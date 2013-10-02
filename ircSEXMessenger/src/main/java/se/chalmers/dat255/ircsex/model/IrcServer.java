@@ -35,6 +35,8 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
 
     private List<SessionListener> sessionListeners;
 
+    private boolean reconnecting;
+
     public IrcServer(String host, int port, String nick) {
         this(host, port, nick, nick);
     }
@@ -254,9 +256,15 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
     @Override
     public void serverConnected() {
         if (NetworkStateHandler.isConnected()) {
-            protocol.connect(user.getNick(), login, realName);
-            for (SessionListener listener : sessionListeners) {
-                listener.onConnectionEstablished(host);
+            if (reconnecting) {
+                protocol.disconnect("");
+                reconnecting = false;
+                startProtocolAdapter();
+            } else {
+                protocol.connect(user.getNick(), login, realName);
+                for (SessionListener listener : sessionListeners) {
+                    listener.onConnectionEstablished(host);
+                }
             }
         }
     }
@@ -409,9 +417,12 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
     public void onOnline() {
         Log.e("IRC", "onOnline()");
         if (protocol != null) {
-            protocol.disconnect("");
+            reconnecting = true;
+            protocol = new IrcProtocolAdapter(host, port, this);
+            new Thread(protocol).start();
+        } else {
+            startProtocolAdapter();
         }
-        startProtocolAdapter();
     }
 
     @Override
