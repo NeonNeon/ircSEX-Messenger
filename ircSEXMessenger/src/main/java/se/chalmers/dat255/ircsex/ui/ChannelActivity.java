@@ -127,9 +127,10 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
             }
         }
         else {
-//            selectItem(selected);
-            fragment = (ChatFragment) getFragmentManager().findFragmentByTag("a");
+            fragment = (ChatFragment) getFragmentManager().findFragmentByTag(CHAT_FRAGMENT_TAG);
             fragment.bringUpToSpeed(this, session.getActiveChannel());
+            setTitle(channelName);
+            updateUserList(session.getActiveChannel().getUsers());
             Log.e("IRCDEBUG", "Post select: " +  fragment.toString());
         }
     }
