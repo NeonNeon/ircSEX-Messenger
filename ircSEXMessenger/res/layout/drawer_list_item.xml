@@ -18,7 +18,6 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceListItemSmall"
                 android:textColor="@drawable/drawer_textcolor"
-                android:background="?android:attr/activatedBackgroundIndicator"
                 android:gravity="center_vertical"
                 android:paddingLeft="@dimen/activity_horizontal_margin"
                 android:minHeight="?android:attr/listPreferredItemHeightSmall"/>
