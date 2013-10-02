@@ -54,7 +54,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
 
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
-    private IrcChannelSelector ircChannelSelector;
+    private static IrcChannelSelector ircChannelSelector;
     private boolean drawerOpen;
     private ChatFragment fragment;
     private String channelName;
@@ -64,7 +64,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     private AlertDialog whoisProgressDialog;
     private AlertDialog whoisResultDialog;
     private View whois;
-    private int selected = -1;
+    private static int selected = -1;
     private ChannelListOnClickListener channelDrawerOnClickListener;
 
     @Override
@@ -73,7 +73,9 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         setContentView(R.layout.activity_channel_main);
 
         mTitle = mDrawerTitle = getTitle();
-        ircChannelSelector = new IrcChannelSelector(this);
+        if (ircChannelSelector == null) {
+            ircChannelSelector = new IrcChannelSelector(this);
+        }
         channelDrawerOnClickListener = new ChannelListOnClickListener();
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -117,11 +119,14 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
 
         if (session == null) {
             session = new Session(this, this);
+            if (session.containsServers()) {
+                showConnectionDialog(getString(R.string.dialog_connect_reconnect));
+            } else {
+                startNoServersActivity();
+            }
         }
-        if (!session.containsServers()) {
-            startNoServersActivity();
-        } else {
-            showConnectionDialog(getString(R.string.dialog_connect_reconnect));
+        else {
+            selectItem(selected);
         }
     }
 
