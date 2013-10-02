@@ -391,6 +391,20 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         }
     }
 
+    @Override
+    public void onChannelUserJoin(String host, String channel, IrcUser user) {
+        if (session.getActiveChannel() != null && session.getActiveChannel().getChannelName().equals(channel)) {
+            addInfoMessage(user + " has joined the channel");
+        }
+    }
+
+    @Override
+    public void onChannelUserPart(String host, String channel, String nick) {
+        if (session.getActiveChannel() != null && session.getActiveChannel().getChannelName().equals(channel)) {
+            addInfoMessage(nick + " has left the channel");
+        }
+    }
+
     private void updateUserList(List<IrcUser> users) {
         this.users.clear();
         for (IrcUser user : users) {
@@ -443,8 +457,17 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     }
 
     @Override
-    public void onNickChange(String host, String oldNick, String newNick) {
+    public void onNickChange(String host, final String oldNick, final String newNick) {
+        addInfoMessage(oldNick + " is now known as " + newNick);
+    }
 
+    private void addInfoMessage(final String infoMessage) {
+        ChannelActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                fragment.addInfoMessage(infoMessage);
+            }
+        });
     }
 
     @Override

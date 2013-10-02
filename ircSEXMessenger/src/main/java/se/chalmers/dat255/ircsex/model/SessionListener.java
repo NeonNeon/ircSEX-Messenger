@@ -2,8 +2,6 @@ package se.chalmers.dat255.ircsex.model;
 
 import java.util.List;
 
-import java.util.Collection;
-
 /**
  * Created by Wilhelm on 2013-09-19.
  */
@@ -55,6 +53,22 @@ public interface SessionListener {
      * @param users
      */
     public void onChannelUserChange(String host, String channel, List<IrcUser> users);
+
+    /**
+     * Notifies the ui when a user has joined the channel
+     * @param host
+     * @param channel
+     * @param user
+     */
+    public void onChannelUserJoin(String host, String channel, IrcUser user);
+
+    /**
+     * Notifies the ui when a user has left the channel
+     * @param host
+     * @param channel
+     * @param nick
+     */
+    public void onChannelUserPart(String host, String channel, String nick);
 
     /**
      * Notifies the ui when a user has changed nick.

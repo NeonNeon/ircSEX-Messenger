@@ -2,7 +2,6 @@ package se.chalmers.dat255.ircsex.ui;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -13,7 +12,6 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +37,7 @@ public class ChatFragment extends Fragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        List<ChatBubble> backlog = new ArrayList<ChatBubble>(channel.getMessages().size());
+        List<ChannelItem> backlog = new ArrayList<ChannelItem>(channel.getMessages().size());
         for (IrcMessage message : channel.getMessages()) {
             if (message.getUser().isSelf()) {
                 backlog.add(new SentChatBubble(message.getMessage()));
@@ -61,15 +59,15 @@ public class ChatFragment extends Fragment {
         messageEditText.requestFocus();
         ((EditText) rootView.findViewById(R.id.fragment_chat_message)).setOnEditorActionListener(
                 new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
-                if (i == EditorInfo.IME_ACTION_DONE) {
-                    sendMessage();
-                    return true;
-                }
-                return false;
-            }
-        });
+                    @Override
+                    public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                        if (i == EditorInfo.IME_ACTION_DONE) {
+                            sendMessage();
+                            return true;
+                        }
+                        return false;
+                    }
+                });
         rootView.findViewById(R.id.fragment_chat_send).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -98,6 +96,13 @@ public class ChatFragment extends Fragment {
         messageList.invalidate();
         messageEditText.setText("");
         scrollToBottom();
+    }
+
+    public void addInfoMessage(String infoMessage) {
+        Log.d("IRCDEBUG", infoMessage);
+        messageArrayAdapter.add(new InfoMessage(infoMessage));
+        messageList.invalidate();
+        scrollWhenNoBacklog();
     }
 
     public void scrollWhenNoBacklog() {

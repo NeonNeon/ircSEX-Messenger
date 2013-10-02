@@ -2,19 +2,20 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
+    android:gravity="center"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
     <RelativeLayout
-        android:id="@+id/channel_item_wrapper"
-        style="@style/chatBubbleLayout"
-        android:background="@drawable/right_chat_bubble"
-        android:paddingRight="20dp"
-        android:paddingLeft="12dp">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/channel_item_wrapper">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/channel_item_message" />
+            android:id="@+id/channel_item_message"
+            android:gravity="center"
+            android:textSize="12sp"/>
     </RelativeLayout>
 </LinearLayout>
