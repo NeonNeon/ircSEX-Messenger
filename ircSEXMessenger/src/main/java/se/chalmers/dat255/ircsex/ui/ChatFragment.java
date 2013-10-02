@@ -26,17 +26,34 @@ public class ChatFragment extends Fragment {
     private ListView messageList;
     private MessageArrayAdapter messageArrayAdapter;
     private EditText messageEditText;
-    private final ChatMessageSendListener messageSendListener;
-    private final IrcChannel channel;
+    private ChatMessageSendListener messageSendListener;
+    private IrcChannel channel;
+
+    public ChatFragment() {
+        Log.e("IRCDEBUG", "Constructor: " + toString());
+    }
 
     public ChatFragment(ChatMessageSendListener messageSendListener, IrcChannel channel) {
+        Log.e("IRCDEBUG", "Constructor params: " +  toString());
         this.messageSendListener = messageSendListener;
         this.channel = channel;
+    }
+
+    public void bringUpToSpeed(ChatMessageSendListener messageSendListener, IrcChannel channel) {
+        this.messageSendListener = messageSendListener;
+        this.channel = channel;
+        setArrayAdapter();
     }
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
+        if (channel != null) {
+            setArrayAdapter();
+        }
+    }
+
+    private void setArrayAdapter() {
         List<ChannelItem> backlog = new ArrayList<ChannelItem>(channel.getMessages().size());
         for (IrcMessage message : channel.getMessages()) {
             if (message.getUser().isSelf()) {

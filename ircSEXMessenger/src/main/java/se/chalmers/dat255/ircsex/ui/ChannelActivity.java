@@ -45,6 +45,7 @@ import se.chalmers.dat255.ircsex.view.IrcServerHeader;
 
 public class ChannelActivity extends FragmentActivity implements SessionListener,
         JoinChannelDialogFragment.DialogListener, ChatFragment.ChatMessageSendListener {
+    private static final String CHAT_FRAGMENT_TAG = "chat_fragment";
     private DrawerLayout drawerLayout;
     private ListView leftDrawer;
     private ListView rightDrawer;
@@ -54,17 +55,17 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
 
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
-    private IrcChannelSelector ircChannelSelector;
+    private static IrcChannelSelector ircChannelSelector;
     private boolean drawerOpen;
-    private ChatFragment fragment;
-    private String channelName;
+    private static ChatFragment fragment;
+    private static String channelName;
 
-    private Session session;
+    private static Session session;
     private ProgressDialog serverConnectProgressDialog;
     private AlertDialog whoisProgressDialog;
     private AlertDialog whoisResultDialog;
     private View whois;
-    private int selected = -1;
+    private static int selected = -1;
     private ChannelListOnClickListener channelDrawerOnClickListener;
 
     @Override
@@ -73,7 +74,9 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         setContentView(R.layout.activity_channel_main);
 
         mTitle = mDrawerTitle = getTitle();
-        ircChannelSelector = new IrcChannelSelector(this);
+        if (ircChannelSelector == null) {
+            ircChannelSelector = new IrcChannelSelector(this);
+        }
         channelDrawerOnClickListener = new ChannelListOnClickListener();
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -115,11 +118,20 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         };
         drawerLayout.setDrawerListener(mDrawerToggle);
 
-        session = new Session(this, this);
-        if (!session.containsServers()) {
-            startNoServersActivity();
-        } else {
-            showConnectionDialog(getString(R.string.dialog_connect_reconnect));
+        if (session == null) {
+            session = new Session(this, this);
+            if (session.containsServers()) {
+                showConnectionDialog(getString(R.string.dialog_connect_reconnect));
+            } else {
+                startNoServersActivity();
+            }
+        }
+        else {
+            fragment = (ChatFragment) getFragmentManager().findFragmentByTag(CHAT_FRAGMENT_TAG);
+            fragment.bringUpToSpeed(this, session.getActiveChannel());
+            setTitle(channelName);
+            updateUserList(session.getActiveChannel().getUsers());
+            Log.e("IRCDEBUG", "Post select: " +  fragment.toString());
         }
     }
 
@@ -273,12 +285,14 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     private void selectItem(int position) {
         channelName = ircChannelSelector.getItem(position).getText();
         session.setActiveChannel(channelName);
+
         fragment = new ChatFragment(this, session.getActiveChannel());
         Bundle args = new Bundle();
         args.putInt(ChatFragment.ARG_CHANNEL_INDEX, position);
         fragment.setArguments(args);
         FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.channel_layout, fragment).commit();
+        fragmentManager.beginTransaction().replace(R.id.channel_layout, fragment, CHAT_FRAGMENT_TAG).commit();
+
         leftDrawer.setItemChecked(position, true);
         setTitle(channelName);
         drawerLayout.closeDrawer(leftDrawer);
@@ -439,6 +453,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
             public void run() {
                 if (channel.equals(channelName)) {
                     fragment.addMessage(message);
+                    Log.e("IRCDEBUG", "onChannelMessage to: " +  fragment.toString());
                 }
             }
         });
