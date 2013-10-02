@@ -49,6 +49,7 @@ public class MessageArrayAdapter extends ArrayAdapter<ChannelItem> {
         dayOfMonth = time.monthDay;
         for (ChannelItem item : backlog) {
             add(item);
+            animate = false;
         }
         this.context = context;
     }
