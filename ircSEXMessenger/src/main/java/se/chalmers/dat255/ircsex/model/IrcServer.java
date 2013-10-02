@@ -3,9 +3,7 @@ package se.chalmers.dat255.ircsex.model;
 import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -19,14 +17,13 @@ import se.chalmers.dat255.ircsex.model.database.ServerDatabaseAdapter;
  *
  * Created by Oskar on 2013-09-17.
  */
-public class IrcServer implements IrcProtocolListener {
+public class IrcServer implements IrcProtocolListener, NetworkStateHandler.ConnectionListener {
 
     private final String host;
     private final int port;
     private final String login;
     private final IrcUser user;
     private final String realName;
-    private boolean connected = false;
 
     private final ChannelDatabaseAdapter datasource;
     private final ServerDatabaseAdapter serverDatasource;
@@ -63,9 +60,13 @@ public class IrcServer implements IrcProtocolListener {
         this.user.setSelf();
         this.realName = realName;
 
+        (new NetworkStateHandler()).addListener(this);
+
         sessionListeners = new ArrayList<SessionListener>();
 
-        startProtocolAdapter();
+        if (NetworkStateHandler.isConnected()) {
+            startProtocolAdapter();
+        }
 
         serverDatasource = new ServerDatabaseAdapter();
         serverDatasource.open();
@@ -120,7 +121,9 @@ public class IrcServer implements IrcProtocolListener {
      * @param channel - Name of channel to join
      */
     public void joinChannel(String channel) {
-        protocol.joinChannel(channel);
+        if (NetworkStateHandler.isConnected()) {
+            protocol.joinChannel(channel);
+        }
     }
 
     /**
@@ -130,7 +133,9 @@ public class IrcServer implements IrcProtocolListener {
      * @param key - Channel password
      */
     public void joinChannel(String channel, String key) {
-        protocol.joinChannel(channel, key);
+        if (NetworkStateHandler.isConnected()) {
+            protocol.joinChannel(channel, key);
+        }
     }
 
     /**
@@ -140,7 +145,9 @@ public class IrcServer implements IrcProtocolListener {
      */
     public void partChannel(String channel) {
         if (channel.contains("#")) {
-            protocol.partChannel(channel);
+            if (NetworkStateHandler.isConnected()) {
+                protocol.partChannel(channel);
+            }
         } else {
             userParted(channel, user.getNick());
         }
@@ -152,7 +159,9 @@ public class IrcServer implements IrcProtocolListener {
      * @param quitMessage - Message to be shown to other users.
      */
     public void quitServer(String quitMessage) {
-        protocol.disconnect(quitMessage);
+        if (NetworkStateHandler.isConnected()) {
+            protocol.disconnect(quitMessage);
+        }
     }
 
     /**
@@ -161,7 +170,9 @@ public class IrcServer implements IrcProtocolListener {
      * @param newNick - New nickname
      */
     public void changeNick(String newNick) {
-        protocol.setNick(newNick);
+        if (NetworkStateHandler.isConnected()) {
+            protocol.setNick(newNick);
+        }
     }
 
     /**
@@ -188,11 +199,13 @@ public class IrcServer implements IrcProtocolListener {
      * @param message Message to send
      */
     public void sendMessage(String channel, String message) {
-        protocol.sendChannelMessage(channel, message);
-        connectedChannels.get(channel).newMessage(user.getNick(), message);
-        IrcMessage ircMessage = new IrcMessage(user, message);
-        for (SessionListener listener : sessionListeners) {
-            listener.onSentMessage(host, channel, ircMessage);
+        if (NetworkStateHandler.isConnected()) {
+            protocol.sendChannelMessage(channel, message);
+            connectedChannels.get(channel).newMessage(user.getNick(), message);
+            IrcMessage ircMessage = new IrcMessage(user, message);
+            for (SessionListener listener : sessionListeners) {
+                listener.onSentMessage(host, channel, ircMessage);
+            }
         }
     }
 
@@ -202,8 +215,10 @@ public class IrcServer implements IrcProtocolListener {
      * @param user Username to lookup
      */
     public void whois(String user) {
-        user = IrcUser.extractUserName(user);
-        protocol.whois(user);
+        if (NetworkStateHandler.isConnected()) {
+            user = IrcUser.extractUserName(user);
+            protocol.whois(user);
+        }
     }
 
     /**
@@ -213,7 +228,9 @@ public class IrcServer implements IrcProtocolListener {
      * @param channel Channel to which the user will be invited
      */
     public void inviteUser(String user, IrcChannel channel) {
-        protocol.invite(user, channel.getChannelName());
+        if (NetworkStateHandler.isConnected()) {
+            protocol.invite(user, channel.getChannelName());
+        }
     }
 
     /**
@@ -236,9 +253,11 @@ public class IrcServer implements IrcProtocolListener {
 
     @Override
     public void serverConnected() {
-        protocol.connect(user.getNick(), login, realName);
-        for (SessionListener listener : sessionListeners) {
-            listener.onConnectionEstablished(host);
+        if (NetworkStateHandler.isConnected()) {
+            protocol.connect(user.getNick(), login, realName);
+            for (SessionListener listener : sessionListeners) {
+                listener.onConnectionEstablished(host);
+            }
         }
     }
 
@@ -361,7 +380,9 @@ public class IrcServer implements IrcProtocolListener {
 
     @Override
     public void serverDisconnected() {
-        protocol = new IrcProtocolAdapter(host, port, this);
+        if (NetworkStateHandler.isConnected()) {
+            protocol = new IrcProtocolAdapter(host, port, this);
+        }
     }
 
     @Override
@@ -382,5 +403,19 @@ public class IrcServer implements IrcProtocolListener {
         for (SessionListener listener : sessionListeners) {
             listener.onChannelMessage(host, user, ircMessage);
         }
+    }
+
+    @Override
+    public void onOnline() {
+        Log.e("IRC", "onOnline()");
+        if (protocol != null) {
+            protocol.disconnect("");
+        }
+        startProtocolAdapter();
+    }
+
+    @Override
+    public void onOffline() {
+
     }
 }
