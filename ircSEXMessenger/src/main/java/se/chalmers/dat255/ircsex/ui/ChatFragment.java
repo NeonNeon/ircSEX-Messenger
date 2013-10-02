@@ -30,30 +30,39 @@ public class ChatFragment extends Fragment {
     private IrcChannel channel;
 
     public ChatFragment() {
-
+        Log.e("IRCDEBUG", "Constructor: " + toString());
     }
 
     public ChatFragment(ChatMessageSendListener messageSendListener, IrcChannel channel) {
+        Log.e("IRCDEBUG", "Constructor params: " +  toString());
         this.messageSendListener = messageSendListener;
         this.channel = channel;
+    }
+
+    public void bringUpToSpeed(ChatMessageSendListener messageSendListener, IrcChannel channel) {
+        this.messageSendListener = messageSendListener;
+        this.channel = channel;
+        setArrayAdapter();
     }
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         if (channel != null) {
-            List<ChatBubble> backlog = new ArrayList<ChatBubble>(channel.getMessages().size());
-            for (IrcMessage message : channel.getMessages()) {
-                if (message.getUser().isSelf()) {
-                    backlog.add(new SentChatBubble(message.getMessage()));
-                } else {
-                    backlog.add(new ReceivedChatBubble(message));
-                }
-            }
-            messageArrayAdapter = new MessageArrayAdapter(getActivity(), backlog);
-        } else {
-            messageArrayAdapter = new MessageArrayAdapter(getActivity(), new ArrayList<ChatBubble>());
+            setArrayAdapter();
         }
+    }
+
+    private void setArrayAdapter() {
+        List<ChatBubble> backlog = new ArrayList<ChatBubble>(channel.getMessages().size());
+        for (IrcMessage message : channel.getMessages()) {
+            if (message.getUser().isSelf()) {
+                backlog.add(new SentChatBubble(message.getMessage()));
+            } else {
+                backlog.add(new ReceivedChatBubble(message));
+            }
+        }
+        messageArrayAdapter = new MessageArrayAdapter(getActivity(), backlog);
     }
 
     @Override

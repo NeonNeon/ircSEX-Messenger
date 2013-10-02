@@ -45,6 +45,7 @@ import se.chalmers.dat255.ircsex.view.IrcServerHeader;
 
 public class ChannelActivity extends FragmentActivity implements SessionListener,
         JoinChannelDialogFragment.DialogListener, ChatFragment.ChatMessageSendListener {
+    private static final String CHAT_FRAGMENT_TAG = "chat_fragment";
     private DrawerLayout drawerLayout;
     private ListView leftDrawer;
     private ListView rightDrawer;
@@ -56,8 +57,8 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     private CharSequence mTitle;
     private static IrcChannelSelector ircChannelSelector;
     private boolean drawerOpen;
-    private ChatFragment fragment;
-    private String channelName;
+    private static ChatFragment fragment;
+    private static String channelName;
 
     private static Session session;
     private ProgressDialog serverConnectProgressDialog;
@@ -126,7 +127,10 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
             }
         }
         else {
-            selectItem(selected);
+//            selectItem(selected);
+            fragment = (ChatFragment) getFragmentManager().findFragmentByTag("a");
+            fragment.bringUpToSpeed(this, session.getActiveChannel());
+            Log.e("IRCDEBUG", "Post select: " +  fragment.toString());
         }
     }
 
@@ -280,12 +284,14 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     private void selectItem(int position) {
         channelName = ircChannelSelector.getItem(position).getText();
         session.setActiveChannel(channelName);
+
         fragment = new ChatFragment(this, session.getActiveChannel());
         Bundle args = new Bundle();
         args.putInt(ChatFragment.ARG_CHANNEL_INDEX, position);
         fragment.setArguments(args);
         FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.channel_layout, fragment).commit();
+        fragmentManager.beginTransaction().replace(R.id.channel_layout, fragment, CHAT_FRAGMENT_TAG).commit();
+
         leftDrawer.setItemChecked(position, true);
         setTitle(channelName);
         drawerLayout.closeDrawer(leftDrawer);
@@ -432,6 +438,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
             public void run() {
                 if (channel.equals(channelName)) {
                     fragment.addMessage(message);
+                    Log.e("IRCDEBUG", "onChannelMessage to: " +  fragment.toString());
                 }
             }
         });
