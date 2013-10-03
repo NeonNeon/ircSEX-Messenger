@@ -420,17 +420,9 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
         } else {
             startProtocolAdapter();
         }
-
-        for (SessionListener listener : sessionListeners) {
-            listener.onOnline();
-        }
     }
 
     @Override
     public void onOffline() {
-        Log.e("IRC", "IrcServer.onOffline()");
-        for (SessionListener listener : sessionListeners) {
-            listener.onOffline();
-        }
     }
 }

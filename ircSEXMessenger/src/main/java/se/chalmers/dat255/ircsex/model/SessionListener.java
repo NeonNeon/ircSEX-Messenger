@@ -7,7 +7,7 @@ import java.util.Collection;
 /**
  * Created by Wilhelm on 2013-09-19.
  */
-public interface SessionListener extends NetworkStateHandler.ConnectionListener {
+public interface SessionListener {
     /**
      * Fired when the socked has been opened.
      * @param host Host to which the socket has been opened.
@@ -102,16 +102,4 @@ public interface SessionListener extends NetworkStateHandler.ConnectionListener 
      * @param seconds
      */
     public void whoisIdleTime(String nick, int seconds);
-
-    /**
-     * Is called when an internet connection is detected.
-     */
-    @Override
-    public void onOnline();
-
-    /**
-     * Is called when there is no internet connection.
-     */
-    @Override
-    public void onOffline();
 }

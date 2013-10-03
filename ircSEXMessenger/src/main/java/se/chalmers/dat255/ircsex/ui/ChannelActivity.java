@@ -504,6 +504,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
 
     @Override
     public void onOffline() {
+        Log.e("IRC", noInternetIntent.toString());
         startActivity(noInternetIntent);
     }
 
