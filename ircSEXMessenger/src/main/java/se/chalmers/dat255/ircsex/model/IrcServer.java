@@ -62,8 +62,6 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
         this.user.setSelf();
         this.realName = realName;
 
-        (new NetworkStateHandler()).addListener(this);
-
         sessionListeners = new ArrayList<SessionListener>();
 
         serverDatasource = new ServerDatabaseAdapter();
@@ -73,6 +71,9 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
 
         channels = new ConcurrentHashMap<String, IrcChannel>();
         connectedChannels = new ConcurrentHashMap<String, IrcChannel>();
+
+        NetworkStateHandler.addListener(this);
+        NetworkStateHandler.start();
     }
 
     private void restoreChannels() {
@@ -411,6 +412,7 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
 
     @Override
     public void onOnline() {
+        Log.e("IRC", "IrcServer.onOnline()");
         if (protocol != null) {
             reconnecting = true;
             protocol = new IrcProtocolAdapter(host, port, this);
@@ -418,10 +420,17 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
         } else {
             startProtocolAdapter();
         }
+
+        for (SessionListener listener : sessionListeners) {
+            listener.onOnline();
+        }
     }
 
     @Override
     public void onOffline() {
-
+        Log.e("IRC", "IrcServer.onOffline()");
+        for (SessionListener listener : sessionListeners) {
+            listener.onOffline();
+        }
     }
 }

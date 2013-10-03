@@ -26,21 +26,20 @@ public class NetworkStateHandler extends BroadcastReceiver {
         listener = new ConnectionListenerImpl();
 
         if (!started) {
-            listeners = new ArrayList<ConnectionListener>();
-            try {
-                ConnectivityManager cm =
-                        (ConnectivityManager) ContextManager.SERVER_CONTEXT.getSystemService(Context.CONNECTIVITY_SERVICE);
-                internet = cm.getActiveNetworkInfo().isConnectedOrConnecting();
-            } catch (NullPointerException e) {
-                internet = false;
-            } finally {
-                started = true;
+            if (listeners == null) {
+                listeners = new ArrayList<ConnectionListener>();
+            }
+            started = true;
 
-                if (internet) {
-                    listener.onOnline();
-                } else {
-                    listener.onOffline();
-                }
+            ConnectivityManager cm =
+                    (ConnectivityManager) ContextManager.SERVER_CONTEXT.getSystemService(Context.CONNECTIVITY_SERVICE);
+            internet = cm.getActiveNetworkInfo() != null &&
+                    cm.getActiveNetworkInfo().isConnectedOrConnecting();
+
+            if (internet) {
+                listener.onOnline();
+            } else {
+                listener.onOffline();
             }
         }
     }
@@ -67,12 +66,28 @@ public class NetworkStateHandler extends BroadcastReceiver {
         return internet;
     }
 
-    public void addListener(ConnectionListener listener) {
+    public static void addListener(ConnectionListener listener) {
+        if (listeners == null) {
+            listeners = new ArrayList<ConnectionListener>();
+        }
         listeners.add(listener);
+        notify(listener);
     }
 
-    public void removeListener(ConnectionListener listener) {
+    public static void removeListener(ConnectionListener listener) {
         listeners.remove(listener);
+    }
+
+    public static void start() {
+        new NetworkStateHandler();
+    }
+
+    public static void notify(ConnectionListener listener) {
+        if (internet) {
+            listener.onOnline();
+        } else {
+            listener.onOffline();
+        }
     }
 
     private class ConnectionListenerImpl implements ConnectionListener {
