@@ -1,7 +1,10 @@
 package se.chalmers.dat255.ircsex.ui;
 
 import android.app.Activity;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.ImageView;
 
 import se.chalmers.dat255.ircsex.R;
 import se.chalmers.dat255.ircsex.model.NetworkStateHandler;
@@ -29,7 +32,11 @@ public class NoInternetActivity extends Activity implements NetworkStateHandler.
     }
 
     private void setImage() {
-
+        int rand = (int) (Math.random() * 4);
+        int imageResource = getResources().getIdentifier("@drawable/nointernet" + rand, null, getPackageName());
+        ImageView imageView = (ImageView) findViewById(R.id.noInternetImage);
+        Drawable res = getResources().getDrawable(imageResource);
+        imageView.setImageDrawable(res);
     }
 
     @Override
