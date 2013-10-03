@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ListView
+    <se.chalmers.dat255.ircsex.view.ChatListView
         android:id="@+id/chat_message_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

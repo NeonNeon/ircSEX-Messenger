@@ -288,7 +288,6 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
 
         fragment = new ChatFragment(this, session.getActiveChannel());
         Bundle args = new Bundle();
-        args.putInt(ChatFragment.ARG_CHANNEL_INDEX, position);
         fragment.setArguments(args);
         FragmentManager fragmentManager = getFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.channel_layout, fragment, CHAT_FRAGMENT_TAG).commit();
