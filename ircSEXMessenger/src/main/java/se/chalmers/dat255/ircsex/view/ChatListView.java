@@ -24,7 +24,6 @@ public class ChatListView extends ListView {
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-        Log.e("IRCDEBUG", "OSC: " + "w = [" + w + "], h = [" + h + "], oldw = [" + oldw + "], oldh = [" + oldh + "]");
         if (oldh > h) {
             setSelection(getCount()-1);
         }

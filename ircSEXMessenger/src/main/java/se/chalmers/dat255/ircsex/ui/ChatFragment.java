@@ -30,11 +30,10 @@ public class ChatFragment extends Fragment {
     private IrcChannel channel;
 
     public ChatFragment() {
-        Log.e("IRCDEBUG", "Constructor: " + toString());
+        // Empty constructor for resuming state.
     }
 
     public ChatFragment(ChatMessageSendListener messageSendListener, IrcChannel channel) {
-        Log.e("IRCDEBUG", "Constructor params: " +  toString());
         this.messageSendListener = messageSendListener;
         this.channel = channel;
     }
@@ -102,7 +101,6 @@ public class ChatFragment extends Fragment {
     }
 
     public void addMessage(IrcMessage ircMessage) {
-        Log.d("IRCDEBUG", ircMessage.getMessage());
         messageArrayAdapter.add(new ReceivedChatBubble(ircMessage));
         messageList.invalidate();
         scrollWhenNoBacklog();
