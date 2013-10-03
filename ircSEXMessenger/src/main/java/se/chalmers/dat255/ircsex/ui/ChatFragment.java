@@ -22,7 +22,6 @@ import se.chalmers.dat255.ircsex.model.IrcMessage;
 import se.chalmers.dat255.ircsex.model.MessageArrayAdapter;
 
 public class ChatFragment extends Fragment {
-    public static final String ARG_CHANNEL_INDEX = "channelIndex";
     private ListView messageList;
     private MessageArrayAdapter messageArrayAdapter;
     private EditText messageEditText;
@@ -67,7 +66,6 @@ public class ChatFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_chat, container, false);
-        int i = getArguments().getInt(ARG_CHANNEL_INDEX);
         messageList = (ListView) rootView.findViewById(R.id.chat_message_list);
         messageList.setAdapter(messageArrayAdapter);
         scrollToBottom();
