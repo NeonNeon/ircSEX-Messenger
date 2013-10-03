@@ -94,6 +94,22 @@ public class ChatFragment extends Fragment {
         return rootView;
     }
 
+    public void displaySearchResult(String query) {
+        List<ChannelItem> searchResults = new ArrayList<ChannelItem>();
+        Log.e("IRCDEBUG", query);
+        for (IrcMessage ircMessage : channel.getMessages()) {
+            if (ircMessage.getMessage().contains(query)) {
+                if (ircMessage.getUser().isSelf()) {
+                    searchResults.add(new SentChatBubble(ircMessage.getMessage()));
+                } else {
+                    searchResults.add(new ReceivedChatBubble(ircMessage));
+                }
+            }
+        }
+        messageArrayAdapter = new MessageArrayAdapter(getActivity(), searchResults);
+        messageList.setAdapter(messageArrayAdapter);
+    }
+
     private void sendMessage() {
         String message = messageEditText.getText().toString();
         if (!message.equals("")) {
