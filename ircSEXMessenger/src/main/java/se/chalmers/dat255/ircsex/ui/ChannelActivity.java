@@ -36,6 +36,7 @@ import java.util.List;
 import se.chalmers.dat255.ircsex.R;
 import se.chalmers.dat255.ircsex.model.IrcMessage;
 import se.chalmers.dat255.ircsex.model.IrcUser;
+import se.chalmers.dat255.ircsex.model.NetworkStateHandler;
 import se.chalmers.dat255.ircsex.model.Session;
 import se.chalmers.dat255.ircsex.model.SessionListener;
 import se.chalmers.dat255.ircsex.ui.dialog.JoinChannelDialogFragment;
@@ -44,7 +45,7 @@ import se.chalmers.dat255.ircsex.view.IrcChannelItem;
 import se.chalmers.dat255.ircsex.view.IrcServerHeader;
 
 public class ChannelActivity extends FragmentActivity implements SessionListener,
-        JoinChannelDialogFragment.DialogListener, ChatFragment.ChatMessageSendListener {
+        JoinChannelDialogFragment.DialogListener, ChatFragment.ChatMessageSendListener, NetworkStateHandler.ConnectionListener {
     private DrawerLayout drawerLayout;
     private ListView leftDrawer;
     private ListView rightDrawer;
@@ -75,6 +76,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         setContentView(R.layout.activity_channel_main);
 
         noInternetIntent = new Intent(this, NoInternetActivity.class);
+        NetworkStateHandler.addListener(this);
 
         mTitle = mDrawerTitle = getTitle();
         ircChannelSelector = new IrcChannelSelector(this);
