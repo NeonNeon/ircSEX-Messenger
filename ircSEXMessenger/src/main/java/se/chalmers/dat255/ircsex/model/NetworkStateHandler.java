@@ -33,8 +33,15 @@ public class NetworkStateHandler extends BroadcastReceiver {
                 internet = cm.getActiveNetworkInfo().isConnectedOrConnecting();
             } catch (NullPointerException e) {
                 internet = false;
+            } finally {
+                started = true;
+
+                if (internet) {
+                    listener.onOnline();
+                } else {
+                    listener.onOffline();
+                }
             }
-            started = true;
         }
     }
 

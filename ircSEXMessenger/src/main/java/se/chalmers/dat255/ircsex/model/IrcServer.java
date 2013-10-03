@@ -58,17 +58,13 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
         this.host = host;
         this.port = port;
         this.login = login;
-        this.user = new IrcUser(nick, IrcUser.NO_STATUS);
+        this.user = new IrcUser("OXi", IrcUser.NO_STATUS);
         this.user.setSelf();
         this.realName = realName;
 
         (new NetworkStateHandler()).addListener(this);
 
         sessionListeners = new ArrayList<SessionListener>();
-
-        if (NetworkStateHandler.isConnected()) {
-            startProtocolAdapter();
-        }
 
         serverDatasource = new ServerDatabaseAdapter();
         serverDatasource.open();
@@ -415,7 +411,6 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
 
     @Override
     public void onOnline() {
-        Log.e("IRC", "onOnline()");
         if (protocol != null) {
             reconnecting = true;
             protocol = new IrcProtocolAdapter(host, port, this);
