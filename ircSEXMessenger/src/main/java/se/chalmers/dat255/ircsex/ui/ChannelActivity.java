@@ -67,10 +67,14 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     private int selected = -1;
     private ChannelListOnClickListener channelDrawerOnClickListener;
 
+    private Intent noInternetIntent;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_channel_main);
+
+        noInternetIntent = new Intent(this, NoInternetActivity.class);
 
         mTitle = mDrawerTitle = getTitle();
         ircChannelSelector = new IrcChannelSelector(this);
@@ -492,6 +496,15 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
                 ((TextView) whois.findViewById(R.id.dialog_whois_idle)).setText(formatIdleTime(seconds));
             }
         });
+    }
+
+    @Override
+    public void onOnline() {
+    }
+
+    @Override
+    public void onOffline() {
+        startActivity(noInternetIntent);
     }
 
     private String formatIdleTime(int time) {
