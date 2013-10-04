@@ -238,26 +238,11 @@ public class IrcServer implements IrcProtocolListener {
         }
     }
 
-    private Set<IrcUser> getKnownUsers() {
-        Set<IrcUser> users = new LinkedHashSet<>();
+    private Set<String> getKnownUsers() {
+        Set<String> users = new LinkedHashSet<String>();
         for (Map.Entry<String, IrcChannel> c : connectedChannels.entrySet()) {
             for (IrcUser user : c.getValue().getUsers()) {
-                users.add(user);
-            }
-        }
-        return users;
-    }
-
-    /**
-     * Returns a set of IrcUser which contains searchTerm.
-     * @param searchTerm - the term to search for
-     * @return all matching users
-     */
-    public Set<IrcUser> searchUsers(String searchTerm) {
-        Set<IrcUser> users = getKnownUsers();
-        for (IrcUser user : users) {
-            if (!user.getNick().contains(searchTerm)) {
-                users.remove(user);
+                users.add(user.getNick());
             }
         }
         return users;
