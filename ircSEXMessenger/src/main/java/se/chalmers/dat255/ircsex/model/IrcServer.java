@@ -6,6 +6,7 @@ import com.sun.corba.se.impl.encoding.OSFCodeSetRegistry;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +36,7 @@ public class IrcServer implements IrcProtocolListener {
     private final ChannelDatabaseAdapter datasource;
     private final ServerDatabaseAdapter serverDatasource;
 
-    private final ConcurrentMap<String, IrcChannel> channels;
+    private final HashMap<String, String> channels;
     private final ConcurrentMap<String, IrcChannel> connectedChannels;
 
     private IrcProtocolAdapter protocol;
@@ -76,7 +77,7 @@ public class IrcServer implements IrcProtocolListener {
         datasource = new ChannelDatabaseAdapter();
         datasource.open();
 
-        channels = new ConcurrentHashMap<String, IrcChannel>();
+        channels = new HashMap<String, String>();
         connectedChannels = new ConcurrentHashMap<String, IrcChannel>();
     }
 
@@ -238,7 +239,7 @@ public class IrcServer implements IrcProtocolListener {
         }
     }
 
-    private Set<String> getKnownUsers() {
+    public Set<String> getKnownUsers() {
         Set<String> users = new LinkedHashSet<String>();
         for (Map.Entry<String, IrcChannel> c : connectedChannels.entrySet()) {
             for (IrcUser user : c.getValue().getUsers()) {
@@ -248,9 +249,14 @@ public class IrcServer implements IrcProtocolListener {
         return users;
     }
 
+    public HashMap<String, String> getChannels() {
+        return channels;
+    }
+
     @Override
     public void serverConnected() {
         protocol.connect(user.getNick(), login, realName);
+        protocol.listChannels();
         for (SessionListener listener : sessionListeners) {
             listener.onConnectionEstablished(host);
         }
@@ -370,7 +376,7 @@ public class IrcServer implements IrcProtocolListener {
 
     @Override
     public void channelListResponse(String name, String topic) {
-
+        channels.put(name, topic);
     }
 
     @Override

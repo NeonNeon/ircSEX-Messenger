@@ -31,7 +31,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import se.chalmers.dat255.ircsex.R;
 import se.chalmers.dat255.ircsex.model.IrcMessage;
@@ -541,7 +543,10 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     }
 
     public void leftDrawerSearch(View view) {
+        HashMap<String, String> content = session.getActiveServer().getChannels();
         Intent intent = new Intent(this, SearchActivity.class);
-        startActivity(intent);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(SearchActivity.BUNDLE_KEY, content);
+        startActivity(intent, bundle);
     }
 }
