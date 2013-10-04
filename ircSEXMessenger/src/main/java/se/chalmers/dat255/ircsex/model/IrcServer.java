@@ -11,7 +11,6 @@ import se.chalmers.dat255.ircsex.irc.IrcProtocolAdapter;
 import se.chalmers.dat255.ircsex.irc.IrcProtocolListener;
 import se.chalmers.dat255.ircsex.model.database.ChannelDatabaseAdapter;
 import se.chalmers.dat255.ircsex.model.database.ServerDatabaseAdapter;
-import sun.rmi.runtime.Log;
 
 /**
  * This class lists and handles a server, including the protocol adapter and channels.
