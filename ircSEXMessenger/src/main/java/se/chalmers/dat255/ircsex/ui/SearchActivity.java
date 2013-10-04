@@ -58,10 +58,10 @@ public class SearchActivity extends ListActivity {
         }
 
         List<String> result = new ArrayList<String>();
-        for (String channel : content.keySet()) {
-            if (channel.toLowerCase().contains(search.toLowerCase())
-                    || content.get(channel).toLowerCase().contains(search.toLowerCase())) {
-                result.add(channel + " - " + content.get(channel));
+        for (String entry : content.keySet()) {
+            if (entry.toLowerCase().contains(search.toLowerCase())
+                    || content.get(entry).toLowerCase().contains(search.toLowerCase())) {
+                result.add(entry + " - " + content.get(entry));
             }
         }
         searchResult = result;
