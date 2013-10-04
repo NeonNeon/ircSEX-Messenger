@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import se.chalmers.dat255.ircsex.R;
+import se.chalmers.dat255.ircsex.model.Session;
 
 /**
  * Created by Oskar on 2013-10-04.
@@ -27,6 +28,7 @@ import se.chalmers.dat255.ircsex.R;
 public class SearchActivity extends ListActivity {
 
     private ArrayAdapter<String> adapter;
+    private Session session;
 
     private Map<String, String> content;
     private List<String> searchResult;
@@ -38,7 +40,9 @@ public class SearchActivity extends ListActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
-        content = (HashMap<String, String>) getIntent().getSerializableExtra(BUNDLE_KEY);
+        session = Session.getInstance(this, null);
+        session.getActiveServer().listChannels();
+        content = new HashMap<String, String>();
 
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
@@ -49,9 +53,14 @@ public class SearchActivity extends ListActivity {
     }
 
     private void search(String search) {
+        if (content.isEmpty()) {
+            content = session.getActiveServer().getChannels();
+        }
+
         List<String> result = new ArrayList<String>();
         for (String channel : content.keySet()) {
-            if (channel.contains(search) || content.get(channel).contains(search)) {
+            if (channel.toLowerCase().contains(search.toLowerCase())
+                    || content.get(channel).toLowerCase().contains(search.toLowerCase())) {
                 result.add(channel + " - " + content.get(channel));
             }
         }

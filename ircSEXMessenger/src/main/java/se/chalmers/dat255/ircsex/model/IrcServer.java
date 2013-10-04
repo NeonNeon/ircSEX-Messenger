@@ -253,10 +253,13 @@ public class IrcServer implements IrcProtocolListener {
         return channels;
     }
 
+    public void listChannels() {
+        protocol.listChannels();
+    }
+
     @Override
     public void serverConnected() {
         protocol.connect(user.getNick(), login, realName);
-        protocol.listChannels();
         for (SessionListener listener : sessionListeners) {
             listener.onConnectionEstablished(host);
         }

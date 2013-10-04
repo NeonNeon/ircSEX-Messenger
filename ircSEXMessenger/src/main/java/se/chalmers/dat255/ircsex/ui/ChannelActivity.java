@@ -545,8 +545,6 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     public void leftDrawerSearch(View view) {
         HashMap<String, String> content = session.getActiveServer().getChannels();
         Intent intent = new Intent(this, SearchActivity.class);
-        Bundle bundle = new Bundle();
-        bundle.putSerializable(SearchActivity.BUNDLE_KEY, content);
-        startActivity(intent, bundle);
+        startActivity(intent);
     }
 }
