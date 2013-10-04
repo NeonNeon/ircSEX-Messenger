@@ -413,13 +413,7 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
     @Override
     public void onOnline() {
         Log.e("IRC", "IrcServer.onOnline()");
-        if (protocol != null) {
-            reconnecting = true;
-            protocol = new IrcProtocolAdapter(host, port, this);
-            //new Thread(protocol).start();
-        } else {
-            startProtocolAdapter();
-        }
+        startProtocolAdapter();
     }
 
     @Override
