@@ -111,7 +111,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
 
             @Override
             public void onDrawerOpened(View drawerView) {
-                drawerLayout.closeDrawer(drawerView == rightDrawer ? leftDrawer : rightDrawer);
+                drawerLayout.closeDrawer(drawerView == rightDrawer ? leftDrawerContainer : rightDrawer);
                 getActionBar().setTitle(mDrawerTitle);
                 getActionBar().setSubtitle(null);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
