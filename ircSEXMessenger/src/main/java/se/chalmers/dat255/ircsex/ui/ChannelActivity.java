@@ -541,6 +541,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     }
 
     public void leftDrawerSearch(View view) {
-        Log.e("IRCDEBUG", "ASDFASDFASDF");
+        Intent intent = new Intent(this, SearchActivity.class);
+        startActivity(intent);
     }
 }
