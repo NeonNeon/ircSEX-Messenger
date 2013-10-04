@@ -1,5 +1,7 @@
 package se.chalmers.dat255.ircsex.model;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -87,7 +89,9 @@ public class IrcChannel {
      * @param user - The user who left
      */
     public void userParted(String user) {
+        Log.e("IRC", user + " quited");
         synchronized (users) {
+            Log.e("IRC", user + " quited");
             user = IrcUser.extractUserName(user);
             users.remove(user);
         }
@@ -108,6 +112,14 @@ public class IrcChannel {
 
     public IrcUser getUser(String nick) {
         return users.get(nick);
+    }
+
+    /**
+     * Returns true if the user is in the channel.
+     * @param user - the user to check
+     */
+    public boolean hasUser(String user) {
+        return users.containsKey(user);
     }
 
     /**

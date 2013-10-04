@@ -11,6 +11,7 @@ import se.chalmers.dat255.ircsex.irc.IrcProtocolAdapter;
 import se.chalmers.dat255.ircsex.irc.IrcProtocolListener;
 import se.chalmers.dat255.ircsex.model.database.ChannelDatabaseAdapter;
 import se.chalmers.dat255.ircsex.model.database.ServerDatabaseAdapter;
+import sun.rmi.runtime.Log;
 
 /**
  * This class lists and handles a server, including the protocol adapter and channels.
@@ -335,7 +336,16 @@ public class IrcServer implements IrcProtocolListener {
 
     @Override
     public void userQuited(String nick, String quitMessage) {
-
+        for (IrcChannel channel : connectedChannels.values()) {
+            if (channel.hasUser(nick)) {
+                channel.userParted(nick);
+                String channelName = channel.getChannelName();
+                for (SessionListener listener : sessionListeners) {
+                    listener.onChannelUserPart(host, channelName, nick);
+                    listener.onChannelUserChange(host, channelName, connectedChannels.get(channelName).getUsers());
+                }
+            }
+        }
     }
 
     @Override
