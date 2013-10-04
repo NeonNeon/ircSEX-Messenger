@@ -1,4 +1,4 @@
-package se.chalmers.dat255.ircsex.model;
+package se.chalmers.dat255.ircsex.ui;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -23,10 +23,6 @@ import java.util.List;
 import java.util.Locale;
 
 import se.chalmers.dat255.ircsex.R;
-import se.chalmers.dat255.ircsex.ui.ChannelItem;
-import se.chalmers.dat255.ircsex.ui.DayChangeMessage;
-import se.chalmers.dat255.ircsex.ui.ReceivedChatBubble;
-import se.chalmers.dat255.ircsex.ui.SentChatBubble;
 
 /**
  * @author Johan Magnusson

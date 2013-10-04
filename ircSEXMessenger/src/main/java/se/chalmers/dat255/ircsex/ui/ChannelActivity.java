@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.DialogFragment;
@@ -145,8 +144,17 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
 
     private void handleIntent(Intent intent) {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            fragment.displaySearchResult(intent.getStringExtra(SearchManager.QUERY));
+            SearchFragment searchFragment = new SearchFragment(session.getActiveChannel().getMessages());
+            searchFragment.setSearchString(intent.getStringExtra(SearchManager.QUERY));
+            FragmentManager fragmentManager = getFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.channel_layout, searchFragment).commit();
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        super.onBackPressed();
     }
 
     private void showConnectionDialog(String message) {
@@ -310,7 +318,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         args.putInt(ChatFragment.ARG_CHANNEL_INDEX, position);
         fragment.setArguments(args);
         FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.channel_layout, fragment, CHAT_FRAGMENT_TAG).commit();
+        fragmentManager.beginTransaction().replace(R.id.channel_layout, fragment, CHAT_FRAGMENT_TAG).addToBackStack(CHAT_FRAGMENT_TAG).commit();
 
         leftDrawer.setItemChecked(position, true);
         setTitle(channelName);

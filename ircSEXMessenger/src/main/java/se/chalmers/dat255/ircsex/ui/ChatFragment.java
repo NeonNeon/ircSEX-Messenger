@@ -19,7 +19,6 @@ import java.util.List;
 import se.chalmers.dat255.ircsex.R;
 import se.chalmers.dat255.ircsex.model.IrcChannel;
 import se.chalmers.dat255.ircsex.model.IrcMessage;
-import se.chalmers.dat255.ircsex.model.MessageArrayAdapter;
 
 public class ChatFragment extends Fragment {
     public static final String ARG_CHANNEL_INDEX = "channelIndex";
@@ -92,22 +91,6 @@ public class ChatFragment extends Fragment {
             }
         });
         return rootView;
-    }
-
-    public void displaySearchResult(String query) {
-        List<ChannelItem> searchResults = new ArrayList<ChannelItem>();
-        Log.e("IRCDEBUG", query);
-        for (IrcMessage ircMessage : channel.getMessages()) {
-            if (ircMessage.getMessage().contains(query)) {
-                if (ircMessage.getUser().isSelf()) {
-                    searchResults.add(new SentChatBubble(ircMessage.getMessage()));
-                } else {
-                    searchResults.add(new ReceivedChatBubble(ircMessage));
-                }
-            }
-        }
-        messageArrayAdapter = new MessageArrayAdapter(getActivity(), searchResults);
-        messageList.setAdapter(messageArrayAdapter);
     }
 
     private void sendMessage() {
