@@ -90,6 +90,7 @@ public class Session {
         IrcServer ircServer = new IrcServer(host, port, login, nick, realName);
         servers.put(host, ircServer);
         ircServer.addSessionListener(sessionListener);
+        NetworkStateHandler.notify(ircServer);
         datasource.addServer(host, port, login, nick, realName);
     }
 
