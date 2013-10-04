@@ -455,7 +455,6 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
 
     @Override
     public void onOnline() {
-        Log.e("IRC", "IrcServer.onOnline()");
         startProtocolAdapter();
     }
 
