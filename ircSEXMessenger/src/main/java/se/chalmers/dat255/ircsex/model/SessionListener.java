@@ -113,7 +113,7 @@ public interface SessionListener {
     /**
      * This method sends the nicks idletime as a whois request resopnse.
      * @param nick
-     * @param seconds
+     * @param formattedIdleTime
      */
-    public void whoisIdleTime(String nick, int seconds);
+    public void whoisIdleTime(String nick, String formattedIdleTime);
 }

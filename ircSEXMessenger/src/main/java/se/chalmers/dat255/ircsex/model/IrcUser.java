@@ -165,4 +165,26 @@ public class IrcUser implements Comparable<IrcUser> {
     public int hashCode() {
         return nick.hashCode();
     }
+
+    public static String formatIdleTime(int time) {
+        int seconds = time % 60;
+        time /= 60;
+        int minutes = time % 60;
+        time /= 60;
+        int hours = time % 24;
+        int days = time / 24;
+
+        String idle = "";
+        if (days > 0) {
+            idle += " " + days + "d";
+        } if (hours > 0) {
+            idle += " " + hours + "h";
+        } if (minutes > 0) {
+            idle += " " + minutes + "m";
+        } if (seconds > 0) {
+            idle += " " + seconds + "s";
+        }
+
+        return idle.trim();
+    }
 }

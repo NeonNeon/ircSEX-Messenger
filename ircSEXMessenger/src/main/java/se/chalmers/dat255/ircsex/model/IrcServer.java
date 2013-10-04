@@ -350,7 +350,7 @@ public class IrcServer implements IrcProtocolListener {
     @Override
     public void whoisIdleTime(String nick, int seconds) {
         for (SessionListener listener : sessionListeners) {
-            listener.whoisIdleTime(nick, seconds);
+            listener.whoisIdleTime(nick, IrcUser.formatIdleTime(seconds));
         }
     }
 

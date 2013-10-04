@@ -7,7 +7,6 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.DialogFragment;
@@ -452,7 +451,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
             public void run() {
                 if (channel.equals(channelName)) {
                     fragment.addMessage(message);
-                    Log.e("IRCDEBUG", "onChannelMessage to: " +  fragment.toString());
+                    Log.e("IRCDEBUG", "onChannelMessage to: " + fragment.toString());
                 }
             }
         });
@@ -519,38 +518,16 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     }
 
     @Override
-    public void whoisIdleTime(final String nick, final int seconds) {
+    public void whoisIdleTime(final String nick, final String formattedIdleTime) {
         ChannelActivity.this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 if (whois == null) {
                     showWhoisDialog(nick);
                 }
-                ((TextView) whois.findViewById(R.id.dialog_whois_idle)).setText(formatIdleTime(seconds));
+                ((TextView) whois.findViewById(R.id.dialog_whois_idle)).setText(formattedIdleTime);
             }
         });
-    }
-
-    private String formatIdleTime(int time) {
-        int seconds = time % 60;
-        time /= 60;
-        int minutes = time % 60;
-        time /= 60;
-        int hours = time % 24;
-        int days = time / 24;
-
-        String idle = "";
-        if (days > 0) {
-            idle += " " + days + "d";
-        } if (hours > 0) {
-            idle += " " + hours + "h";
-        } if (minutes > 0) {
-            idle += " " + minutes + "m";
-        } if (seconds > 0) {
-            idle += " " + seconds + "s";
-        }
-
-        return idle.trim();
     }
 
     private void showWhoisDialog(final String nick) {
