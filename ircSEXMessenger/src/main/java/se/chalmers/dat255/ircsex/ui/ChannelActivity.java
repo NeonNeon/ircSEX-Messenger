@@ -281,6 +281,13 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         }
     }
 
+    public void bubbleClicked(View view) {
+        String name = ((TextView)view.findViewById(R.id.chat_bubble_nick))
+                .getText().toString();
+        ((TextView)findViewById(R.id.fragment_chat_message))
+                .append(name + ": ");
+    }
+
     private void selectItem(int position) {
         channelName = ircChannelSelector.getItem(position).getText();
         session.setActiveChannel(channelName);
