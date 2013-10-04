@@ -48,6 +48,13 @@ public interface IrcProtocolListener {
     public void userParted(String channelName, String nick);
 
     /**
+     * This method is called whn a user quits from the server.
+     * @param nick - the nick of the user
+     * @param quitMessage - the quit message
+     */
+    public void userQuited(String nick, String quitMessage);
+
+    /**
      * Sent when a channel message is received from the server.
      * @param channel - the channel that the message was sent to
      * @param user - the user that sent the message

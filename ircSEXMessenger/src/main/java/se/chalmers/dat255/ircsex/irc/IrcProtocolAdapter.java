@@ -101,6 +101,11 @@ public class IrcProtocolAdapter implements Runnable {
             listener.userParted(reply.substring(index + 5),
                     reply.substring(1, reply.indexOf('!')));
         }
+        else if ((index = reply.indexOf("QUIT")) != -1) {
+            String message = reply.substring(index + 6);
+            String user = reply.substring(1, reply.indexOf('!'));
+            listener.userQuited(user, message);
+        }
         else if ((index = reply.indexOf("NICK ")) != -1) {
             listener.nickChanged(reply.substring(reply.indexOf(':') + 1, reply.indexOf('!')),
                     reply.substring(index + 6));

@@ -334,6 +334,11 @@ public class IrcServer implements IrcProtocolListener {
     }
 
     @Override
+    public void userQuited(String nick, String quitMessage) {
+
+    }
+
+    @Override
     public void whoisChannels(String nick, List<String> channels) {
         for (SessionListener listener : sessionListeners) {
             listener.whoisChannels(nick, channels);

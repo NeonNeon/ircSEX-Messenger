@@ -39,6 +39,19 @@ class IrcProtocolAdapterEventsTest extends Specification {
         user << ["oed", "Heissman", "Rascal"]
     }
 
+    def "test userQuited event sent"() {
+        when:
+        def command ="!~banned@smurf-BC4B6572.eduroam.chalmers.se QUIT :"
+        ipa.handleReply(":" + user + command + quitMessage)
+
+        then:
+        1 * subscriber.userQuited(user, quitMessage)
+
+        where:
+        user << ["oed", "Heissman", "Rascal"]
+        quitMessage << ["Client exited", "Rascal är sämst", "Vodka"]
+    }
+
     def "test usersInChannel event sent"() {
         def channel = "#ircSEX-asp"
 
