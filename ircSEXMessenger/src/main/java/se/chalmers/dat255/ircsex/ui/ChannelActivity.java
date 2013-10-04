@@ -71,14 +71,11 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     private static int selected = -1;
     private ChannelListOnClickListener channelDrawerOnClickListener;
 
-    private Intent noInternetIntent;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_channel_main);
 
-        noInternetIntent = new Intent(this, NoInternetActivity.class);
         NetworkStateHandler.addListener(this);
 
         mTitle = mDrawerTitle = getTitle();
@@ -552,7 +549,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
 
     @Override
     public void onOffline() {
-        Log.e("IRC", noInternetIntent.toString());
+        Intent noInternetIntent = new Intent(this, NoInternetActivity.class);
         startActivity(noInternetIntent);
     }
 
