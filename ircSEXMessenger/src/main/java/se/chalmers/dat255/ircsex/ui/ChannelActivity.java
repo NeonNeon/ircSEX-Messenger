@@ -33,7 +33,6 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import se.chalmers.dat255.ircsex.R;
 import se.chalmers.dat255.ircsex.model.IrcMessage;
@@ -51,6 +50,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     private ListView leftDrawer;
     private ListView rightDrawer;
     private ViewGroup leftDrawerContainer;
+    private ViewGroup rightDrawerContainer;
     private ActionBarDrawerToggle mDrawerToggle;
     private ArrayAdapter<IrcUser> userArrayAdapter;
     private List<IrcUser> users;
@@ -84,12 +84,13 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         drawerLayout.setDrawerShadow(R.drawable.drawer_shadow_right, GravityCompat.END);
 
         leftDrawerContainer = (ViewGroup) findViewById(R.id.left_drawer);
+        rightDrawerContainer = (ViewGroup) findViewById(R.id.right_drawer);
         leftDrawer = (ListView) findViewById(R.id.left_drawer_list);
         leftDrawer.setAdapter(ircChannelSelector.getArrayAdapter());
         leftDrawer.setItemsCanFocus(false);
         leftDrawer.setOnItemClickListener(channelDrawerOnClickListener);
         leftDrawer.setItemsCanFocus(false);
-        rightDrawer = (ListView) findViewById(R.id.right_drawer);
+        rightDrawer = (ListView) findViewById(R.id.right_drawer_list);
         users = new ArrayList<IrcUser>();
         userArrayAdapter = new ArrayAdapter<IrcUser>(this, R.layout.drawer_list_item, android.R.id.text1, users);
 
@@ -111,7 +112,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
 
             @Override
             public void onDrawerOpened(View drawerView) {
-                drawerLayout.closeDrawer(drawerView == rightDrawer ? leftDrawerContainer : rightDrawer);
+                drawerLayout.closeDrawer(drawerView == rightDrawerContainer ? leftDrawerContainer : rightDrawerContainer);
                 getActionBar().setTitle(mDrawerTitle);
                 getActionBar().setSubtitle(null);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
@@ -149,7 +150,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         // If the nav drawer is open, hide action items related to the content view
-        drawerOpen = (drawerLayout.isDrawerOpen(leftDrawerContainer) || drawerLayout.isDrawerOpen(rightDrawer));
+        drawerOpen = (drawerLayout.isDrawerOpen(leftDrawerContainer) || drawerLayout.isDrawerOpen(rightDrawerContainer));
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -543,9 +544,14 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     }
 
     public void leftDrawerSearch(View view) {
-        HashMap<String, String> content = session.getActiveServer().getChannels();
         Intent intent = new Intent(this, SearchActivity.class);
-        intent.putExtra("requestCode", SearchActivity.CHANNEL_FLAG);
+        intent.putExtra(SearchActivity.REQUEST_CODE, SearchActivity.CHANNEL_FLAG);
+        startActivity(intent);
+    }
+
+    public void rightDrawerSearch(View view) {
+        Intent intent = new Intent(this, SearchActivity.class);
+        intent.putExtra(SearchActivity.REQUEST_CODE, SearchActivity.USER_FLAG);
         startActivity(intent);
     }
 }

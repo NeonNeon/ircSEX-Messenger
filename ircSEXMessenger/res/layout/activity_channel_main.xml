@@ -40,12 +40,32 @@
                 android:dividerHeight="1dp"/>
     </LinearLayout>
 
-    <ListView
-            android:id="@+id/right_drawer"
+    <LinearLayout
             android:layout_width="280dp"
             android:layout_height="match_parent"
             android:layout_gravity="end"
-            android:choiceMode="singleChoice"
-            android:dividerHeight="1dp"
-            android:background="#EEE"/>
+            android:orientation="vertical"
+            android:id="@+id/right_drawer"
+            android:background="#EEE">
+
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:onClick="rightDrawerSearch">
+            <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Search stuff"
+                    android:drawableLeft="@drawable/social_send_now"
+                    android:textSize="16sp"
+                    android:enabled="false"/>
+        </LinearLayout>
+        <ListView
+                android:id="@+id/right_drawer_list"
+                android:layout_width="280dp"
+                android:layout_height="match_parent"
+                android:choiceMode="singleChoice"
+                android:dividerHeight="1dp"/>
+    </LinearLayout>
 </android.support.v4.widget.DrawerLayout>

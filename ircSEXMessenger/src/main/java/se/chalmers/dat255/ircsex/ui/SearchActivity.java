@@ -28,6 +28,9 @@ import se.chalmers.dat255.ircsex.model.Session;
  * Created by Oskar on 2013-10-04.
  */
 public class SearchActivity extends ListActivity {
+    public static final int CHANNEL_FLAG = 0;
+    public static final int USER_FLAG = 1;
+    public static final String REQUEST_CODE = "requestCode";
 
     private ArrayAdapter<String> adapter;
     private Session session;
@@ -36,16 +39,13 @@ public class SearchActivity extends ListActivity {
     private Set<String> content;
     private List<String> searchResult;
 
-    public static final int CHANNEL_FLAG = 0;
-    public static final int USER_FLAG = 1;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
         session = Session.getInstance(this, null);
-        if (getIntent().getExtras().getInt("requestCode") == CHANNEL_FLAG) {
+        if (getIntent().getExtras().getInt(REQUEST_CODE) == CHANNEL_FLAG) {
             session.getActiveServer().listChannels();
             channels = new HashMap<String, String>();
         }
