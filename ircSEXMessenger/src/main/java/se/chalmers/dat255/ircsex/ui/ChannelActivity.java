@@ -35,6 +35,7 @@ import java.util.List;
 import se.chalmers.dat255.ircsex.R;
 import se.chalmers.dat255.ircsex.model.IrcMessage;
 import se.chalmers.dat255.ircsex.model.IrcUser;
+import se.chalmers.dat255.ircsex.model.NetworkStateHandler;
 import se.chalmers.dat255.ircsex.model.Session;
 import se.chalmers.dat255.ircsex.model.SessionListener;
 import se.chalmers.dat255.ircsex.ui.dialog.JoinChannelDialogFragment;
@@ -43,8 +44,11 @@ import se.chalmers.dat255.ircsex.view.IrcChannelItem;
 import se.chalmers.dat255.ircsex.view.IrcServerHeader;
 
 public class ChannelActivity extends FragmentActivity implements SessionListener,
-        JoinChannelDialogFragment.DialogListener, ChatFragment.ChatMessageSendListener {
+        JoinChannelDialogFragment.DialogListener, ChatFragment.ChatMessageSendListener,
+        NetworkStateHandler.ConnectionListener {
+
     private static final String CHAT_FRAGMENT_TAG = "chat_fragment";
+
     private DrawerLayout drawerLayout;
     private ListView leftDrawer;
     private ListView rightDrawer;
@@ -67,10 +71,15 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     private static int selected = -1;
     private ChannelListOnClickListener channelDrawerOnClickListener;
 
+    private Intent noInternetIntent;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_channel_main);
+
+        noInternetIntent = new Intent(this, NoInternetActivity.class);
+        NetworkStateHandler.addListener(this);
 
         mTitle = mDrawerTitle = getTitle();
         if (ircChannelSelector == null) {
@@ -535,6 +544,16 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
                 ((TextView) whois.findViewById(R.id.dialog_whois_idle)).setText(formattedIdleTime);
             }
         });
+    }
+
+    @Override
+    public void onOnline() {
+    }
+
+    @Override
+    public void onOffline() {
+        Log.e("IRC", noInternetIntent.toString());
+        startActivity(noInternetIntent);
     }
 
     private void showWhoisDialog(final String nick) {
