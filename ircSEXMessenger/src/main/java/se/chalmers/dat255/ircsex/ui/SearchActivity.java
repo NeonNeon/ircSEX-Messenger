@@ -48,7 +48,7 @@ public class SearchActivity extends ListActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
 
         searchResult = new ArrayList<String>();
-        adapter = new ArrayAdapter<String>(this, R.layout.server_list_item, searchResult);
+        adapter = new ArrayAdapter<String>(this, R.layout.server_list_item, android.R.id.text1, searchResult);
         setListAdapter(adapter);
     }
 
@@ -56,16 +56,14 @@ public class SearchActivity extends ListActivity {
         if (content.isEmpty()) {
             content = session.getActiveServer().getChannels();
         }
-
-        List<String> result = new ArrayList<String>();
+        adapter.clear();
         for (String entry : content.keySet()) {
-            if (entry.toLowerCase().contains(search.toLowerCase())
-                    || content.get(entry).toLowerCase().contains(search.toLowerCase())) {
-                result.add(entry + " - " + content.get(entry));
+            if (entry.contains(search)
+                    || content.get(entry).contains(search)) {
+                adapter.add(entry + " - " + content.get(entry));
             }
         }
-        searchResult = result;
-        adapter.notifyDataSetChanged();
+        getListView().invalidate();
     }
 
     @Override
