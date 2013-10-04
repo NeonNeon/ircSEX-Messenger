@@ -32,7 +32,7 @@ public class NoInternetActivity extends Activity implements NetworkStateHandler.
     }
 
     private void setImage() {
-        int rand = (int) (Math.random() * 4);
+        int rand = (int) (Math.random() * 5);
         int imageResource = getResources().getIdentifier("@drawable/nointernet" + rand, null, getPackageName());
         ImageView imageView = (ImageView) findViewById(R.id.noInternetImage);
         Drawable res = getResources().getDrawable(imageResource);
