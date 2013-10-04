@@ -21,6 +21,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -30,6 +31,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import se.chalmers.dat255.ircsex.R;
@@ -52,6 +54,8 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     private DrawerLayout drawerLayout;
     private ListView leftDrawer;
     private ListView rightDrawer;
+    private ViewGroup leftDrawerContainer;
+    private ViewGroup rightDrawerContainer;
     private ActionBarDrawerToggle mDrawerToggle;
     private ArrayAdapter<IrcUser> userArrayAdapter;
     private List<IrcUser> users;
@@ -91,12 +95,14 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         drawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
         drawerLayout.setDrawerShadow(R.drawable.drawer_shadow_right, GravityCompat.END);
 
-        leftDrawer = (ListView) findViewById(R.id.left_drawer);
+        leftDrawerContainer = (ViewGroup) findViewById(R.id.left_drawer);
+        rightDrawerContainer = (ViewGroup) findViewById(R.id.right_drawer);
+        leftDrawer = (ListView) findViewById(R.id.left_drawer_list);
         leftDrawer.setAdapter(ircChannelSelector.getArrayAdapter());
         leftDrawer.setItemsCanFocus(false);
         leftDrawer.setOnItemClickListener(channelDrawerOnClickListener);
         leftDrawer.setItemsCanFocus(false);
-        rightDrawer = (ListView) findViewById(R.id.right_drawer);
+        rightDrawer = (ListView) findViewById(R.id.right_drawer_list);
         users = new ArrayList<IrcUser>();
         userArrayAdapter = new ArrayAdapter<IrcUser>(this, R.layout.drawer_list_item, android.R.id.text1, users);
 
@@ -118,16 +124,15 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
 
             @Override
             public void onDrawerOpened(View drawerView) {
-                drawerLayout.closeDrawer(drawerView == rightDrawer ? leftDrawer : rightDrawer);
+                drawerLayout.closeDrawer(drawerView == rightDrawerContainer ? leftDrawerContainer : rightDrawerContainer);
                 getActionBar().setTitle(mDrawerTitle);
                 getActionBar().setSubtitle(null);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
         };
         drawerLayout.setDrawerListener(mDrawerToggle);
-
         if (session == null) {
-            session = new Session(this, this);
+            session = Session.getInstance(this, this);
             if (session.containsServers()) {
                 showConnectionDialog(getString(R.string.dialog_connect_reconnect));
             } else {
@@ -166,7 +171,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         // If the nav drawer is open, hide action items related to the content view
-        drawerOpen = (drawerLayout.isDrawerOpen(leftDrawer) || drawerLayout.isDrawerOpen(rightDrawer));
+        drawerOpen = (drawerLayout.isDrawerOpen(leftDrawerContainer) || drawerLayout.isDrawerOpen(rightDrawerContainer));
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -248,6 +253,10 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     @Override
     public void onJoinDialogAccept(DialogFragment dialog) {
         String channelName = ((TextView) dialog.getDialog().findViewById(R.id.dialog_join_channel_channel_name)).getText().toString();
+        joinChannel(channelName);
+    }
+
+    private void joinChannel(String channelName) {
         session.joinChannel(session.getActiveServer().getHost(), "#" + channelName);
     }
 
@@ -309,7 +318,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
 
         leftDrawer.setItemChecked(position, true);
         setTitle(channelName);
-        drawerLayout.closeDrawer(leftDrawer);
+        drawerLayout.closeDrawer(leftDrawerContainer);
         selected = position;
         updateUserList(session.getActiveChannel().getUsers());
     }
@@ -324,6 +333,10 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
                 String nickname = data.getStringExtra(NoServersActivity.EXTRA_NICKNAME);
                 // Maybe validate here, or maybe somewhere else? Should we even validate?
                 startServer(server, Integer.parseInt(port), nickname);
+                break;
+            case SearchActivity.RESULT_RETURN_CHANNEL:
+                String channel = data.getStringExtra(SearchActivity.EXTRA_CHANNEL);
+                joinChannel(channel);
                 break;
             case Activity.RESULT_CANCELED:
                 finish();
@@ -577,5 +590,20 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
                 .create();
 
         whoisResultDialog.show();
+    }
+
+    public void leftDrawerSearch(View view) {
+        Intent intent = new Intent(this, SearchActivity.class);
+        intent.putExtra(SearchActivity.REQUEST_CODE, SearchActivity.CHANNEL_FLAG);
+//        startActivityForResult(intent, 0);
+        startActivity(intent);
+    }
+
+    public void rightDrawerSearch(View view) {
+        Intent intent = new Intent(this, SearchActivity.class);
+        intent.putExtra(SearchActivity.REQUEST_CODE, SearchActivity.USER_FLAG);
+//        startActivityForResult(intent, 0);
+        startActivity(intent);
+
     }
 }

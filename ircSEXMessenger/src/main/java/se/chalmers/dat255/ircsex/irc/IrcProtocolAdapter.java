@@ -93,7 +93,7 @@ public class IrcProtocolAdapter implements Runnable {
         else if (reply.startsWith("PING ")) {
             write("PONG " + reply.substring(5));
         }
-        else if ((index = reply.indexOf("JOIN")) != -1) {
+        else if ((index = reply.indexOf("JOIN ")) != -1) {
             listener.userJoined(reply.substring(index + 6),
                     reply.substring(1, reply.indexOf('!')));
         }
@@ -140,6 +140,13 @@ public class IrcProtocolAdapter implements Runnable {
             int idleTime = Integer.parseInt(reply.substring(index3 + 1, reply.indexOf(' ', index3 + 1)));
             System.out.println(nick+"|"+idleTime);
             listener.whoisIdleTime(nick, idleTime);
+        }
+        else if (reply.contains("322 ")) {
+            if ((index = reply.indexOf("#")) != -1) {
+                String channel = reply.substring(index, reply.indexOf(":", 1) - 1);
+                String topic = reply.substring(reply.indexOf("] ") + 2);
+                listener.channelListResponse(channel, topic);
+            }
         }
 
         // Numeric replies - should be after everything else
@@ -229,6 +236,13 @@ public class IrcProtocolAdapter implements Runnable {
      */
     public void getUsers(String channel) {
         write("NAMES " + channel);
+    }
+
+    /**
+     * Send a request to get all channels on the server.
+     */
+    public void listChannels() {
+        write("LIST");
     }
 
     /**

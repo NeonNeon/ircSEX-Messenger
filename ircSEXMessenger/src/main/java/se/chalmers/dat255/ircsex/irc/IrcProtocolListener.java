@@ -90,6 +90,13 @@ public interface IrcProtocolListener {
      */
     public void whoisIdleTime(String nick, int seconds);
 
+    /**
+     * This is sent as a response to a listChannel call to IPA.
+     * @param name - the name of the channel
+     * @param topic - the topic of the channel
+     */
+    public void channelListResponse(String name, String topic);
+
     // ERRORS
 
     /**

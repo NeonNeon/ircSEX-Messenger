@@ -75,4 +75,12 @@ class IrcProtocolAdapterTest extends Specification {
         nick << ["Heissman", "Rascal", "oed"]
         channel << ["#fest", "#svinstia", "#party"]
     }
+
+    def "test getChannelsOnServer"() {
+        when:
+        ipa.listChannels()
+
+        then:
+        mockIrcServer.readLine().equals("LIST\r\n")
+    }
 }

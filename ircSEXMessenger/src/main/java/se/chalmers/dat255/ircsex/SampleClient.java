@@ -18,7 +18,7 @@ public class SampleClient {
         reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
         write("NICK " + nick);
-        write("USER " + login + " 8 * : Test test");
+        write("USER " + login + " 8 * : Test leftDrawerSearch");
         writer.flush();
 
         String line;

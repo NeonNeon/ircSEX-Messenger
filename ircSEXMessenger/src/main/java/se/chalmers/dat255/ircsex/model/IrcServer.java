@@ -4,6 +4,10 @@ import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -28,7 +32,7 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
     private final ChannelDatabaseAdapter datasource;
     private final ServerDatabaseAdapter serverDatasource;
 
-    private final ConcurrentMap<String, IrcChannel> channels;
+    private final HashMap<String, String> channels;
     private final ConcurrentMap<String, IrcChannel> connectedChannels;
 
     private IrcProtocolAdapter protocol;
@@ -69,7 +73,7 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
         datasource = new ChannelDatabaseAdapter();
         datasource.open();
 
-        channels = new ConcurrentHashMap<String, IrcChannel>();
+        channels = new HashMap<String, String>();
         connectedChannels = new ConcurrentHashMap<String, IrcChannel>();
 
         NetworkStateHandler.addListener(this);
@@ -250,6 +254,24 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
         }
     }
 
+    public Set<String> getKnownUsers() {
+        Set<String> users = new LinkedHashSet<String>();
+        for (Map.Entry<String, IrcChannel> c : connectedChannels.entrySet()) {
+            for (IrcUser user : c.getValue().getUsers()) {
+                users.add(user.getNick());
+            }
+        }
+        return users;
+    }
+
+    public HashMap<String, String> getChannels() {
+        return channels;
+    }
+
+    public void listChannels() {
+        protocol.listChannels();
+    }
+
     @Override
     public void serverConnected() {
         if (NetworkStateHandler.isConnected()) {
@@ -392,6 +414,11 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
         for (SessionListener listener : sessionListeners) {
             listener.whoisIdleTime(nick, IrcUser.formatIdleTime(seconds));
         }
+    }
+
+    @Override
+    public void channelListResponse(String name, String topic) {
+        channels.put(name, topic);
     }
 
     @Override
