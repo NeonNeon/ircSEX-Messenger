@@ -118,7 +118,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
             }
         };
         drawerLayout.setDrawerListener(mDrawerToggle);
-        session = new Session(this, this);
+        session = Session.getInstance(this, this);
         if (!session.containsServers()) {
             startNoServersActivity();
         } else {

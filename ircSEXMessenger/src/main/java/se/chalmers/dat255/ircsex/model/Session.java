@@ -15,6 +15,9 @@ import se.chalmers.dat255.ircsex.model.database.ServerDatabaseAdapter;
  * Created by Oskar on 2013-09-17.
  */
 public class Session {
+
+    private static Session instance;
+
     private IrcServer activeServer;
     private IrcChannel activeChannel;
     private final Map<String, IrcServer> servers;
@@ -25,7 +28,7 @@ public class Session {
     /**
      * Creates an Session object.
      */
-    public Session(Context context, SessionListener listener) {
+    private Session(Context context, SessionListener listener) {
         ContextManager.CHANNEL_CONTEXT = context;
         ContextManager.SERVER_CONTEXT = context;
         this.listener = listener;
@@ -37,6 +40,15 @@ public class Session {
         for (IrcServer server : servers.values()) {
             server.addSessionListener(listener);
         }
+    }
+
+
+
+    public static Session getInstance(Context context, SessionListener listener) {
+        if (instance == null) {
+            instance = new Session(context, listener);
+        }
+        return instance;
     }
 
     /**
