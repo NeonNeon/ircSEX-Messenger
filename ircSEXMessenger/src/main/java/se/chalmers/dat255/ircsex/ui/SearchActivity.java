@@ -4,14 +4,10 @@ import android.app.ActionBar;
 import android.app.ListActivity;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.view.MenuItemCompat;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
 import android.widget.SearchView;
 
 import java.util.ArrayList;
@@ -110,6 +106,13 @@ public class SearchActivity extends ListActivity {
             public boolean onQueryTextChange(String s) {
                 SearchActivity.this.search(s);
                 return false;
+            }
+        });
+        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                SearchActivity.this.finish();
+                return true;
             }
         });
         return super.onCreateOptionsMenu(menu);
