@@ -232,6 +232,10 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     @Override
     public void onJoinDialogAccept(DialogFragment dialog) {
         String channelName = ((TextView) dialog.getDialog().findViewById(R.id.dialog_join_channel_channel_name)).getText().toString();
+        joinChannel(channelName);
+    }
+
+    private void joinChannel(String channelName) {
         session.joinChannel(session.getActiveServer().getHost(), "#" + channelName);
     }
 
@@ -300,6 +304,10 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
                 String nickname = data.getStringExtra(NoServersActivity.EXTRA_NICKNAME);
                 // Maybe validate here, or maybe somewhere else? Should we even validate?
                 startServer(server, Integer.parseInt(port), nickname);
+                break;
+            case SearchActivity.RESULT_RETURN_CHANNEL:
+                String channel = data.getStringExtra(SearchActivity.EXTRA_CHANNEL);
+                joinChannel(channel);
                 break;
             case Activity.RESULT_CANCELED:
                 finish();
@@ -546,12 +554,15 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     public void leftDrawerSearch(View view) {
         Intent intent = new Intent(this, SearchActivity.class);
         intent.putExtra(SearchActivity.REQUEST_CODE, SearchActivity.CHANNEL_FLAG);
+//        startActivityForResult(intent, 0);
         startActivity(intent);
     }
 
     public void rightDrawerSearch(View view) {
         Intent intent = new Intent(this, SearchActivity.class);
         intent.putExtra(SearchActivity.REQUEST_CODE, SearchActivity.USER_FLAG);
+//        startActivityForResult(intent, 0);
         startActivity(intent);
+
     }
 }

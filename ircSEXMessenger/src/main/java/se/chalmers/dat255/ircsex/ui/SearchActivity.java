@@ -3,6 +3,7 @@ package se.chalmers.dat255.ircsex.ui;
 import android.app.ActionBar;
 import android.app.ListActivity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -30,6 +31,8 @@ import se.chalmers.dat255.ircsex.model.Session;
 public class SearchActivity extends ListActivity {
     public static final int CHANNEL_FLAG = 0;
     public static final int USER_FLAG = 1;
+    public static final int RESULT_RETURN_CHANNEL = 30;
+    public static final String EXTRA_CHANNEL = "channelName";
     public static final String REQUEST_CODE = "requestCode";
 
     private ArrayAdapter<String> adapter;
@@ -60,21 +63,22 @@ public class SearchActivity extends ListActivity {
     }
 
     private void search(String search) {
+        boolean channelSearch = getIntent().getExtras().getInt(REQUEST_CODE) == CHANNEL_FLAG;
         if (content.isEmpty()) {
-            if (getIntent().getExtras().getInt("requestCode") == CHANNEL_FLAG) {
+            if (channelSearch) {
                 channels = session.getActiveServer().getChannels();
                 content = channels.keySet();
             } else {
                 content = session.getActiveServer().getKnownUsers();
             }
         }
-
+        search = search.toLowerCase();
         adapter.clear();
         for (String entry : content) {
-            if (getIntent().getExtras().getInt("requestCode") == CHANNEL_FLAG
-                && (entry.contains(search) || channels.get(entry).contains(search))) {
+            if (channelSearch && (entry.toLowerCase().contains(search) // TODO: Improve efficiency
+                    || channels.get(entry).toLowerCase().contains(search))) {
                 adapter.add(entry + " - " + channels.get(entry));
-            } else if (entry.contains(search)) {
+            } else if (entry.toLowerCase().contains(search)) {
                 adapter.add(entry);
             }
         }
@@ -129,10 +133,10 @@ public class SearchActivity extends ListActivity {
         String text = ((TextView) ((LinearLayout) v).getChildAt(0)).getText().toString();
         if (getIntent().getExtras().getInt("requestCode") == CHANNEL_FLAG) {
             text = text.substring(0, text.indexOf(" "));
-            session.getActiveServer().joinChannel(text);
-        } else {
-            session.getActiveServer().queryUser(text);
         }
-        onBackPressed();
+        Intent data = new Intent();
+        data.putExtra(EXTRA_CHANNEL, text);
+        setResult(RESULT_RETURN_CHANNEL, data);
+        finish();
     }
 }
