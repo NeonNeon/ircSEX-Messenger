@@ -7,7 +7,6 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.DialogFragment;
@@ -22,6 +21,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -48,6 +48,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     private DrawerLayout drawerLayout;
     private ListView leftDrawer;
     private ListView rightDrawer;
+    private ViewGroup leftDrawerContainer;
     private ActionBarDrawerToggle mDrawerToggle;
     private ArrayAdapter<IrcUser> userArrayAdapter;
     private List<IrcUser> users;
@@ -80,7 +81,8 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         drawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
         drawerLayout.setDrawerShadow(R.drawable.drawer_shadow_right, GravityCompat.END);
 
-        leftDrawer = (ListView) findViewById(R.id.left_drawer);
+        leftDrawerContainer = (ViewGroup) findViewById(R.id.left_drawer);
+        leftDrawer = (ListView) findViewById(R.id.left_drawer_list);
         leftDrawer.setAdapter(ircChannelSelector.getArrayAdapter());
         leftDrawer.setItemsCanFocus(false);
         leftDrawer.setOnItemClickListener(channelDrawerOnClickListener);
@@ -114,7 +116,6 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
             }
         };
         drawerLayout.setDrawerListener(mDrawerToggle);
-
         session = new Session(this, this);
         if (!session.containsServers()) {
             startNoServersActivity();
@@ -146,7 +147,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         // If the nav drawer is open, hide action items related to the content view
-        drawerOpen = (drawerLayout.isDrawerOpen(leftDrawer) || drawerLayout.isDrawerOpen(rightDrawer));
+        drawerOpen = (drawerLayout.isDrawerOpen(leftDrawerContainer) || drawerLayout.isDrawerOpen(rightDrawer));
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -281,7 +282,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         fragmentManager.beginTransaction().replace(R.id.channel_layout, fragment).commit();
         leftDrawer.setItemChecked(position, true);
         setTitle(channelName);
-        drawerLayout.closeDrawer(leftDrawer);
+        drawerLayout.closeDrawer(leftDrawerContainer);
         selected = position;
         updateUserList(session.getActiveChannel().getUsers());
     }
@@ -537,5 +538,9 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
                 .create();
 
         whoisResultDialog.show();
+    }
+
+    public void leftDrawerSearch(View view) {
+        Log.e("IRCDEBUG", "ASDFASDFASDF");
     }
 }
