@@ -139,7 +139,6 @@ public class IrcProtocolAdapter implements Runnable {
         else if (reply.contains("322 ")) {
             String channel = reply.substring(reply.indexOf("#"), reply.indexOf(":", 1) - 1);
             String topic = reply.substring(reply.indexOf("] ") + 2);
-            System.out.println(channel+"|"+topic);
             listener.channelListResponse(channel, topic);
         }
 

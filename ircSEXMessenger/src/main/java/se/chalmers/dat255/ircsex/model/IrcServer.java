@@ -2,10 +2,14 @@ package se.chalmers.dat255.ircsex.model;
 
 import android.util.Log;
 
+import com.sun.corba.se.impl.encoding.OSFCodeSetRegistry;
+
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -232,6 +236,31 @@ public class IrcServer implements IrcProtocolListener {
         if (!connectedChannels.containsKey(user)) {
             userJoined(user, this.user.getNick());
         }
+    }
+
+    private Set<IrcUser> getKnownUsers() {
+        Set<IrcUser> users = new LinkedHashSet<>();
+        for (Map.Entry<String, IrcChannel> c : connectedChannels.entrySet()) {
+            for (IrcUser user : c.getValue().getUsers()) {
+                users.add(user);
+            }
+        }
+        return users;
+    }
+
+    /**
+     * Returns a set of IrcUser which contains searchTerm.
+     * @param searchTerm - the term to search for
+     * @return all matching users
+     */
+    public Set<IrcUser> searchUsers(String searchTerm) {
+        Set<IrcUser> users = getKnownUsers();
+        for (IrcUser user : users) {
+            if (!user.getNick().contains(searchTerm)) {
+                users.remove(user);
+            }
+        }
+        return users;
     }
 
     @Override
