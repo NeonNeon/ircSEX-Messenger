@@ -6,9 +6,13 @@ import android.content.Context;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.SearchView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -116,5 +120,19 @@ public class SearchActivity extends ListActivity {
             }
         });
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    protected void onListItemClick(ListView l, View v, int position, long id) {
+        super.onListItemClick(l, v, position, id);
+
+        String text = ((TextView) ((LinearLayout) v).getChildAt(0)).getText().toString();
+        if (getIntent().getExtras().getInt("requestCode") == CHANNEL_FLAG) {
+            text = text.substring(0, text.indexOf(" "));
+            session.getActiveServer().joinChannel(text);
+        } else {
+            session.getActiveServer().queryUser(text);
+        }
+        onBackPressed();
     }
 }
