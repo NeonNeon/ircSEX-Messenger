@@ -16,8 +16,10 @@ import android.widget.SearchView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import se.chalmers.dat255.ircsex.R;
 import se.chalmers.dat255.ircsex.model.Session;
@@ -30,10 +32,12 @@ public class SearchActivity extends ListActivity {
     private ArrayAdapter<String> adapter;
     private Session session;
 
-    private Map<String, String> content;
+    private Map<String, String> channels;
+    private Set<String> content;
     private List<String> searchResult;
 
-    public static final String BUNDLE_KEY = "search_content";
+    public static final int CHANNEL_FLAG = 0;
+    public static final int USER_FLAG = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,8 +45,11 @@ public class SearchActivity extends ListActivity {
         setContentView(R.layout.activity_search);
 
         session = Session.getInstance(this, null);
-        session.getActiveServer().listChannels();
-        content = new HashMap<String, String>();
+        if (getIntent().getExtras().getInt("requestCode") == CHANNEL_FLAG) {
+            session.getActiveServer().listChannels();
+            channels = new HashMap<String, String>();
+        }
+        content = new LinkedHashSet<String>();
 
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
@@ -54,13 +61,21 @@ public class SearchActivity extends ListActivity {
 
     private void search(String search) {
         if (content.isEmpty()) {
-            content = session.getActiveServer().getChannels();
+            if (getIntent().getExtras().getInt("requestCode") == CHANNEL_FLAG) {
+                channels = session.getActiveServer().getChannels();
+                content = channels.keySet();
+            } else {
+                content = session.getActiveServer().getKnownUsers();
+            }
         }
+
         adapter.clear();
-        for (String entry : content.keySet()) {
-            if (entry.contains(search)
-                    || content.get(entry).contains(search)) {
-                adapter.add(entry + " - " + content.get(entry));
+        for (String entry : content) {
+            if (getIntent().getExtras().getInt("requestCode") == CHANNEL_FLAG
+                && (entry.contains(search) || channels.get(entry).contains(search))) {
+                adapter.add(entry + " - " + channels.get(entry));
+            } else if (entry.contains(search)) {
+                adapter.add(entry);
             }
         }
         getListView().invalidate();
