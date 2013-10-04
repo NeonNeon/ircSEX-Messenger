@@ -15,24 +15,29 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import se.chalmers.dat255.ircsex.R;
 import se.chalmers.dat255.ircsex.model.IrcMessage;
 import se.chalmers.dat255.ircsex.model.IrcUser;
+import se.chalmers.dat255.ircsex.model.NetworkStateHandler;
 import se.chalmers.dat255.ircsex.model.Session;
 import se.chalmers.dat255.ircsex.model.SessionListener;
 import se.chalmers.dat255.ircsex.ui.dialog.JoinChannelDialogFragment;
@@ -41,27 +46,33 @@ import se.chalmers.dat255.ircsex.view.IrcChannelItem;
 import se.chalmers.dat255.ircsex.view.IrcServerHeader;
 
 public class ChannelActivity extends FragmentActivity implements SessionListener,
-        JoinChannelDialogFragment.DialogListener, ChatFragment.ChatMessageSendListener {
+        JoinChannelDialogFragment.DialogListener, ChatFragment.ChatMessageSendListener,
+        NetworkStateHandler.ConnectionListener {
+
+    private static final String CHAT_FRAGMENT_TAG = "chat_fragment";
+
     private DrawerLayout drawerLayout;
     private ListView leftDrawer;
     private ListView rightDrawer;
+    private ViewGroup leftDrawerContainer;
+    private ViewGroup rightDrawerContainer;
     private ActionBarDrawerToggle mDrawerToggle;
     private ArrayAdapter<IrcUser> userArrayAdapter;
     private List<IrcUser> users;
 
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
-    private IrcChannelSelector ircChannelSelector;
+    private static IrcChannelSelector ircChannelSelector;
     private boolean drawerOpen;
-    private ChatFragment fragment;
-    private String channelName;
+    private static ChatFragment fragment;
+    private static String channelName;
 
-    private Session session;
+    private static Session session;
     private ProgressDialog serverConnectProgressDialog;
     private AlertDialog whoisProgressDialog;
     private AlertDialog whoisResultDialog;
     private View whois;
-    private int selected = -1;
+    private static int selected = -1;
     private ChannelListOnClickListener channelDrawerOnClickListener;
 
     @Override
@@ -69,20 +80,26 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_channel_main);
 
+        NetworkStateHandler.addListener(this);
+
         mTitle = mDrawerTitle = getTitle();
-        ircChannelSelector = new IrcChannelSelector(this);
+        if (ircChannelSelector == null) {
+            ircChannelSelector = new IrcChannelSelector(this);
+        }
         channelDrawerOnClickListener = new ChannelListOnClickListener();
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
         drawerLayout.setDrawerShadow(R.drawable.drawer_shadow_right, GravityCompat.END);
 
-        leftDrawer = (ListView) findViewById(R.id.left_drawer);
+        leftDrawerContainer = (ViewGroup) findViewById(R.id.left_drawer);
+        rightDrawerContainer = (ViewGroup) findViewById(R.id.right_drawer);
+        leftDrawer = (ListView) findViewById(R.id.left_drawer_list);
         leftDrawer.setAdapter(ircChannelSelector.getArrayAdapter());
         leftDrawer.setItemsCanFocus(false);
         leftDrawer.setOnItemClickListener(channelDrawerOnClickListener);
         leftDrawer.setItemsCanFocus(false);
-        rightDrawer = (ListView) findViewById(R.id.right_drawer);
+        rightDrawer = (ListView) findViewById(R.id.right_drawer_list);
         users = new ArrayList<IrcUser>();
         userArrayAdapter = new ArrayAdapter<IrcUser>(this, R.layout.drawer_list_item, android.R.id.text1, users);
 
@@ -104,19 +121,27 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
 
             @Override
             public void onDrawerOpened(View drawerView) {
-                drawerLayout.closeDrawer(drawerView == rightDrawer ? leftDrawer : rightDrawer);
+                drawerLayout.closeDrawer(drawerView == rightDrawerContainer ? leftDrawerContainer : rightDrawerContainer);
                 getActionBar().setTitle(mDrawerTitle);
                 getActionBar().setSubtitle(null);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
         };
         drawerLayout.setDrawerListener(mDrawerToggle);
-
-        session = new Session(this, this);
-        if (!session.containsServers()) {
-            startNoServersActivity();
-        } else {
-            showConnectionDialog(getString(R.string.dialog_connect_reconnect));
+        if (session == null) {
+            session = Session.getInstance(this, this);
+            if (session.containsServers()) {
+                showConnectionDialog(getString(R.string.dialog_connect_reconnect));
+            } else {
+                startNoServersActivity();
+            }
+        }
+        else {
+            fragment = (ChatFragment) getFragmentManager().findFragmentByTag(CHAT_FRAGMENT_TAG);
+            fragment.bringUpToSpeed(this, session.getActiveChannel());
+            setTitle(channelName);
+            updateUserList(session.getActiveChannel().getUsers());
+            Log.e("IRCDEBUG", "Post select: " +  fragment.toString());
         }
     }
 
@@ -143,7 +168,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         // If the nav drawer is open, hide action items related to the content view
-        drawerOpen = (drawerLayout.isDrawerOpen(leftDrawer) || drawerLayout.isDrawerOpen(rightDrawer));
+        drawerOpen = (drawerLayout.isDrawerOpen(leftDrawerContainer) || drawerLayout.isDrawerOpen(rightDrawerContainer));
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -172,23 +197,10 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
 //                drawerOpen = true;
 //                break;
             case R.id.action_settings:
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                LayoutInflater inflater = getLayoutInflater();
-                View view = inflater.inflate(R.layout.dialog_change_nick, null);
-                final EditText nickEditText = (EditText) view.findViewById(android.R.id.text1);
-                nickEditText.setHint(getString(R.string.dialog_nick_hint) + " " + session.getActiveServer().getHost());
-                builder.setTitle(R.string.dialog_nick_title)
-                        .setView(view)
-                        .setPositiveButton(getString(R.string.dialog_generic_ok), new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                String newNick = nickEditText.getText().toString();
-                                Log.e("IRCDEBUG", "Change nickname to " + newNick);
-                                session.changeNick(newNick);
-                            }
-                        })
-                        .setNegativeButton(R.string.dialog_generic_cancel, null)
-                        .create().show();
+                changeNick();
+                break;
+            case R.id.action_invite_user:
+                inviteUser();
                 break;
             default:
                 return super.onOptionsItemSelected(item);
@@ -196,9 +208,52 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         return true;
     }
 
+    private void inviteUser() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = getLayoutInflater();
+        View view = inflater.inflate(R.layout.dialog_invite_user, null);
+        final EditText userToInvite = (EditText) view.findViewById(android.R.id.text1);
+        userToInvite.setHint(getString(R.string.dialog_invite_hint));
+        builder.setTitle(R.string.dialog_invite_title)
+                .setView(view)
+                .setPositiveButton(getString(R.string.dialog_generic_ok), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        String user = userToInvite.getText().toString();
+                        session.getActiveServer().inviteUser(user, session.getActiveChannel());
+                    }
+                })
+                .setNegativeButton(R.string.dialog_generic_cancel, null)
+                .create().show();
+    }
+
+    private void changeNick() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = getLayoutInflater();
+        View view = inflater.inflate(R.layout.dialog_change_nick, null);
+        final EditText nickEditText = (EditText) view.findViewById(android.R.id.text1);
+        nickEditText.setHint(getString(R.string.dialog_nick_hint) + " " + session.getActiveServer().getHost());
+        builder.setTitle(R.string.dialog_nick_title)
+                .setView(view)
+                .setPositiveButton(getString(R.string.dialog_generic_ok), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        String newNick = nickEditText.getText().toString();
+                        Log.e("IRCDEBUG", "Change nickname to " + newNick);
+                        session.changeNick(newNick);
+                    }
+                })
+                .setNegativeButton(R.string.dialog_generic_cancel, null)
+                .create().show();
+    }
+
     @Override
     public void onJoinDialogAccept(DialogFragment dialog) {
         String channelName = ((TextView) dialog.getDialog().findViewById(R.id.dialog_join_channel_channel_name)).getText().toString();
+        joinChannel(channelName);
+    }
+
+    private void joinChannel(String channelName) {
         session.joinChannel(session.getActiveServer().getHost(), "#" + channelName);
     }
 
@@ -241,21 +296,26 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         }
     }
 
+    public void bubbleClicked(View view) {
+        String name = ((TextView)view.findViewById(R.id.chat_bubble_nick))
+                .getText().toString();
+        ((TextView)findViewById(R.id.fragment_chat_message))
+                .append(name + ": ");
+    }
+
     private void selectItem(int position) {
-        // update the channel_main content by replacing fragments
         channelName = ircChannelSelector.getItem(position).getText();
         session.setActiveChannel(channelName);
-        fragment = new ChatFragment(this);
+
+        fragment = new ChatFragment(this, session.getActiveChannel());
         Bundle args = new Bundle();
-        args.putInt(ChatFragment.ARG_CHANNEL_INDEX, position);
         fragment.setArguments(args);
         FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.channel_layout, fragment).commit();
+        fragmentManager.beginTransaction().replace(R.id.channel_layout, fragment, CHAT_FRAGMENT_TAG).commit();
 
-        // update selected item and title, then close the drawer
         leftDrawer.setItemChecked(position, true);
         setTitle(channelName);
-        drawerLayout.closeDrawer(leftDrawer);
+        drawerLayout.closeDrawer(leftDrawerContainer);
         selected = position;
         updateUserList(session.getActiveChannel().getUsers());
     }
@@ -270,6 +330,10 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
                 String nickname = data.getStringExtra(NoServersActivity.EXTRA_NICKNAME);
                 // Maybe validate here, or maybe somewhere else? Should we even validate?
                 startServer(server, Integer.parseInt(port), nickname);
+                break;
+            case SearchActivity.RESULT_RETURN_CHANNEL:
+                String channel = data.getStringExtra(SearchActivity.EXTRA_CHANNEL);
+                joinChannel(channel);
                 break;
             case Activity.RESULT_CANCELED:
                 finish();
@@ -365,6 +429,20 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         }
     }
 
+    @Override
+    public void onChannelUserJoin(String host, String channel, IrcUser user) {
+        if (session.getActiveChannel() != null && session.getActiveChannel().getChannelName().equals(channel)) {
+            addInfoMessage(user + " has joined the channel");
+        }
+    }
+
+    @Override
+    public void onChannelUserPart(String host, String channel, String nick) {
+        if (session.getActiveChannel() != null && session.getActiveChannel().getChannelName().equals(channel)) {
+            addInfoMessage(nick + " has left the channel");
+        }
+    }
+
     private void updateUserList(List<IrcUser> users) {
         this.users.clear();
         for (IrcUser user : users) {
@@ -385,6 +463,13 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         whoisProgressDialog.show();
     }
 
+    public void queryUser(View view) {
+        view = ((LinearLayout) view).getChildAt(0);
+        String user = ((TextView) ((LinearLayout) view).getChildAt(0)).getText().toString();
+        session.getActiveServer().queryUser(IrcUser.extractUserName(user));
+        drawerLayout.closeDrawer(Gravity.END);
+    }
+
     @Override
     public void onChannelMessage(String host, final String channel, final IrcMessage message) {
         ChannelActivity.this.runOnUiThread(new Runnable() {
@@ -392,18 +477,36 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
             public void run() {
                 if (channel.equals(channelName)) {
                     fragment.addMessage(message);
+                    Log.e("IRCDEBUG", "onChannelMessage to: " + fragment.toString());
                 }
             }
         });
     }
 
     @Override
-    public void onSentMessage(String host, String channel, IrcMessage message) {
-
+    public void onSentMessage(String host, final String channel, final IrcMessage message) {
+        ChannelActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (channel.equals(channelName)) {
+                    fragment.addSentMessage(message);
+                }
+            }
+        });
     }
 
-    public void onNickChange(String host, String oldNick, String newNick) {
+    @Override
+    public void onNickChange(String host, final String oldNick, final String newNick) {
+        addInfoMessage(oldNick + " is now known as " + newNick);
+    }
 
+    private void addInfoMessage(final String infoMessage) {
+        ChannelActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                fragment.addInfoMessage(infoMessage);
+            }
+        });
     }
 
     @Override
@@ -441,38 +544,26 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     }
 
     @Override
-    public void whoisIdleTime(final String nick, final int seconds) {
+    public void whoisIdleTime(final String nick, final String formattedIdleTime) {
         ChannelActivity.this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 if (whois == null) {
                     showWhoisDialog(nick);
                 }
-                ((TextView) whois.findViewById(R.id.dialog_whois_idle)).setText(formatIdleTime(seconds));
+                ((TextView) whois.findViewById(R.id.dialog_whois_idle)).setText(formattedIdleTime);
             }
         });
     }
 
-    private String formatIdleTime(int time) {
-        int seconds = time % 60;
-        time /= 60;
-        int minutes = time % 60;
-        time /= 60;
-        int hours = time % 24;
-        int days = time / 24;
+    @Override
+    public void onOnline() {
+    }
 
-        String idle = "";
-        if (days > 0) {
-            idle += " " + days + "d";
-        } if (hours > 0) {
-            idle += " " + hours + "h";
-        } if (minutes > 0) {
-            idle += " " + minutes + "m";
-        } if (seconds > 0) {
-            idle += " " + seconds + "s";
-        }
-
-        return idle.trim();
+    @Override
+    public void onOffline() {
+        Intent noInternetIntent = new Intent(this, NoInternetActivity.class);
+        startActivity(noInternetIntent);
     }
 
     private void showWhoisDialog(final String nick) {
@@ -496,5 +587,20 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
                 .create();
 
         whoisResultDialog.show();
+    }
+
+    public void leftDrawerSearch(View view) {
+        Intent intent = new Intent(this, SearchActivity.class);
+        intent.putExtra(SearchActivity.REQUEST_CODE, SearchActivity.CHANNEL_FLAG);
+//        startActivityForResult(intent, 0);
+        startActivity(intent);
+    }
+
+    public void rightDrawerSearch(View view) {
+        Intent intent = new Intent(this, SearchActivity.class);
+        intent.putExtra(SearchActivity.REQUEST_CODE, SearchActivity.USER_FLAG);
+//        startActivityForResult(intent, 0);
+        startActivity(intent);
+
     }
 }

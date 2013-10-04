@@ -48,12 +48,26 @@ public interface IrcProtocolListener {
     public void userParted(String channelName, String nick);
 
     /**
-     * Sent when a message is received from the server.
+     * This method is called whn a user quits from the server.
+     * @param nick - the nick of the user
+     * @param quitMessage - the quit message
+     */
+    public void userQuited(String nick, String quitMessage);
+
+    /**
+     * Sent when a channel message is received from the server.
      * @param channel - the channel that the message was sent to
      * @param user - the user that sent the message
      * @param message - the message sent
      */
-    public void messageReceived(String channel, String user, String message);
+    public void channelMessageReceived(String channel, String user, String message);
+
+    /**
+     * Sent when a query message is received from the server.
+     * @param user - the user that sent the message
+     * @param message - the message sent
+     */
+    public void queryMessageReceived(String user, String message);
 
     /**
      * This method sends a list of connected channels as a whois request resopnse.
@@ -75,6 +89,13 @@ public interface IrcProtocolListener {
      * @param seconds
      */
     public void whoisIdleTime(String nick, int seconds);
+
+    /**
+     * This is sent as a response to a listChannel call to IPA.
+     * @param name - the name of the channel
+     * @param topic - the topic of the channel
+     */
+    public void channelListResponse(String name, String topic);
 
     // ERRORS
 

@@ -8,13 +8,14 @@
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
     <string name="action_settings">Change nickname</string>
-    <string name="no_servers_connected">You\'re not connected to any servers yet :(</string>
+    <string name="noservers_not_connected">You\'re not connected to any servers yet :(</string>
     <string name="action_userlist">View users</string>
     <string name="add_server">Add server</string>
     <string name="hint_server">Server</string>
     <string name="hint_port">Port</string>
     <string name="hint_nickname">Nickname</string>
     <string name="action_leave_channel">Leave channel</string>
+    <string name="action_invite_user">Invite user</string>
     <string name="join_channel">Join channel</string>
     <string name="hint_channel_name">Channel name</string>
     <string name="hint_join">Join</string>
@@ -29,4 +30,9 @@
     <string name="dialog_whois_idle_time">Idle time</string>
     <string name="dialog_whois_connected_to">Connected to</string>
     <string name="sendMessage">Send a message</string>
+    <string name="dialog_invite_hint">User to invite</string>
+    <string name="dialog_invite_title">Invite user</string>
+    <string name="noservers_connect_button">Connect to a server</string>
+    <string name="dialog_query_user_title">Send message to</string>
+    <string name="dialog_query_user_hint">Recipient</string>
 </resources>

@@ -83,18 +83,28 @@ public class IrcProtocolAdapter implements Runnable {
             String channel = reply.substring(index + 8, msgIndex - 1);
             String message = reply.substring(msgIndex + 1);
 
-            listener.messageReceived(channel, nick, message);
+            if (channel.contains("#")) {
+                listener.channelMessageReceived(channel, nick, message);
+            }
+            else {
+                listener.queryMessageReceived(nick, message);
+            }
         }
         else if (reply.startsWith("PING ")) {
             write("PONG " + reply.substring(5));
         }
-        else if ((index = reply.indexOf("JOIN")) != -1) {
+        else if ((index = reply.indexOf("JOIN ")) != -1) {
             listener.userJoined(reply.substring(index + 6),
                     reply.substring(1, reply.indexOf('!')));
         }
         else if ((index = reply.indexOf("PART")) != -1) {
             listener.userParted(reply.substring(index + 5),
                     reply.substring(1, reply.indexOf('!')));
+        }
+        else if ((index = reply.indexOf("QUIT")) != -1) {
+            String message = reply.substring(index + 6);
+            String user = reply.substring(1, reply.indexOf('!'));
+            listener.userQuited(user, message);
         }
         else if ((index = reply.indexOf("NICK ")) != -1) {
             listener.nickChanged(reply.substring(reply.indexOf(':') + 1, reply.indexOf('!')),
@@ -130,6 +140,13 @@ public class IrcProtocolAdapter implements Runnable {
             int idleTime = Integer.parseInt(reply.substring(index3 + 1, reply.indexOf(' ', index3 + 1)));
             System.out.println(nick+"|"+idleTime);
             listener.whoisIdleTime(nick, idleTime);
+        }
+        else if (reply.contains("322 ")) {
+            if ((index = reply.indexOf("#")) != -1) {
+                String channel = reply.substring(index, reply.indexOf(":", 1) - 1);
+                String topic = reply.substring(reply.indexOf("] ") + 2);
+                listener.channelListResponse(channel, topic);
+            }
         }
 
         // Numeric replies - should be after everything else
@@ -222,11 +239,27 @@ public class IrcProtocolAdapter implements Runnable {
     }
 
     /**
+     * Send a request to get all channels on the server.
+     */
+    public void listChannels() {
+        write("LIST");
+    }
+
+    /**
      * Send request to get whois info.
      * @param nick - the nick to get info for
      */
     public void whois(String nick) {
         write("WHOIS " + nick);
+    }
+
+    /**
+     * Invite a user to a channel.
+     * @param nick
+     * @param channel
+     */
+    public void invite(String nick, String channel) {
+        write("INVITE " + nick + " " + channel);
     }
 
     private synchronized void write(String string) {

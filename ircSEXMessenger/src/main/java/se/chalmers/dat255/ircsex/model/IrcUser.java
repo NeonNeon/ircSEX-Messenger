@@ -9,13 +9,13 @@ import java.security.NoSuchAlgorithmException;
  * Created by Oskar on 2013-09-24.
  */
 public class IrcUser implements Comparable<IrcUser> {
-
     private String nick;
     private char status;
     private boolean owner;
     private boolean op;
     private boolean halfOp;
     private boolean voice;
+    private boolean self;
 
     private int color;
 
@@ -98,13 +98,13 @@ public class IrcUser implements Comparable<IrcUser> {
     @Override
     public int compareTo(IrcUser ircUser) {
         if (owner != ircUser.isOwner()) {
-            return Boolean.valueOf(ircUser.isOwner()).compareTo(Boolean.valueOf(owner));
+            return Boolean.valueOf(ircUser.isOwner()).compareTo(owner);
         } else if (op != ircUser.isOp()) {
-            return Boolean.valueOf(ircUser.isOp()).compareTo(Boolean.valueOf(op));
+            return Boolean.valueOf(ircUser.isOp()).compareTo(op);
         } else if (halfOp != ircUser.isHalfOp()) {
-            return Boolean.valueOf(ircUser.isHalfOp()).compareTo(Boolean.valueOf(halfOp));
+            return Boolean.valueOf(ircUser.isHalfOp()).compareTo(halfOp);
         } else if (voice != ircUser.isVoice()) {
-            return Boolean.valueOf(ircUser.isVoice()).compareTo(Boolean.valueOf(voice));
+            return Boolean.valueOf(ircUser.isVoice()).compareTo(voice);
         } else {
             return nick.toLowerCase().compareTo(ircUser.getNick().toLowerCase());
         }
@@ -112,6 +112,10 @@ public class IrcUser implements Comparable<IrcUser> {
 
     public int getColor() {
         return color;
+    }
+
+    public boolean isNamed(String name) {
+        return nick.equals(name);
     }
 
     /**
@@ -138,5 +142,49 @@ public class IrcUser implements Comparable<IrcUser> {
     public static String extractUserName(String username) {
         char status = extractUserStatus(username);
         return username.replace(Character.toString(status), "");
+    }
+
+    public boolean isSelf() {
+        return self;
+    }
+
+    public void setSelf() {
+        this.self = true;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        IrcUser ircUser = (IrcUser) o;
+        return nick.equals(ircUser.nick);
+    }
+
+    @Override
+    public int hashCode() {
+        return nick.hashCode();
+    }
+
+    public static String formatIdleTime(int time) {
+        int seconds = time % 60;
+        time /= 60;
+        int minutes = time % 60;
+        time /= 60;
+        int hours = time % 24;
+        int days = time / 24;
+
+        String idle = "";
+        if (days > 0) {
+            idle += " " + days + "d";
+        } if (hours > 0) {
+            idle += " " + hours + "h";
+        } if (minutes > 0) {
+            idle += " " + minutes + "m";
+        } if (seconds > 0) {
+            idle += " " + seconds + "s";
+        }
+
+        return idle.trim();
     }
 }

@@ -1,9 +1,12 @@
 package se.chalmers.dat255.ircsex.model;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.util.Log;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import se.chalmers.dat255.ircsex.model.database.ContextManager;
@@ -15,6 +18,9 @@ import se.chalmers.dat255.ircsex.model.database.ServerDatabaseAdapter;
  * Created by Oskar on 2013-09-17.
  */
 public class Session {
+
+    private static Session instance;
+
     private IrcServer activeServer;
     private IrcChannel activeChannel;
     private final Map<String, IrcServer> servers;
@@ -25,7 +31,7 @@ public class Session {
     /**
      * Creates an Session object.
      */
-    public Session(Context context, SessionListener listener) {
+    private Session(Context context, SessionListener listener) {
         ContextManager.CHANNEL_CONTEXT = context;
         ContextManager.SERVER_CONTEXT = context;
         this.listener = listener;
@@ -39,6 +45,15 @@ public class Session {
         }
     }
 
+
+
+    public static Session getInstance(Context context, SessionListener listener) {
+        if (instance == null) {
+            instance = new Session(context, listener);
+        }
+        return instance;
+    }
+
     /**
      * Adds a server and connects to it.
      *
@@ -47,7 +62,7 @@ public class Session {
      * @param nick - Nickname
      */
     public void addServer(String host, int port, String nick, se.chalmers.dat255.ircsex.model.SessionListener sessionListener) {
-        addServer(host, port, "banned", nick, sessionListener); // TODO: Should not be banned before release.
+        addServer(host, port, nick, nick, sessionListener);
     }
 
     /**
@@ -75,6 +90,7 @@ public class Session {
         IrcServer ircServer = new IrcServer(host, port, login, nick, realName);
         servers.put(host, ircServer);
         ircServer.addSessionListener(sessionListener);
+        NetworkStateHandler.notify(ircServer);
         datasource.addServer(host, port, login, nick, realName);
     }
 
