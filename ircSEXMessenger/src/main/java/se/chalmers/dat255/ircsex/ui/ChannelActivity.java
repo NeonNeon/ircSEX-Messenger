@@ -254,7 +254,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     }
 
     private void joinChannel(String channelName) {
-        session.joinChannel(session.getActiveServer().getHost(), "#" + channelName);
+        session.joinChannel(session.getActiveServer().getHost(), channelName);
     }
 
     private void leaveActiveChannel() {
@@ -336,7 +336,9 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
                 joinChannel(channel);
                 break;
             case Activity.RESULT_CANCELED:
-                finish();
+                if (requestCode == NoServersActivity.REQUEST_SERVER) {
+                    finish();
+                }
                 break;
         }
     }
@@ -592,15 +594,13 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     public void leftDrawerSearch(View view) {
         Intent intent = new Intent(this, SearchActivity.class);
         intent.putExtra(SearchActivity.REQUEST_CODE, SearchActivity.CHANNEL_FLAG);
-//        startActivityForResult(intent, 0);
-        startActivity(intent);
+        startActivityForResult(intent, SearchActivity.CHANNEL_FLAG);
     }
 
     public void rightDrawerSearch(View view) {
         Intent intent = new Intent(this, SearchActivity.class);
         intent.putExtra(SearchActivity.REQUEST_CODE, SearchActivity.USER_FLAG);
-//        startActivityForResult(intent, 0);
-        startActivity(intent);
+        startActivityForResult(intent, SearchActivity.USER_FLAG);
 
     }
 }

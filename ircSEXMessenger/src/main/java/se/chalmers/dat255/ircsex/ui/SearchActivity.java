@@ -41,6 +41,7 @@ public class SearchActivity extends ListActivity {
     private Map<String, String> channels;
     private Set<String> content;
     private List<String> searchResult;
+    private boolean channelSearch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +49,8 @@ public class SearchActivity extends ListActivity {
         setContentView(R.layout.activity_search);
 
         session = Session.getInstance(this, null);
-        if (getIntent().getExtras().getInt(REQUEST_CODE) == CHANNEL_FLAG) {
+        channelSearch = getIntent().getExtras().getInt(REQUEST_CODE) == CHANNEL_FLAG;
+        if (channelSearch) {
             session.getActiveServer().listChannels();
             channels = new HashMap<String, String>();
         }
@@ -63,7 +65,6 @@ public class SearchActivity extends ListActivity {
     }
 
     private void search(String search) {
-        boolean channelSearch = getIntent().getExtras().getInt(REQUEST_CODE) == CHANNEL_FLAG;
         if (content.isEmpty()) {
             if (channelSearch) {
                 channels = session.getActiveServer().getChannels();
