@@ -67,8 +67,11 @@ public class IrcProtocolAdapter implements Runnable {
      * a message or a channel message.
      */
     private void handleReply(String reply) {
-        //TODO - handle more cases
         System.out.println(reply);
+        handleReplyOld(reply);
+    }
+    private void handleReplyOld(String reply) {
+        //TODO - handle more cases
         int index;
         if ((index = reply.indexOf("PRIVMSG")) != -1) {
             String nick = reply.substring(1, reply.indexOf('!'));
@@ -282,7 +285,7 @@ public class IrcProtocolAdapter implements Runnable {
     }
 
     private synchronized void write(String string) {
-        System.out.println(string);
+        System.out.print(string);
         try {
             output.write(string + "\r\n");
             output.flush();
