@@ -6,6 +6,7 @@ import android.app.FragmentManager;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
@@ -62,12 +63,12 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
 
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
-    private static IrcChannelSelector ircChannelSelector;
+    private IrcChannelSelector ircChannelSelector;
     private boolean drawerOpen;
-    private static ChatFragment fragment;
-    private static String channelName;
+    private ChatFragment fragment;
+    private String channelName;
 
-    private static Session session;
+    private Session session;
     private ProgressDialog serverConnectProgressDialog;
     private AlertDialog whoisProgressDialog;
     private AlertDialog whoisResultDialog;
@@ -78,6 +79,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.activity_channel_main);
 
         NetworkStateHandler.addListener(this);
