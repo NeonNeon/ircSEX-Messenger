@@ -10,7 +10,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.LinearLayout;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.SimpleAdapter;
@@ -19,7 +18,6 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -38,8 +36,9 @@ public class SearchActivity extends ListActivity {
     public static final String REQUEST_CODE = "requestCode";
 
     private SimpleAdapter adapter;
-    private static final String LINE1 = "line1";
-    private static final String LINE2 = "line2";
+    private static final String TEXT1 = "text1";
+    private static final String TEXT2 = "text2";
+    private static final String TEXT3 = "text3";
 
     private Session session;
 
@@ -73,8 +72,8 @@ public class SearchActivity extends ListActivity {
                 this,
                 result,
                 R.layout.search_list_item,
-                new String[]{LINE1, LINE2},
-                new int[]{android.R.id.text1, android.R.id.text2});
+                new String[]{TEXT1, TEXT2, TEXT3},
+                new int[]{R.id.text1, R.id.text2, R.id.text3});
         setListAdapter(adapter);
     }
 
@@ -93,13 +92,15 @@ public class SearchActivity extends ListActivity {
             if (channelSearch && (entry.toLowerCase().contains(search) // TODO: Improve efficiency
                     || channels.get(entry).toLowerCase().contains(search))) {
                 HashMap<String, String> item = new HashMap<String, String>();
-                item.put(LINE1, entry);
-                item.put(LINE2, channels.get(entry));
+                item.put(TEXT1, entry.substring(0, entry.lastIndexOf(" ")));
+                item.put(TEXT2, entry.substring(entry.lastIndexOf(" ")+1) + " users");
+                item.put(TEXT3, channels.get(entry));
                 result.add(item);
             } else if (entry.toLowerCase().contains(search)) {
                 HashMap<String, String> item = new HashMap<String, String>();
-                item.put(LINE1, entry);
-                item.put(LINE2, "");
+                item.put(TEXT1, entry);
+                item.put(TEXT2, "");
+                item.put(TEXT3, "");
                 result.add(item);
             }
         }
