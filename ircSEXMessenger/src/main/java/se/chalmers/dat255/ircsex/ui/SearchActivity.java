@@ -60,7 +60,7 @@ public class SearchActivity extends ListActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
 
         searchResult = new ArrayList<String>();
-        adapter = new ArrayAdapter<String>(this, R.layout.server_list_item, android.R.id.text1, searchResult);
+        adapter = new ArrayAdapter<String>(this, R.layout.search_list_item, android.R.id.text1, searchResult);
         setListAdapter(adapter);
     }
 
