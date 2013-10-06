@@ -9,18 +9,20 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import se.chalmers.dat255.ircsex.R;
 import se.chalmers.dat255.ircsex.model.Session;
@@ -35,12 +37,15 @@ public class SearchActivity extends ListActivity {
     public static final String EXTRA_CHANNEL = "channelName";
     public static final String REQUEST_CODE = "requestCode";
 
-    private ArrayAdapter<String> adapter;
+    private SimpleAdapter adapter;
+    private static final String LINE1 = "line1";
+    private static final String LINE2 = "line2";
+
     private Session session;
 
     private Map<String, String> channels;
     private Set<String> content;
-    private List<String> searchResult;
+    ArrayList<HashMap<String,String>> result;
     private boolean channelSearch;
 
     @Override
@@ -54,13 +59,22 @@ public class SearchActivity extends ListActivity {
             session.getActiveServer().listChannels();
             channels = new HashMap<String, String>();
         }
-        content = new LinkedHashSet<String>();
+        content = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
 
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
-        searchResult = new ArrayList<String>();
-        adapter = new ArrayAdapter<String>(this, R.layout.search_list_item, android.R.id.text1, searchResult);
+        clearAdapter();
+    }
+
+    private void clearAdapter() {
+        result = new ArrayList<HashMap<String,String>>();
+        adapter = new SimpleAdapter(
+                this,
+                result,
+                R.layout.search_list_item,
+                new String[]{LINE1, LINE2},
+                new int[]{android.R.id.text1, android.R.id.text2});
         setListAdapter(adapter);
     }
 
@@ -74,15 +88,22 @@ public class SearchActivity extends ListActivity {
             }
         }
         search = search.toLowerCase();
-        adapter.clear();
+        clearAdapter();
         for (String entry : content) {
             if (channelSearch && (entry.toLowerCase().contains(search) // TODO: Improve efficiency
                     || channels.get(entry).toLowerCase().contains(search))) {
-                adapter.add(entry + " - " + channels.get(entry));
+                HashMap<String, String> item = new HashMap<String, String>();
+                item.put(LINE1, entry);
+                item.put(LINE2, channels.get(entry));
+                result.add(item);
             } else if (entry.toLowerCase().contains(search)) {
-                adapter.add(entry);
+                HashMap<String, String> item = new HashMap<String, String>();
+                item.put(LINE1, entry);
+                item.put(LINE2, "");
+                result.add(item);
             }
         }
+        adapter.notifyDataSetChanged();
         getListView().invalidate();
     }
 
