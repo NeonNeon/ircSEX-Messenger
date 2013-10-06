@@ -447,6 +447,9 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
     @Override
     public void queryMessageReceived(String user, String message) {
         user = IrcUser.extractUserName(user);
+        if (!connectedChannels.containsKey(user)) {
+            queryUser(user);
+        }
         IrcMessage ircMessage = connectedChannels.get(user).newMessage(user, message);
         for (SessionListener listener : sessionListeners) {
             listener.onChannelMessage(host, user, ircMessage);
