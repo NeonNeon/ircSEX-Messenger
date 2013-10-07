@@ -26,8 +26,11 @@
             <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Search channels"
-                    android:drawableLeft="@drawable/social_send_now"
+                    android:text="  Search channels"
+                    android:drawableLeft="@drawable/ic_action_search"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="8dp"
+                    android:paddingTop="8dp"
                     android:textSize="16sp"
                     android:enabled="false"/>
         </LinearLayout>
@@ -57,7 +60,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Search user"
-                    android:drawableLeft="@drawable/social_send_now"
+                    android:drawableLeft="@drawable/ic_action_search"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="8dp"
+                    android:paddingTop="8dp"
                     android:textSize="16sp"
                     android:enabled="false"/>
         </LinearLayout>
