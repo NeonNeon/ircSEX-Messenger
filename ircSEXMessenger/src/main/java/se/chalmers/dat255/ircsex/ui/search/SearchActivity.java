@@ -111,5 +111,11 @@ public abstract class SearchActivity extends ListActivity {
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
+
+        String text = ((TextView) v.findViewById(android.R.id.text1)).getText().toString();
+        Intent data = new Intent();
+        data.putExtra(EXTRA_CHANNEL, text);
+        setResult(RESULT_RETURN_CHANNEL, data);
+        finish();
     }
 }
