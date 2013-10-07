@@ -44,7 +44,9 @@ public class Session {
 
     private void addListener(SessionListener listener) {
         for (IrcServer server : servers.values()) {
-            server.addSessionListener(listener);
+            if (server != null) {
+                server.addSessionListener(listener);
+            }
         }
     }
 
