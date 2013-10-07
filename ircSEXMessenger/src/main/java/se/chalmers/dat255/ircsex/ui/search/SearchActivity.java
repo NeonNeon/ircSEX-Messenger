@@ -1,4 +1,4 @@
-package se.chalmers.dat255.ircsex.ui;
+package se.chalmers.dat255.ircsex.ui.search;
 
 import android.app.ActionBar;
 import android.app.ListActivity;
@@ -9,24 +9,16 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Adapter;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SearchView;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import se.chalmers.dat255.ircsex.R;
-import se.chalmers.dat255.ircsex.model.Session;
 
 /**
  * Created by Oskar on 2013-10-04.
@@ -115,7 +107,7 @@ public abstract class SearchActivity extends ListActivity {
     protected void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
 
-        String text = ((TextView) v.findViewById(R.id.text1)).getText().toString();
+        String text = ((TextView) v.findViewById(android.R.id.text1)).getText().toString();
         Intent data = new Intent();
         data.putExtra(EXTRA_CHANNEL, text);
         setResult(RESULT_RETURN_CHANNEL, data);
