@@ -35,4 +35,5 @@
     <string name="noservers_connect_button">Connect to a server</string>
     <string name="dialog_query_user_title">Send message to</string>
     <string name="dialog_query_user_hint">Recipient</string>
+    <string name="search_messages">Search messages</string>
 </resources>

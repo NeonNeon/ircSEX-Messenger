@@ -11,4 +11,9 @@
         android:title="@string/action_settings"/>
     <item android:id="@+id/action_invite_user"
           android:title="@string/action_invite_user"/>
+    <item android:id="@+id/search_messages"
+        android:title="@string/search_messages"
+        android:icon="@drawable/ic_action_search"
+        android:showAsAction="collapseActionView|ifRoom"
+        android:actionViewClass="android.widget.SearchView" />
 </menu>

@@ -19,7 +19,6 @@ import java.util.List;
 import se.chalmers.dat255.ircsex.R;
 import se.chalmers.dat255.ircsex.model.IrcChannel;
 import se.chalmers.dat255.ircsex.model.IrcMessage;
-import se.chalmers.dat255.ircsex.model.MessageArrayAdapter;
 
 public class ChatFragment extends Fragment {
     private ListView messageList;
