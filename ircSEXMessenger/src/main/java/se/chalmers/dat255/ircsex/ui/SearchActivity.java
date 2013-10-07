@@ -9,6 +9,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Adapter;
+import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SearchView;
@@ -28,82 +31,41 @@ import se.chalmers.dat255.ircsex.model.Session;
 /**
  * Created by Oskar on 2013-10-04.
  */
-public class SearchActivity extends ListActivity {
-    public static final int CHANNEL_FLAG = 0;
-    public static final int USER_FLAG = 1;
+public abstract class SearchActivity extends ListActivity {
+
     public static final int RESULT_RETURN_CHANNEL = 30;
     public static final String EXTRA_CHANNEL = "channelName";
-    public static final String REQUEST_CODE = "requestCode";
 
-    private SimpleAdapter adapter;
-    private static final String TEXT1 = "text1";
-    private static final String TEXT2 = "text2";
-    private static final String TEXT3 = "text3";
+    private BaseAdapter adapter;
+    public static final String TEXT1 = "text1";
+    public static final String TEXT2 = "text2";
+    public static final String TEXT3 = "text3";
 
-    private Session session;
-
-    private Map<String, String> channels;
-    private Set<String> content;
-    ArrayList<HashMap<String,String>> result;
-    private boolean channelSearch;
+    public Set<String> content;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
-        session = Session.getInstance(this, null);
-        channelSearch = getIntent().getExtras().getInt(REQUEST_CODE) == CHANNEL_FLAG;
-        if (channelSearch) {
-            session.getActiveServer().listChannels();
-            channels = new HashMap<String, String>();
-        }
-        content = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
 
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
+        content = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
         clearAdapter();
     }
 
-    private void clearAdapter() {
-        result = new ArrayList<HashMap<String,String>>();
-        adapter = new SimpleAdapter(
-                this,
-                result,
-                R.layout.channel_search_list_item,
-                new String[]{TEXT1, TEXT2, TEXT3},
-                new int[]{R.id.text1, R.id.text2, R.id.text3});
+    public abstract BaseAdapter getAdapter();
+
+    public abstract void search(String search);
+
+    public void clearAdapter() {
+        adapter = getAdapter();
         setListAdapter(adapter);
     }
 
-    private void search(String search) {
-        if (content.isEmpty()) {
-            if (channelSearch) {
-                channels = session.getActiveServer().getChannels();
-                content = channels.keySet();
-            } else {
-                content = session.getActiveServer().getKnownUsers();
-            }
-        }
-        search = search.toLowerCase();
-        clearAdapter();
-        for (String entry : content) {
-            if (channelSearch && (entry.toLowerCase().contains(search) // TODO: Improve efficiency
-                    || channels.get(entry).toLowerCase().contains(search))) {
-                HashMap<String, String> item = new HashMap<String, String>();
-                item.put(TEXT1, entry.substring(0, entry.lastIndexOf(" ")));
-                item.put(TEXT2, entry.substring(entry.lastIndexOf(" ")+1) + " users");
-                item.put(TEXT3, channels.get(entry));
-                result.add(item);
-            } else if (entry.toLowerCase().contains(search)) {
-                HashMap<String, String> item = new HashMap<String, String>();
-                item.put(TEXT1, entry);
-                item.put(TEXT2, "");
-                item.put(TEXT3, "");
-                result.add(item);
-            }
-        }
+    public void update() {
         adapter.notifyDataSetChanged();
         getListView().invalidate();
     }
@@ -153,10 +115,7 @@ public class SearchActivity extends ListActivity {
     protected void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
 
-        String text = ((TextView) ((LinearLayout) v).getChildAt(0)).getText().toString();
-        if (getIntent().getExtras().getInt("requestCode") == CHANNEL_FLAG) {
-            text = text.substring(0, text.indexOf(" "));
-        }
+        String text = ((TextView) v.findViewById(R.id.text1)).getText().toString();
         Intent data = new Intent();
         data.putExtra(EXTRA_CHANNEL, text);
         setResult(RESULT_RETURN_CHANNEL, data);

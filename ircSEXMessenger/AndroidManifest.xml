@@ -32,7 +32,10 @@
             android:name=".ui.NoInternetActivity"
             android:label="@string/app_name"/>
         <activity
-            android:name=".ui.SearchActivity"
+            android:name=".ui.ChannelSearchActivity"
+            android:label="@string/app_name"/>
+        <activity
+            android:name=".ui.UserSearchActivity"
             android:label="@string/app_name"/>
         <receiver android:name=".model.NetworkStateHandler">
             <intent-filter>
