@@ -35,6 +35,8 @@ public abstract class SearchActivity extends ListActivity {
 
     public Set<String> content;
 
+    private SearchView searchView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,12 +77,12 @@ public abstract class SearchActivity extends ListActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.search_channels, menu);
 
-        final SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+        searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
         // Configure the search info and add any event listeners
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
-                InputMethodManager imm = (InputMethodManager)getSystemService(
+                InputMethodManager imm = (InputMethodManager) getSystemService(
                         Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(searchView.getWindowToken(), 0);
                 return true;
@@ -99,17 +101,15 @@ public abstract class SearchActivity extends ListActivity {
                 return true;
             }
         });
+
+        MenuItem searchMenuItem = menu.findItem(R.id.action_search);
+        searchMenuItem.expandActionView();
+
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
-
-        String text = ((TextView) v.findViewById(android.R.id.text1)).getText().toString();
-        Intent data = new Intent();
-        data.putExtra(EXTRA_CHANNEL, text);
-        setResult(RESULT_RETURN_CHANNEL, data);
-        finish();
     }
 }
