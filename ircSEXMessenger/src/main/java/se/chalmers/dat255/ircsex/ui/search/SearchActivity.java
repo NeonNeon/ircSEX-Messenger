@@ -40,7 +40,6 @@ public abstract class SearchActivity extends ListActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
-
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
