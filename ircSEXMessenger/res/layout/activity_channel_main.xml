@@ -26,11 +26,12 @@
             <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="  Search channels"
+                    android:text=" Search channels"
                     android:drawableLeft="@drawable/ic_action_search"
                     android:gravity="center_vertical"
                     android:paddingLeft="8dp"
                     android:paddingTop="8dp"
+                    android:paddingBottom="8dp"
                     android:textSize="16sp"
                     android:enabled="false"/>
         </LinearLayout>
@@ -59,13 +60,18 @@
             <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Search user"
+                    android:text=" Search user"
                     android:drawableLeft="@drawable/ic_action_search"
                     android:gravity="center_vertical"
                     android:paddingLeft="8dp"
                     android:paddingTop="8dp"
+                    android:paddingBottom="8dp"
                     android:textSize="16sp"
                     android:enabled="false"/>
+            <View
+                    android:layout_height="3px"
+                    android:layout_width="fill_parent"
+                    android:background="@drawable/border_shape"/>
         </LinearLayout>
         <ListView
                 android:id="@+id/right_drawer_list"
