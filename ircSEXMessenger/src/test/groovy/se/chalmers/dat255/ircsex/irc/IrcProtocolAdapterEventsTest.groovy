@@ -39,6 +39,19 @@ class IrcProtocolAdapterEventsTest extends Specification {
         user << ["oed", "Heissman", "Rascal"]
     }
 
+    def "test userQuited event sent"() {
+        when:
+        def command ="!~banned@smurf-BC4B6572.eduroam.chalmers.se QUIT :"
+        ipa.handleReply(":" + user + command + quitMessage)
+
+        then:
+        1 * subscriber.userQuited(user, quitMessage)
+
+        where:
+        user << ["oed", "Heissman", "Rascal"]
+        quitMessage << ["Client exited", "Rascal är sämst", "Vodka"]
+    }
+
     def "test usersInChannel event sent"() {
         def channel = "#ircSEX-asp"
 
@@ -143,5 +156,19 @@ class IrcProtocolAdapterEventsTest extends Specification {
         where:
         nick << ["oed", "Heissman", "Rascal"]
         time << [14495, 20, 23423523]
+    }
+
+    def "test channelListResponse event sent"() {
+        when:
+        def command = ":irc.chalmers.it 322 tord "
+        ipa.handleReply(command + channel + " :[ntr] " + topic)
+
+        then:
+        1 * subscriber.channelListResponse(channel, topic)
+
+        where:
+        channel << ["#prit", "#svinstia", "#party"]
+        topic << ["11,1< P.R.I.T. >11 | 2 Ohmsits 2013-12-07! Tagga! //P.R.I.T. '13", "festen fortsätter..", "Nu kör vi!!"]
+
     }
 }

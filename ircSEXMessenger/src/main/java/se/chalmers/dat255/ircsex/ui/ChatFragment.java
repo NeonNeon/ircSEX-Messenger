@@ -21,7 +21,6 @@ import se.chalmers.dat255.ircsex.model.IrcChannel;
 import se.chalmers.dat255.ircsex.model.IrcMessage;
 
 public class ChatFragment extends Fragment {
-    public static final String ARG_CHANNEL_INDEX = "channelIndex";
     private ListView messageList;
     private MessageArrayAdapter messageArrayAdapter;
     private EditText messageEditText;
@@ -29,11 +28,10 @@ public class ChatFragment extends Fragment {
     private IrcChannel channel;
 
     public ChatFragment() {
-        Log.e("IRCDEBUG", "Constructor: " + toString());
+        // Empty constructor for resuming state.
     }
 
     public ChatFragment(ChatMessageSendListener messageSendListener, IrcChannel channel) {
-        Log.e("IRCDEBUG", "Constructor params: " +  toString());
         this.messageSendListener = messageSendListener;
         this.channel = channel;
     }
@@ -67,7 +65,6 @@ public class ChatFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_chat, container, false);
-        int i = getArguments().getInt(ARG_CHANNEL_INDEX);
         messageList = (ListView) rootView.findViewById(R.id.chat_message_list);
         messageList.setAdapter(messageArrayAdapter);
         scrollToBottom();
@@ -101,7 +98,6 @@ public class ChatFragment extends Fragment {
     }
 
     public void addMessage(IrcMessage ircMessage) {
-        Log.d("IRCDEBUG", ircMessage.getMessage());
         messageArrayAdapter.add(new ReceivedChatBubble(ircMessage));
         messageList.invalidate();
         scrollWhenNoBacklog();
