@@ -51,8 +51,8 @@ public class ChannelSearchActivity extends SearchActivity {
         content = channels.keySet();
 
         search = search.toLowerCase();
-        clearAdapter();
 
+        clearAdapter();
         for (String entry : content) {
             if (entry.toLowerCase().contains(search) // TODO: Improve efficiency
                     || channels.get(entry).toLowerCase().contains(search)) {

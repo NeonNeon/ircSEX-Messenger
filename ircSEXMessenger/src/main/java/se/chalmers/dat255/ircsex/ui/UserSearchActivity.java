@@ -22,7 +22,7 @@ public class UserSearchActivity extends SearchActivity {
         super.onCreate(savedInstanceState);
 
         session = Session.getInstance(this, null);
-        session.getActiveServer().getKnownUsers();
+        content = session.getActiveServer().getKnownUsers();
     }
 
     @Override
@@ -38,7 +38,6 @@ public class UserSearchActivity extends SearchActivity {
 
     @Override
     public void search(String search) {
-        content = session.getActiveServer().getKnownUsers();
         search = search.toLowerCase();
         clearAdapter();
         for (String entry : content) {
