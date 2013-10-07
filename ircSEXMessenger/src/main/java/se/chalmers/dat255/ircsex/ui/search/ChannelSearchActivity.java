@@ -36,7 +36,7 @@ public class ChannelSearchActivity extends SearchActivity {
                 result,
                 R.layout.channel_search_list_item,
                 new String[]{TEXT1, TEXT2, TEXT3},
-                new int[]{R.id.text1, R.id.text2, R.id.text3});
+                new int[]{android.R.id.text1, R.id.text2, R.id.text3});
     }
 
     @Override
