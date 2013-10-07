@@ -14,7 +14,7 @@ public class ReceivedChatBubble extends ChatBubble {
     private final IrcUser ircUser;
     private final IrcMessage ircMessage;
 
-    protected ReceivedChatBubble(IrcMessage ircMessage) {
+    public ReceivedChatBubble(IrcMessage ircMessage) {
         super(ircMessage.getMessage());
         this.ircMessage = ircMessage;
         this.ircUser = ircMessage.getUser();
