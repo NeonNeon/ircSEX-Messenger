@@ -36,7 +36,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceListItemSmall"
-                    android:textColor="@drawable/drawer_textcolor"
+                    android:textSize="15sp"
+                    android:textColor="#888888"
                     android:background="?android:attr/activatedBackgroundIndicator"
                     android:maxLines="1"/>
         </LinearLayout>
@@ -47,7 +48,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceListItemSmall"
-            android:textColor="@drawable/drawer_textcolor"
+            android:textSize="13sp"
+            android:textColor="#888888"
             android:background="?android:attr/activatedBackgroundIndicator"
             android:gravity="center_vertical"
             android:maxLines="1"/>
