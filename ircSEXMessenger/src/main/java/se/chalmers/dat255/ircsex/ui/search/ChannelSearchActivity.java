@@ -1,4 +1,4 @@
-package se.chalmers.dat255.ircsex.ui;
+package se.chalmers.dat255.ircsex.ui.search;
 
 import android.os.Bundle;
 import android.widget.BaseAdapter;
