@@ -539,7 +539,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
                     }
                     TextView textView = ((TextView) whois.findViewById(R.id.dialog_whois_channels));
                     String text = textView.getText().toString();
-                    text += (text.equals("") ? "" : ", ") + channels.toString().replace("[", "").replace("]", "").replace(", ", "\n");
+                    text += (text.equals("") ? "" : "\n") + channels.toString().replace("[", "").replace("]", "").replace(", ", "\n");
                     textView.setText(text);
                     textView.setMovementMethod(new ScrollingMovementMethod());
                 }
