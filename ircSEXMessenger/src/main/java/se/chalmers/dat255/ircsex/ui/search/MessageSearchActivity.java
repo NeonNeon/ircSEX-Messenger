@@ -3,7 +3,6 @@ package se.chalmers.dat255.ircsex.ui.search;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.BaseAdapter;
 
 import java.util.ArrayList;
@@ -28,6 +27,7 @@ public class MessageSearchActivity extends SearchActivity {
         super.onCreate(savedInstanceState);
         session = Session.getInstance(this, null);
         handleIntent(getIntent());
+        getListView().setDivider(null);
     }
 
     private void handleIntent(Intent intent) {
