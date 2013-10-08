@@ -82,9 +82,7 @@ public class MessageArrayAdapter extends ArrayAdapter<ChannelItem> {
         android.view.animation.Animation animation;
         if (channelItem instanceof ReceivedChatBubble) {
             TextView nickView = (TextView) rowView.findViewById(R.id.chat_bubble_nick);
-            TextView timestampView = (TextView) rowView.findViewById(R.id.chat_bubble_timestamp);
             nickView.setText(((ReceivedChatBubble) channelItem).getNick());
-            timestampView.setText(((ReceivedChatBubble)channelItem).getTimestamp());
             animation = AnimationUtils.loadAnimation(context, R.anim.left_to_right);
         }
         else if (channelItem instanceof SentChatBubble){
@@ -93,6 +91,8 @@ public class MessageArrayAdapter extends ArrayAdapter<ChannelItem> {
         else {
             animation = AnimationUtils.loadAnimation(context, android.R.anim.fade_in);
         }
+        TextView timestampView = (TextView) rowView.findViewById(R.id.chat_bubble_timestamp);
+        timestampView.setText(((ChatBubble)channelItem).getTimestamp());
         messageView.setText(channelItem.getMessage());
         wrapper.setGravity(channelItem.getGravity());
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
