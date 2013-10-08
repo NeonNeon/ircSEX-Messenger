@@ -40,17 +40,22 @@ public class Session {
         datasource.open();
 
         servers = datasource.getAllIrcServers();
-        for (IrcServer server : servers.values()) {
-            server.addSessionListener(listener);
-        }
     }
 
+    private void addListener(SessionListener listener) {
+        for (IrcServer server : servers.values()) {
+            if (server != null) {
+                server.addSessionListener(listener);
+            }
+        }
+    }
 
 
     public static Session getInstance(Context context, SessionListener listener) {
         if (instance == null) {
             instance = new Session(context, listener);
         }
+        instance.addListener(listener);
         return instance;
     }
 

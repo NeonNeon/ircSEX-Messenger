@@ -1,4 +1,4 @@
-package se.chalmers.dat255.ircsex.ui;
+package se.chalmers.dat255.ircsex.ui.search;
 
 import android.app.ActionBar;
 import android.app.ListActivity;
@@ -9,80 +9,56 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
+import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.Collections;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import se.chalmers.dat255.ircsex.R;
-import se.chalmers.dat255.ircsex.model.Session;
 
 /**
  * Created by Oskar on 2013-10-04.
  */
-public class SearchActivity extends ListActivity {
-    public static final int CHANNEL_FLAG = 0;
-    public static final int USER_FLAG = 1;
+public abstract class SearchActivity extends ListActivity {
+
     public static final int RESULT_RETURN_CHANNEL = 30;
     public static final String EXTRA_CHANNEL = "channelName";
-    public static final String REQUEST_CODE = "requestCode";
 
-    private ArrayAdapter<String> adapter;
-    private Session session;
+    private BaseAdapter adapter;
+    public static final String TEXT1 = "text1";
+    public static final String TEXT2 = "text2";
+    public static final String TEXT3 = "text3";
 
-    private Map<String, String> channels;
-    private Set<String> content;
-    private List<String> searchResult;
-    private boolean channelSearch;
+    public Set<String> content;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
-        session = Session.getInstance(this, null);
-        channelSearch = getIntent().getExtras().getInt(REQUEST_CODE) == CHANNEL_FLAG;
-        if (channelSearch) {
-            session.getActiveServer().listChannels();
-            channels = new HashMap<String, String>();
-        }
-        content = new LinkedHashSet<String>();
 
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
-        searchResult = new ArrayList<String>();
-        adapter = new ArrayAdapter<String>(this, R.layout.server_list_item, android.R.id.text1, searchResult);
+        content = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
+        clearAdapter();
+    }
+
+    public abstract BaseAdapter getAdapter();
+
+    public abstract void search(String search);
+
+    public void clearAdapter() {
+        adapter = getAdapter();
         setListAdapter(adapter);
     }
 
-    private void search(String search) {
-        if (content.isEmpty()) {
-            if (channelSearch) {
-                channels = session.getActiveServer().getChannels();
-                content = channels.keySet();
-            } else {
-                content = session.getActiveServer().getKnownUsers();
-            }
-        }
-        search = search.toLowerCase();
-        adapter.clear();
-        for (String entry : content) {
-            if (channelSearch && (entry.toLowerCase().contains(search) // TODO: Improve efficiency
-                    || channels.get(entry).toLowerCase().contains(search))) {
-                adapter.add(entry + " - " + channels.get(entry));
-            } else if (entry.toLowerCase().contains(search)) {
-                adapter.add(entry);
-            }
-        }
+    public void update() {
+        adapter.notifyDataSetChanged();
         getListView().invalidate();
     }
 
@@ -131,10 +107,7 @@ public class SearchActivity extends ListActivity {
     protected void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
 
-        String text = ((TextView) ((LinearLayout) v).getChildAt(0)).getText().toString();
-        if (getIntent().getExtras().getInt("requestCode") == CHANNEL_FLAG) {
-            text = text.substring(0, text.indexOf(" "));
-        }
+        String text = ((TextView) v.findViewById(android.R.id.text1)).getText().toString();
         Intent data = new Intent();
         data.putExtra(EXTRA_CHANNEL, text);
         setResult(RESULT_RETURN_CHANNEL, data);

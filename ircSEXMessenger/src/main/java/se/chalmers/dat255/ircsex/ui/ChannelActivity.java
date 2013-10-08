@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.app.ProgressDialog;
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -29,10 +31,10 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.SearchView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import se.chalmers.dat255.ircsex.R;
@@ -43,6 +45,9 @@ import se.chalmers.dat255.ircsex.model.Session;
 import se.chalmers.dat255.ircsex.model.SessionListener;
 import se.chalmers.dat255.ircsex.ui.dialog.JoinChannelDialogFragment;
 import se.chalmers.dat255.ircsex.ui.dialog.ServerConnectDialogFragment;
+import se.chalmers.dat255.ircsex.ui.search.ChannelSearchActivity;
+import se.chalmers.dat255.ircsex.ui.search.SearchActivity;
+import se.chalmers.dat255.ircsex.ui.search.UserSearchActivity;
 import se.chalmers.dat255.ircsex.view.IrcChannelItem;
 import se.chalmers.dat255.ircsex.view.IrcServerHeader;
 
@@ -147,6 +152,26 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         }
     }
 
+    @Override
+    protected void onNewIntent(Intent intent) {
+        handleIntent(intent);
+    }
+
+    private void handleIntent(Intent intent) {
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            SearchFragment searchFragment = new SearchFragment(session.getActiveChannel().getMessages());
+            searchFragment.setSearchString(intent.getStringExtra(SearchManager.QUERY));
+            FragmentManager fragmentManager = getFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.channel_layout, searchFragment).commit();
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        super.onBackPressed();
+    }
+
     private void showConnectionDialog(String message) {
         serverConnectProgressDialog = new ProgressDialog(this);
         serverConnectProgressDialog.setIndeterminate(true);
@@ -163,6 +188,11 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.channel_main, menu);
+
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView = (SearchView) menu.findItem(R.id.search_messages).getActionView();
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -313,7 +343,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         Bundle args = new Bundle();
         fragment.setArguments(args);
         FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.channel_layout, fragment, CHAT_FRAGMENT_TAG).commit();
+        fragmentManager.beginTransaction().replace(R.id.channel_layout, fragment, CHAT_FRAGMENT_TAG).addToBackStack(CHAT_FRAGMENT_TAG).commit();
 
         leftDrawer.setItemChecked(position, true);
         setTitle(channelName);
@@ -520,44 +550,51 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
 
     @Override
     public void whoisChannels(final String nick, final List<String> channels) {
-        ChannelActivity.this.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (whois == null) {
-                    showWhoisDialog(nick);
+        if (whoisProgressDialog != null && whoisProgressDialog.isShowing()) {
+            ChannelActivity.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (whois == null) {
+                        showWhoisDialog(nick);
+                    }
+                    TextView textView = ((TextView) whois.findViewById(R.id.dialog_whois_channels));
+                    String text = textView.getText().toString();
+                    text += (text.equals("") ? "" : ", ") + channels.toString().replace("[", "").replace("]", "").replace(", ", "\n");
+                    textView.setText(text);
+                    textView.setMovementMethod(new ScrollingMovementMethod());
                 }
-                TextView textView = ((TextView) whois.findViewById(R.id.dialog_whois_channels));
-                textView.setText(
-                        channels.toString().replace("[", "").replace("]", "").replace(", ", "\n"));
-                textView.setMovementMethod(new ScrollingMovementMethod());
-            }
-        });
+            });
+        }
     }
 
     @Override
     public void whoisRealname(final String nick, final String realname) {
-        ChannelActivity.this.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (whois == null) {
-                    showWhoisDialog(nick);
+        if (whoisProgressDialog != null && whoisProgressDialog.isShowing()) {
+            ChannelActivity.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (whois == null) {
+                        showWhoisDialog(nick);
+                    }
+                    ((TextView) whois.findViewById(R.id.dialog_whois_realname)).setText(realname);
                 }
-                ((TextView) whois.findViewById(R.id.dialog_whois_realname)).setText(realname);
-            }
-        });
+            });
+        }
     }
 
     @Override
     public void whoisIdleTime(final String nick, final String formattedIdleTime) {
-        ChannelActivity.this.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (whois == null) {
-                    showWhoisDialog(nick);
+        if (whoisProgressDialog != null && whoisProgressDialog.isShowing()) {
+            ChannelActivity.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (whois == null) {
+                        showWhoisDialog(nick);
+                    }
+                    ((TextView) whois.findViewById(R.id.dialog_whois_idle)).setText(formattedIdleTime);
                 }
-                ((TextView) whois.findViewById(R.id.dialog_whois_idle)).setText(formattedIdleTime);
-            }
-        });
+            });
+        }
     }
 
     @Override
@@ -571,38 +608,38 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     }
 
     private void showWhoisDialog(final String nick) {
-        whoisProgressDialog.dismiss();
-        LayoutInflater inflater = getLayoutInflater();
-        whois = inflater.inflate(R.layout.dialog_whois, null);
-        AlertDialog.Builder builder = new AlertDialog.Builder(ChannelActivity.this);
-        whoisResultDialog = builder.setTitle(getApplication().getString(R.string.dialog_whois_title) +" - "+ nick)
-                .setOnCancelListener(new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialogInterface) {
-                whois = null;
-            }
-        }).setView(whois)
-                .setNegativeButton(R.string.dialog_generic_close, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        whois = null;
-                    }
-                })
-                .create();
+        if (whoisProgressDialog != null && whoisProgressDialog.isShowing()) {
+            whoisProgressDialog.dismiss();
+            LayoutInflater inflater = getLayoutInflater();
+            whois = inflater.inflate(R.layout.dialog_whois, null);
+            AlertDialog.Builder builder = new AlertDialog.Builder(ChannelActivity.this);
+            whoisResultDialog = builder.setTitle(getApplication().getString(R.string.dialog_whois_title) +" - "+ nick)
+                    .setOnCancelListener(new DialogInterface.OnCancelListener() {
+                @Override
+                public void onCancel(DialogInterface dialogInterface) {
+                    whois = null;
+                }
+            }).setView(whois)
+                    .setNegativeButton(R.string.dialog_generic_close, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            whois = null;
+                        }
+                    })
+                    .create();
 
-        whoisResultDialog.show();
+            whoisResultDialog.show();
+        }
     }
 
     public void leftDrawerSearch(View view) {
-        Intent intent = new Intent(this, SearchActivity.class);
-        intent.putExtra(SearchActivity.REQUEST_CODE, SearchActivity.CHANNEL_FLAG);
-        startActivityForResult(intent, SearchActivity.CHANNEL_FLAG);
+        Intent intent = new Intent(this, ChannelSearchActivity.class);
+        startActivity(intent);
     }
 
     public void rightDrawerSearch(View view) {
-        Intent intent = new Intent(this, SearchActivity.class);
-        intent.putExtra(SearchActivity.REQUEST_CODE, SearchActivity.USER_FLAG);
-        startActivityForResult(intent, SearchActivity.USER_FLAG);
+        Intent intent = new Intent(this, UserSearchActivity.class);
+        startActivity(intent);
 
     }
 }
