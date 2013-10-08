@@ -1,11 +1,6 @@
 package se.chalmers.dat255.ircsex.model;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.util.Log;
 
 import java.util.Map;
 
@@ -49,7 +44,6 @@ public class Session {
             }
         }
     }
-
 
     public static Session getInstance(Context context, SessionListener listener) {
         if (instance == null) {
