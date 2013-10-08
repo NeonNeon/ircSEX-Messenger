@@ -4,8 +4,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.app.ProgressDialog;
-import android.app.SearchManager;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -31,7 +29,6 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.SearchView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -46,6 +43,7 @@ import se.chalmers.dat255.ircsex.model.SessionListener;
 import se.chalmers.dat255.ircsex.ui.dialog.JoinChannelDialogFragment;
 import se.chalmers.dat255.ircsex.ui.dialog.ServerConnectDialogFragment;
 import se.chalmers.dat255.ircsex.ui.search.ChannelSearchActivity;
+import se.chalmers.dat255.ircsex.ui.search.MessageSearchActivity;
 import se.chalmers.dat255.ircsex.ui.search.SearchActivity;
 import se.chalmers.dat255.ircsex.ui.search.UserSearchActivity;
 import se.chalmers.dat255.ircsex.view.IrcChannelItem;
@@ -168,10 +166,6 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.channel_main, menu);
 
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView = (SearchView) menu.findItem(R.id.search_messages).getActionView();
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -213,6 +207,10 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
                 break;
             case R.id.action_invite_user:
                 inviteUser();
+                break;
+            case R.id.search_messages:
+                Intent intent = new Intent(this, MessageSearchActivity.class);
+                startActivity(intent);
                 break;
             default:
                 return super.onOptionsItemSelected(item);
