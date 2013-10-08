@@ -3,7 +3,9 @@ package se.chalmers.dat255.ircsex.ui.search;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.BaseAdapter;
+import android.widget.ListView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,5 +66,11 @@ public class MessageSearchActivity extends SearchActivity {
         }
         super.clearAdapter();
         update();
+    }
+
+    @Override
+    protected void onListItemClick(ListView l, View v, int position, long id) {
+        //TODO: scroll the chat fragment list to the clicked view
+        finish();
     }
 }
