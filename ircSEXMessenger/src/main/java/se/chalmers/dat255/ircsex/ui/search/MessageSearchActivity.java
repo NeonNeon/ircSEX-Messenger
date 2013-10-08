@@ -58,7 +58,7 @@ public class MessageSearchActivity extends SearchActivity {
         for (IrcMessage message : messages) {
             if (message.getMessage().toLowerCase().contains(search)) {
                 if (message.getUser().isSelf()) {
-                    result.add(new SentChatBubble(message.getMessage()));
+                    result.add(new SentChatBubble(message));
                 }
                 else {
                     result.add(new ReceivedChatBubble(message));

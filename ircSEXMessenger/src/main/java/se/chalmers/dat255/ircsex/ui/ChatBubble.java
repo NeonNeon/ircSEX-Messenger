@@ -5,7 +5,7 @@ import android.graphics.Rect;
 /**
  * Created by Johan on 2013-09-24.
  */
-public abstract class ChatBubble implements ChannelItem{
+public abstract class ChatBubble implements ChannelItem {
     private final String message;
 
     protected ChatBubble(String message) {

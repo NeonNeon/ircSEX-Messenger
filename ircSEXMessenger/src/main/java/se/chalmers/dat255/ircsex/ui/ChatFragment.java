@@ -54,7 +54,7 @@ public class ChatFragment extends Fragment {
         List<ChannelItem> backlog = new ArrayList<ChannelItem>(channel.getMessages().size());
         for (IrcMessage message : channel.getMessages()) {
             if (message.getUser().isSelf()) {
-                backlog.add(new SentChatBubble(message.getMessage()));
+                backlog.add(new SentChatBubble(message));
             } else {
                 backlog.add(new ReceivedChatBubble(message));
             }
@@ -104,7 +104,7 @@ public class ChatFragment extends Fragment {
     }
 
     public void addSentMessage(IrcMessage ircMessage) {
-        messageArrayAdapter.add(new SentChatBubble(ircMessage.getMessage()));
+        messageArrayAdapter.add(new SentChatBubble(ircMessage));
         messageList.invalidate();
         messageEditText.setText("");
         scrollToBottom();
