@@ -469,12 +469,12 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         View view1 = (View) view.getParent().getParent();
         String user = ((TextView) view1.findViewById(android.R.id.text1)).getText().toString();
 
-        session.getActiveServer().whois(user);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         whoisProgressDialog = builder.setTitle(R.string.dialog_whois_title)
                 .setView(new ProgressBar(this))
                 .create();
         whoisProgressDialog.show();
+        session.getActiveServer().whois(user);
     }
 
     public void queryUser(View view) {
