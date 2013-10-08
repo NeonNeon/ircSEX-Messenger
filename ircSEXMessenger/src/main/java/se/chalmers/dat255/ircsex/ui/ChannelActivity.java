@@ -152,26 +152,6 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         }
     }
 
-    @Override
-    protected void onNewIntent(Intent intent) {
-        handleIntent(intent);
-    }
-
-    private void handleIntent(Intent intent) {
-        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            SearchFragment searchFragment = new SearchFragment(session.getActiveChannel().getMessages());
-            searchFragment.setSearchString(intent.getStringExtra(SearchManager.QUERY));
-            FragmentManager fragmentManager = getFragmentManager();
-            fragmentManager.beginTransaction().replace(R.id.channel_layout, searchFragment).commit();
-        }
-    }
-
-    @Override
-    public void onBackPressed() {
-
-        super.onBackPressed();
-    }
-
     private void showConnectionDialog(String message) {
         serverConnectProgressDialog = new ProgressDialog(this);
         serverConnectProgressDialog.setIndeterminate(true);

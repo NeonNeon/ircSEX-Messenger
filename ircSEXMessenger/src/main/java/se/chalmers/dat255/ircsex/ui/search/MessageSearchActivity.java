@@ -18,7 +18,8 @@ import se.chalmers.dat255.ircsex.ui.ReceivedChatBubble;
 import se.chalmers.dat255.ircsex.ui.SentChatBubble;
 
 /**
- * Created by Johan on 2013-10-07.
+ * @author Johan Magnusson
+ *         Date: 2013-10-04
  */
 public class MessageSearchActivity extends SearchActivity {
     private ArrayList<ChannelItem> result;
