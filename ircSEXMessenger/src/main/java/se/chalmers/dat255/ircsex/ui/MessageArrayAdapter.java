@@ -91,8 +91,10 @@ public class MessageArrayAdapter extends ArrayAdapter<ChannelItem> {
         else {
             animation = AnimationUtils.loadAnimation(context, android.R.anim.fade_in);
         }
-        TextView timestampView = (TextView) rowView.findViewById(R.id.chat_bubble_timestamp);
-        timestampView.setText(((ChatBubble)channelItem).getTimestamp());
+        if (channelItem instanceof ChatBubble) {
+            TextView timestampView = (TextView) rowView.findViewById(R.id.chat_bubble_timestamp);
+            timestampView.setText(((ChatBubble)channelItem).getTimestamp());
+        }
         messageView.setText(channelItem.getMessage());
         wrapper.setGravity(channelItem.getGravity());
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
