@@ -31,7 +31,7 @@ public class SentChatBubble extends ChatBubble {
 
     @Override
     public int getColor() {
-        return Color.rgb(195, 229, 183);
+        return Color.parseColor("#FFF6F6F6");
     }
 
     @Override
