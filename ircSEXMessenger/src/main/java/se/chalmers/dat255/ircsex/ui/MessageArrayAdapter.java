@@ -62,7 +62,7 @@ public class MessageArrayAdapter extends ArrayAdapter<ChannelItem> {
         time.setToNow();
         if (time.monthDay != dayOfMonth) {
             dayOfMonth = time.monthDay;
-            DayChangeMessage dayChangeMessage = new DayChangeMessage(time.monthDay + " " + getMonth(time.month));
+            InfoMessage dayChangeMessage = new InfoMessage(time.monthDay + " " + getMonth(time.month));
             channelItems.add(dayChangeMessage);
             super.add(dayChangeMessage);
         }
