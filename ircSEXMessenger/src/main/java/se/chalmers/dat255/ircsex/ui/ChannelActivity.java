@@ -261,11 +261,11 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     @Override
     public void onJoinDialogAccept(DialogFragment dialog) {
         String channelName = ((TextView) dialog.getDialog().findViewById(R.id.dialog_join_channel_channel_name)).getText().toString();
-        joinChannel(channelName);
+        joinChannel(channelName, true);
     }
 
-    private void joinChannel(String channelName) {
-        session.joinChannel(session.getActiveServer().getHost(), channelName);
+    private void joinChannel(String channelName, boolean isChannel) {
+        session.joinChannel(session.getActiveServer().getHost(), channelName, isChannel);
     }
 
     private void leaveActiveChannel() {
@@ -344,7 +344,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
                 break;
             case SearchActivity.RESULT_RETURN_CHANNEL:
                 String channel = data.getStringExtra(SearchActivity.EXTRA_CHANNEL);
-                joinChannel(channel);
+                joinChannel(channel, true);
                 break;
             case Activity.RESULT_CANCELED:
                 if (requestCode == NoServersActivity.REQUEST_SERVER) {

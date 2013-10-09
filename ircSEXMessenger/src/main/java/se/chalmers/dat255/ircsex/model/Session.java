@@ -107,8 +107,12 @@ public class Session {
      *
      * @param host - Server address
      * @param channel - Name of channel to join
+     * @param isChannel - True if an actual channel, false if query
      */
-    public void joinChannel(String host, String channel) {
+    public void joinChannel(String host, String channel, boolean isChannel) {
+        if (isChannel && channel.charAt(0) != '#') {
+            channel = "#" + channel;
+        }
         servers.get(host).joinChannel(channel);
     }
 
