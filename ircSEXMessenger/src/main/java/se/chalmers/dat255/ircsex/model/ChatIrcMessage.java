@@ -7,38 +7,16 @@ import java.text.SimpleDateFormat;
  *
  * Created by Oskar on 2013-09-24.
  */
-public class ChatIrcMessage {
-
+public class ChatIrcMessage extends IrcMessage {
+    private static final int ONE_DAY = 60 * 60 * 24;
+    private static final long MS_MULTIPLIER = 1000L;
     private final IrcUser user;
-    private final String message;
     private final long timestamp;
-    private boolean read;
 
     public ChatIrcMessage(IrcUser user, String message) {
+        super(message);
         this.user = user;
-        this.message = message;
         this.timestamp = System.currentTimeMillis();
-        this.read = false;
-    }
-
-    /**
-     * Checks if the message is read.
-     *
-     * @return if the message is read
-     */
-    public boolean isRead() {
-        return read;
-    }
-
-    /**
-     * Marks message as read.
-     */
-    public void read() {
-        read = true;
-    }
-
-    public String getMessage() {
-        return message;
     }
 
     public IrcUser getUser() {
@@ -46,7 +24,7 @@ public class ChatIrcMessage {
     }
 
     public String getReadableTimestamp() {
-        if (System.currentTimeMillis()/1000L - timestamp < 60*60*24) {
+        if (System.currentTimeMillis()/ MS_MULTIPLIER - timestamp < ONE_DAY) {
             return new SimpleDateFormat("HH:mm").format(timestamp);
         } else {
             return new SimpleDateFormat("yyyy-MM-dd HH:mm").format(timestamp);
