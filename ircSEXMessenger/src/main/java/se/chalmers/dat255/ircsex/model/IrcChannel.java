@@ -17,7 +17,7 @@ public class IrcChannel {
 
     private final String channelName;
     private ConcurrentMap<String, IrcUser> users;
-    private final List<ChatIrcMessage> messages;
+    private final List<IrcMessage> messages;
 
     /**
      * Creates an IrcChannel object.
@@ -27,7 +27,7 @@ public class IrcChannel {
     public IrcChannel(String channelName) {
         this.channelName = channelName;
         this.users = new ConcurrentHashMap<String, IrcUser>();
-        messages = new ArrayList<ChatIrcMessage>();
+        messages = new ArrayList<IrcMessage>();
     }
 
     /**
@@ -87,9 +87,9 @@ public class IrcChannel {
      * @param user - The user who left
      */
     public void userParted(String user) {
-        Log.e("IRC", user + " quited");
+        Log.e("IRC", user + " quit");
         synchronized (users) {
-            Log.e("IRC", user + " quited");
+            Log.e("IRC", user + " quit");
             user = IrcUser.extractUserName(user);
             users.remove(user);
         }
@@ -125,7 +125,7 @@ public class IrcChannel {
      *
      * @return The messages in this channel
      */
-    public List<ChatIrcMessage> getMessages() {
+    public List<IrcMessage> getMessages() {
         synchronized (messages) {
             return messages;
         }
@@ -138,10 +138,18 @@ public class IrcChannel {
      * @param message Message to add
      * @return The ChatIrcMessage created from the message string and user string
      */
-    public ChatIrcMessage newMessage(String user, String message) {
+    public ChatIrcMessage newChatMessage(String user, String message) {
         synchronized (messages) {
             user = IrcUser.extractUserName(user);
             ChatIrcMessage ircMessage = new ChatIrcMessage(users.get(user), message);
+            messages.add(ircMessage);
+            return ircMessage;
+        }
+    }
+
+    public InfoIrcMessage newInfoMessage(String message) {
+        synchronized (messages) {
+            InfoIrcMessage ircMessage = new InfoIrcMessage(message);
             messages.add(ircMessage);
             return ircMessage;
         }

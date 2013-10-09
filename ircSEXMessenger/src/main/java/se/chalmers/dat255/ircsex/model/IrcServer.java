@@ -202,7 +202,7 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
     public void sendMessage(String channel, String message) {
         if (NetworkStateHandler.isConnected()) {
             protocol.sendChannelMessage(channel, message);
-            connectedChannels.get(channel).newMessage(user.getNick(), message);
+            connectedChannels.get(channel).newChatMessage(user.getNick(), message);
             ChatIrcMessage ircMessage = new ChatIrcMessage(user, message);
             for (SessionListener listener : sessionListeners) {
                 listener.onSentMessage(host, channel, ircMessage);
@@ -357,9 +357,9 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
             IrcChannel ircChannel = connectedChannels.get(channelName);
             ircChannel.userJoined(ircUser);
             for (SessionListener listener : sessionListeners) {
+                IrcMessage ircMessage = ircChannel.newInfoMessage(nick + " has joined the channel");
+                listener.onChannelUserJoin(host, channelName, ircMessage);
                 listener.onChannelUserChange(host, channelName, ircChannel.getUsers());
-                listener.onChannelUserJoin(host, channelName,
-                        new InfoIrcMessage(ircChannel.getUser(nick).toString() + " has joined the channel"));
             }
         }
     }
@@ -376,8 +376,9 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
             IrcChannel ircChannel = connectedChannels.get(channelName);
             ircChannel.userParted(nick);
             for (SessionListener listener : sessionListeners) {
+                IrcMessage ircMessage = ircChannel.newInfoMessage(nick + " has left the channel");
+                listener.onChannelUserPart(host, channelName, ircMessage);
                 listener.onChannelUserChange(host, channelName, ircChannel.getUsers());
-                listener.onChannelUserPart(host, channelName, new InfoIrcMessage(nick + " has left the channel"));
             }
         }
     }
@@ -437,8 +438,7 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
     @Override
     public void channelMessageReceived(String channel, String user, String message) {
         user = IrcUser.extractUserName(user);
-
-        ChatIrcMessage ircMessage = connectedChannels.get(channel).newMessage(user, message);
+        ChatIrcMessage ircMessage = connectedChannels.get(channel).newChatMessage(user, message);
 
         for (SessionListener listener : sessionListeners) {
             listener.onChannelMessage(host, channel, ircMessage);
@@ -451,7 +451,8 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
         if (!connectedChannels.containsKey(user)) {
             queryUser(user);
         }
-        ChatIrcMessage ircMessage = connectedChannels.get(user).newMessage(user, message);
+
+        ChatIrcMessage ircMessage = connectedChannels.get(user).newChatMessage(user, message);
         for (SessionListener listener : sessionListeners) {
             listener.onChannelMessage(host, user, ircMessage);
         }
