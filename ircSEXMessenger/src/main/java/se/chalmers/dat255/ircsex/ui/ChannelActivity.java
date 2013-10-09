@@ -214,7 +214,8 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
                 startActivity(intent);
                 break;
             case R.id.highlights:
-                // TODO
+                Intent highlightIntent = new Intent(this, HighlightActivity.class);
+                startActivity(highlightIntent);
                 break;
             default:
                 return super.onOptionsItemSelected(item);
