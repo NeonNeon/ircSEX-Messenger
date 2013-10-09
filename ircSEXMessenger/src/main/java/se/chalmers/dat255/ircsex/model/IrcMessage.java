@@ -5,7 +5,7 @@ import se.chalmers.dat255.ircsex.ui.ChannelItem;
 /**
  * Created by Wilhelm on 2013-10-09.
  */
-public class IrcMessage {
+public abstract class IrcMessage {
     protected final String message;
     private boolean read = false;
 
@@ -36,5 +36,5 @@ public class IrcMessage {
         return message;
     }
 
-    public Class<? extends ChannelItem> getChannelItem() { return null; }
+    public abstract Class<? extends ChannelItem> getChannelItem();
 }

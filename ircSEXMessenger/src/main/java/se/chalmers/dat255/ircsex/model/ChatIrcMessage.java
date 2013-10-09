@@ -2,6 +2,9 @@ package se.chalmers.dat255.ircsex.model;
 
 import java.text.SimpleDateFormat;
 
+import se.chalmers.dat255.ircsex.ui.ChannelItem;
+import se.chalmers.dat255.ircsex.ui.ReceivedChatBubble;
+
 /**
  * Class to represent an message.
  *
@@ -29,5 +32,10 @@ public class ChatIrcMessage extends IrcMessage {
         } else {
             return new SimpleDateFormat("yyyy-MM-dd HH:mm").format(timestamp);
         }
+    }
+
+    @Override
+    public Class<? extends ChannelItem> getChannelItem() {
+        return ReceivedChatBubble.class;
     }
 }
