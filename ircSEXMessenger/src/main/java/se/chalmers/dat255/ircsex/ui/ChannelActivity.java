@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import se.chalmers.dat255.ircsex.R;
+import se.chalmers.dat255.ircsex.model.ChatIrcMessage;
 import se.chalmers.dat255.ircsex.model.IrcMessage;
 import se.chalmers.dat255.ircsex.model.IrcUser;
 import se.chalmers.dat255.ircsex.model.NetworkStateHandler;
@@ -442,16 +443,16 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     }
 
     @Override
-    public void onChannelUserJoin(String host, String channel, IrcUser user) {
+    public void onChannelUserJoin(String host, String channel, IrcMessage joinMessage) {
         if (session.getActiveChannel() != null && session.getActiveChannel().getChannelName().equals(channel)) {
-            addInfoMessage(user + " has joined the channel");
+            addInfoMessage(joinMessage);
         }
     }
 
     @Override
-    public void onChannelUserPart(String host, String channel, String nick) {
+    public void onChannelUserPart(String host, String channel, IrcMessage partMessage) {
         if (session.getActiveChannel() != null && session.getActiveChannel().getChannelName().equals(channel)) {
-            addInfoMessage(nick + " has left the channel");
+            addInfoMessage(partMessage);
         }
     }
 
@@ -483,7 +484,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     }
 
     @Override
-    public void onChannelMessage(String host, final String channel, final IrcMessage message) {
+    public void onChannelMessage(String host, final String channel, final ChatIrcMessage message) {
         ChannelActivity.this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -496,7 +497,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     }
 
     @Override
-    public void onSentMessage(String host, final String channel, final IrcMessage message) {
+    public void onSentMessage(String host, final String channel, final ChatIrcMessage message) {
         ChannelActivity.this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -508,11 +509,11 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     }
 
     @Override
-    public void onNickChange(String host, final String oldNick, final String newNick) {
-        addInfoMessage(oldNick + " is now known as " + newNick);
+    public void onNickChange(String host, IrcMessage ircMessage) {
+        addInfoMessage(ircMessage);
     }
 
-    private void addInfoMessage(final String infoMessage) {
+    private void addInfoMessage(final IrcMessage infoMessage) {
         ChannelActivity.this.runOnUiThread(new Runnable() {
             @Override
             public void run() {

@@ -52,7 +52,7 @@ public interface IrcProtocolListener {
      * @param nick - the nick of the user
      * @param quitMessage - the quit message
      */
-    public void userQuited(String nick, String quitMessage);
+    public void userQuit(String nick, String quitMessage);
 
     /**
      * Sent when a channel message is received from the server.

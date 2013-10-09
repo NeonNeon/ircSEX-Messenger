@@ -3,19 +3,19 @@ package se.chalmers.dat255.ircsex.ui.search;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
 import se.chalmers.dat255.ircsex.model.IrcMessage;
 import se.chalmers.dat255.ircsex.model.Session;
-import se.chalmers.dat255.ircsex.ui.ChannelItem;
+import se.chalmers.dat255.ircsex.model.ChannelItem;
 import se.chalmers.dat255.ircsex.ui.MessageArrayAdapter;
-import se.chalmers.dat255.ircsex.ui.ReceivedChatBubble;
-import se.chalmers.dat255.ircsex.ui.SentChatBubble;
 
 /**
  * @author Johan Magnusson
@@ -55,18 +55,26 @@ public class MessageSearchActivity extends SearchActivity {
         List<IrcMessage> messages = session.getActiveChannel().getMessages();
         search = search.toLowerCase();
         clearAdapter();
-        for (IrcMessage message : messages) {
-            if (message.getMessage().toLowerCase().contains(search)) {
-                if (message.getUser().isSelf()) {
-                    result.add(new SentChatBubble(message));
-                }
-                else {
-                    result.add(new ReceivedChatBubble(message));
+        try {
+            for (IrcMessage message : messages) {
+                if (message.getMessage().toLowerCase().contains(search)) {
+                    Class<? extends ChannelItem> channelItemClass = message.getChannelItem();
+                    ChannelItem ci = channelItemClass.getConstructor(IrcMessage.class).newInstance(message);
+                    result.add(ci);
                 }
             }
+        } catch (InvocationTargetException e) {
+            Log.e("IRCDEBUG", "Could not instantiate search results for search string: " + search, e);
+        } catch (NoSuchMethodException e) {
+            Log.e("IRCDEBUG", "Could not instantiate search results for search string: " + search, e);
+        } catch (InstantiationException e) {
+            Log.e("IRCDEBUG", "Could not instantiate search results for search string: " + search, e);
+        } catch (IllegalAccessException e) {
+            Log.e("IRCDEBUG", "Could not instantiate search results for search string: " + search, e);
+        } finally {
+            super.clearAdapter();
+            update();
         }
-        super.clearAdapter();
-        update();
     }
 
     @Override

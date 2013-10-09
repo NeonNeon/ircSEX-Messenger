@@ -7,7 +7,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.NinePatchDrawable;
 import android.os.Build;
-import android.text.format.Time;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,12 +16,14 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import java.text.DateFormatSymbols;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import se.chalmers.dat255.ircsex.R;
+import se.chalmers.dat255.ircsex.model.ChannelItem;
+import se.chalmers.dat255.ircsex.model.ChatBubble;
+import se.chalmers.dat255.ircsex.model.ReceivedChatBubble;
+import se.chalmers.dat255.ircsex.model.SentChatBubble;
 
 /**
  * @author Johan Magnusson
@@ -35,14 +36,9 @@ public class MessageArrayAdapter extends ArrayAdapter<ChannelItem> {
     private List<ChannelItem> channelItems = new ArrayList<ChannelItem>();
     private RelativeLayout wrapper;
     private boolean animate = true;
-    private Time time;
-    private int dayOfMonth;
 
     public MessageArrayAdapter(Context context, List<ChannelItem> backlog) {
         super(context, R.layout.received_chat_bubble);
-        time = new Time();
-        time.setToNow();
-        dayOfMonth = time.monthDay;
         for (ChannelItem item : backlog) {
             add(item);
             animate = false;
@@ -52,24 +48,9 @@ public class MessageArrayAdapter extends ArrayAdapter<ChannelItem> {
 
     @Override
     public void add(ChannelItem channelItem) {
-        checkForDateChange();
         channelItems.add(channelItem);
         super.add(channelItem);
         animate = true;
-    }
-
-    private void checkForDateChange() {
-        time.setToNow();
-        if (time.monthDay != dayOfMonth) {
-            dayOfMonth = time.monthDay;
-            InfoMessage dayChangeMessage = new InfoMessage(time.monthDay + " " + getMonth(time.month));
-            channelItems.add(dayChangeMessage);
-            super.add(dayChangeMessage);
-        }
-    }
-
-    private String getMonth(int month) {
-        return DateFormatSymbols.getInstance(Locale.getDefault()).getMonths()[month];
     }
 
     @Override

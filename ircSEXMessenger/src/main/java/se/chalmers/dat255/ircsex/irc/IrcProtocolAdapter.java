@@ -8,9 +8,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * This class is used to easily communicate with the IRC protocol.
@@ -104,7 +102,7 @@ public class IrcProtocolAdapter implements Runnable {
         else if ((index = reply.indexOf("QUIT")) != -1) {
             String message = reply.substring(index + 6);
             String user = reply.substring(1, reply.indexOf('!'));
-            listener.userQuited(user, message);
+            listener.userQuit(user, message);
         }
         else if ((index = reply.indexOf("NICK ")) != -1) {
             listener.nickChanged(reply.substring(reply.indexOf(':') + 1, reply.indexOf('!')),

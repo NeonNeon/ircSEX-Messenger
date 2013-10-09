@@ -45,7 +45,7 @@ class IrcProtocolAdapterEventsTest extends Specification {
         ipa.handleReply(":" + user + command + quitMessage)
 
         then:
-        1 * subscriber.userQuited(user, quitMessage)
+        1 * subscriber.userQuit(user, quitMessage)
 
         where:
         user << ["oed", "Heissman", "Rascal"]
