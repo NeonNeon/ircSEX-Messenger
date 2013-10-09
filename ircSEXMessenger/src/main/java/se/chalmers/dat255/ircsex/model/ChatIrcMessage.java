@@ -2,10 +2,6 @@ package se.chalmers.dat255.ircsex.model;
 
 import java.text.SimpleDateFormat;
 
-import se.chalmers.dat255.ircsex.ui.ChannelItem;
-import se.chalmers.dat255.ircsex.ui.ReceivedChatBubble;
-import se.chalmers.dat255.ircsex.ui.SentChatBubble;
-
 /**
  * Class to represent an message.
  *

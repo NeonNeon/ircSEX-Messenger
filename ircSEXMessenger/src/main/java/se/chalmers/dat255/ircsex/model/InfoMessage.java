@@ -1,10 +1,11 @@
-package se.chalmers.dat255.ircsex.ui;
+package se.chalmers.dat255.ircsex.model;
 
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.view.Gravity;
 
 import se.chalmers.dat255.ircsex.R;
+import se.chalmers.dat255.ircsex.model.ChannelItem;
 import se.chalmers.dat255.ircsex.model.IrcMessage;
 
 /**

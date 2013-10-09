@@ -14,7 +14,7 @@ import java.util.List;
 
 import se.chalmers.dat255.ircsex.model.IrcMessage;
 import se.chalmers.dat255.ircsex.model.Session;
-import se.chalmers.dat255.ircsex.ui.ChannelItem;
+import se.chalmers.dat255.ircsex.model.ChannelItem;
 import se.chalmers.dat255.ircsex.ui.MessageArrayAdapter;
 
 /**
@@ -63,7 +63,13 @@ public class MessageSearchActivity extends SearchActivity {
                     result.add(ci);
                 }
             }
-        } catch (java.lang.InstantiationException  | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+        } catch (InvocationTargetException e) {
+            Log.e("IRCDEBUG", "Could not instantiate search results for search string: " + search, e);
+        } catch (NoSuchMethodException e) {
+            Log.e("IRCDEBUG", "Could not instantiate search results for search string: " + search, e);
+        } catch (InstantiationException e) {
+            Log.e("IRCDEBUG", "Could not instantiate search results for search string: " + search, e);
+        } catch (IllegalAccessException e) {
             Log.e("IRCDEBUG", "Could not instantiate search results for search string: " + search, e);
         } finally {
             super.clearAdapter();

@@ -1,9 +1,10 @@
-package se.chalmers.dat255.ircsex.ui;
+package se.chalmers.dat255.ircsex.model;
 
 import android.graphics.Rect;
 import android.view.Gravity;
 
 import se.chalmers.dat255.ircsex.R;
+import se.chalmers.dat255.ircsex.model.ChatBubble;
 import se.chalmers.dat255.ircsex.model.ChatIrcMessage;
 import se.chalmers.dat255.ircsex.model.IrcMessage;
 import se.chalmers.dat255.ircsex.model.IrcUser;

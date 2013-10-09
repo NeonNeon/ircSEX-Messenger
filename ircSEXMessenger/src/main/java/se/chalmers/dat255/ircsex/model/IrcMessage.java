@@ -1,7 +1,5 @@
 package se.chalmers.dat255.ircsex.model;
 
-import se.chalmers.dat255.ircsex.ui.ChannelItem;
-
 /**
  * Created by Wilhelm on 2013-10-09.
  */

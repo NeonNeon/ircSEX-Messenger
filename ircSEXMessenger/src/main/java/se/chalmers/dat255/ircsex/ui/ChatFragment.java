@@ -18,9 +18,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import se.chalmers.dat255.ircsex.R;
+import se.chalmers.dat255.ircsex.model.ChannelItem;
+import se.chalmers.dat255.ircsex.model.InfoMessage;
 import se.chalmers.dat255.ircsex.model.IrcChannel;
 import se.chalmers.dat255.ircsex.model.ChatIrcMessage;
 import se.chalmers.dat255.ircsex.model.IrcMessage;
+import se.chalmers.dat255.ircsex.model.ReceivedChatBubble;
+import se.chalmers.dat255.ircsex.model.SentChatBubble;
 
 public class ChatFragment extends Fragment {
     private ListView messageList;
@@ -60,7 +64,13 @@ public class ChatFragment extends Fragment {
                 ChannelItem ci = channelItemClass.getConstructor(IrcMessage.class).newInstance(message);
                 backlog.add(ci);
             }
-        } catch (java.lang.InstantiationException  | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+        } catch (InvocationTargetException e) {
+            Log.e("IRCDEBUG", "Could not instantiate backlog of channel " + channel.getChannelName(), e);
+        } catch (NoSuchMethodException e) {
+            Log.e("IRCDEBUG", "Could not instantiate backlog of channel " + channel.getChannelName(), e);
+        } catch (java.lang.InstantiationException e) {
+            Log.e("IRCDEBUG", "Could not instantiate backlog of channel " + channel.getChannelName(), e);
+        } catch (IllegalAccessException e) {
             Log.e("IRCDEBUG", "Could not instantiate backlog of channel " + channel.getChannelName(), e);
         } finally {
             messageArrayAdapter = new MessageArrayAdapter(getActivity(), backlog);

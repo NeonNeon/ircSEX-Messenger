@@ -7,7 +7,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.NinePatchDrawable;
 import android.os.Build;
-import android.text.format.Time;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,12 +16,14 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import java.text.DateFormatSymbols;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import se.chalmers.dat255.ircsex.R;
+import se.chalmers.dat255.ircsex.model.ChannelItem;
+import se.chalmers.dat255.ircsex.model.ChatBubble;
+import se.chalmers.dat255.ircsex.model.ReceivedChatBubble;
+import se.chalmers.dat255.ircsex.model.SentChatBubble;
 
 /**
  * @author Johan Magnusson
