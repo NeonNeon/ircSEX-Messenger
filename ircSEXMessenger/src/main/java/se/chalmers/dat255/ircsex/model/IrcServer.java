@@ -301,6 +301,15 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
         protocol.listChannels();
     }
 
+    private boolean checkHighlight(String str) {
+        for (String h : highlightsWords) {
+            if (str.contains(h)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     public void serverConnected() {
         if (NetworkStateHandler.isConnected()) {
@@ -467,7 +476,14 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
     public void channelMessageReceived(String channel, String user, String message) {
         user = IrcUser.extractUserName(user);
 
-        IrcMessage ircMessage = connectedChannels.get(channel).newMessage(user, message);
+        IrcChannel ircChannel = connectedChannels.get(channel);
+        IrcMessage ircMessage = ircChannel.newMessage(user, message);
+        if (checkHighlight(message)) {
+            highlights.put(ircChannel, ircMessage);
+            for (SessionListener listener : sessionListeners) {
+                listener.onHighlight(ircChannel, ircMessage);
+            }
+        }
 
         for (SessionListener listener : sessionListeners) {
             listener.onChannelMessage(host, channel, ircMessage);
@@ -480,7 +496,16 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
         if (!connectedChannels.containsKey(user)) {
             queryUser(user);
         }
-        IrcMessage ircMessage = connectedChannels.get(user).newMessage(user, message);
+
+        IrcChannel ircChannel = connectedChannels.get(user);
+        IrcMessage ircMessage = ircChannel.newMessage(user, message);
+        if (checkHighlight(message)) {
+            highlights.put(ircChannel, ircMessage);
+            for (SessionListener listener : sessionListeners) {
+                listener.onHighlight(ircChannel, ircMessage);
+            }
+        }
+
         for (SessionListener listener : sessionListeners) {
             listener.onChannelMessage(host, user, ircMessage);
         }
