@@ -506,7 +506,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
 
     @Override
     public void onHighlight(IrcChannel channel, IrcMessage message) {
-
+        // TODO
     }
 
     @Override
