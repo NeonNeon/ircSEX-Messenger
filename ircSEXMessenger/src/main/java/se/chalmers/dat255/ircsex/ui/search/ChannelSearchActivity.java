@@ -1,8 +1,12 @@
 package se.chalmers.dat255.ircsex.ui.search;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.BaseAdapter;
+import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -64,5 +68,15 @@ public class ChannelSearchActivity extends SearchActivity {
             }
         }
         update();
+    }
+
+    @Override
+    protected void onListItemClick(ListView l, View v, int position, long id) {
+        super.onListItemClick(l, v, position, id);
+        String text = ((TextView) v.findViewById(android.R.id.text1)).getText().toString();
+        Intent data = new Intent();
+        data.putExtra(EXTRA_CHANNEL, text);
+        setResult(RESULT_RETURN_CHANNEL, data);
+        finish();
     }
 }

@@ -261,11 +261,15 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     @Override
     public void onJoinDialogAccept(DialogFragment dialog) {
         String channelName = ((TextView) dialog.getDialog().findViewById(R.id.dialog_join_channel_channel_name)).getText().toString();
-        joinChannel(channelName, true);
+        joinChannel(channelName);
     }
 
-    private void joinChannel(String channelName, boolean isChannel) {
-        session.joinChannel(session.getActiveServer().getHost(), channelName, isChannel);
+    private void joinChannel(String channelName) {
+        session.joinChannel(session.getActiveServer().getHost(), channelName);
+    }
+
+    private void queryUser(String user) {
+        session.getActiveServer().queryUser(IrcUser.extractUserName(user));
     }
 
     private void leaveActiveChannel() {
@@ -344,7 +348,12 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
                 break;
             case SearchActivity.RESULT_RETURN_CHANNEL:
                 String channel = data.getStringExtra(SearchActivity.EXTRA_CHANNEL);
-                joinChannel(channel, true);
+                joinChannel(channel);
+                break;
+            case SearchActivity.RESULT_RETURN_QUERY:
+                String queryTarget = data.getStringExtra(SearchActivity.EXTRA_CHANNEL);
+                queryUser(queryTarget);
+                drawerLayout.closeDrawer(rightDrawerContainer);
                 break;
             case Activity.RESULT_CANCELED:
                 if (requestCode == NoServersActivity.REQUEST_SERVER) {
@@ -479,7 +488,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     public void queryUser(View view) {
         view = ((LinearLayout) view).getChildAt(0);
         String user = ((TextView) ((LinearLayout) view).getChildAt(0)).getText().toString();
-        session.getActiveServer().queryUser(IrcUser.extractUserName(user));
+        queryUser(user);
         drawerLayout.closeDrawer(Gravity.END);
     }
 
@@ -613,12 +622,12 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
 
     public void leftDrawerSearch(View view) {
         Intent intent = new Intent(this, ChannelSearchActivity.class);
-        startActivity(intent);
+        startActivityForResult(intent, SearchActivity.REQUEST_CHANNEL);
     }
 
     public void rightDrawerSearch(View view) {
         Intent intent = new Intent(this, UserSearchActivity.class);
-        startActivity(intent);
+        startActivityForResult(intent, SearchActivity.REQUEST_CHANNEL);
 
     }
 }

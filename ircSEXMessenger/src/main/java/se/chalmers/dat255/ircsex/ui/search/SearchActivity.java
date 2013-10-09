@@ -3,16 +3,12 @@ package se.chalmers.dat255.ircsex.ui.search;
 import android.app.ActionBar;
 import android.app.ListActivity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.BaseAdapter;
-import android.widget.ListView;
 import android.widget.SearchView;
-import android.widget.TextView;
 
 import java.util.Collections;
 import java.util.Set;
@@ -24,17 +20,16 @@ import se.chalmers.dat255.ircsex.R;
  * Created by Oskar on 2013-10-04.
  */
 public abstract class SearchActivity extends ListActivity {
-
+    public static final int REQUEST_CHANNEL = 29;
     public static final int RESULT_RETURN_CHANNEL = 30;
+    public static final int RESULT_RETURN_QUERY = 31;
     public static final String EXTRA_CHANNEL = "channelName";
-
-    private BaseAdapter adapter;
     public static final String TEXT1 = "text1";
     public static final String TEXT2 = "text2";
     public static final String TEXT3 = "text3";
 
-    public Set<String> content;
-
+    protected Set<String> content;
+    private BaseAdapter adapter;
     private SearchView searchView;
 
     @Override
@@ -106,16 +101,5 @@ public abstract class SearchActivity extends ListActivity {
         searchMenuItem.expandActionView();
 
         return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    protected void onListItemClick(ListView l, View v, int position, long id) {
-        super.onListItemClick(l, v, position, id);
-
-        String text = ((TextView) v.findViewById(android.R.id.text1)).getText().toString();
-        Intent data = new Intent();
-        data.putExtra(EXTRA_CHANNEL, text);
-        setResult(RESULT_RETURN_CHANNEL, data);
-        finish();
     }
 }
