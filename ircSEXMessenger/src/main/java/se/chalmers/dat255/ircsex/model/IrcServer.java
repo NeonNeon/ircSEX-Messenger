@@ -301,6 +301,12 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
             user.changeNick(newNick);
             serverDatasource.updateNickname(host, newNick);
             for (SessionListener listener : sessionListeners) {
+                // TODO: What?
+                // This will only send a notification to the current window.
+                // And since the messages are not persistent, it will then disappear.
+                // It would seem that we must first find all channels in which there is an oldNick user,
+                // and then notify those channels. In addition, the callback to ChannelActivity must
+                // contain the host name, otherwise the change nick message will appear in ALL channels.
                 listener.onNickChange(host, new InfoIrcMessage(oldNick + " is now known as " + newNick));
             }
         } else {
