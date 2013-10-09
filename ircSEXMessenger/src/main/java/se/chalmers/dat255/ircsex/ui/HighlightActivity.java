@@ -30,6 +30,7 @@ public class HighlightActivity extends ListActivity {
 
     public static final String TEXT1 = "text1";
     public static final String TEXT2 = "text2";
+    public static final String TEXT3 = "text3";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +42,8 @@ public class HighlightActivity extends ListActivity {
         for (IrcHighlight highlight : highlights) {
             Map<String, String> entry = new HashMap<String, String>();
             entry.put(TEXT1, highlight.getChannel().getChannelName());
-            entry.put(TEXT2, highlight.getMessage().getMessage());
+            entry.put(TEXT2, highlight.getMessage().getReadableTimestamp());
+            entry.put(TEXT3, highlight.getMessage().getMessage());
             content.add(entry);
         }
 
@@ -49,8 +51,8 @@ public class HighlightActivity extends ListActivity {
                 this,
                 content,
                 R.layout.channel_search_list_item,
-                new String[]{TEXT1, TEXT2},
-                new int[]{android.R.id.text1, R.id.text3});
+                new String[]{TEXT1, TEXT2, TEXT3},
+                new int[]{android.R.id.text1, R.id.text2, R.id.text3});
         setListAdapter(adapter);
     }
 }
