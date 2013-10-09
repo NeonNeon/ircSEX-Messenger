@@ -50,7 +50,7 @@ public class HighlightActivity extends ListActivity {
         adapter = new SimpleAdapter(
                 this,
                 content,
-                R.layout.channel_search_list_item,
+                R.layout.highlight_list_item,
                 new String[]{TEXT1, TEXT2, TEXT3},
                 new int[]{android.R.id.text1, R.id.text2, R.id.text3});
         setListAdapter(adapter);
