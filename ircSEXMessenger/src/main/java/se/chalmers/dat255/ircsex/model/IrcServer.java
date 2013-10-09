@@ -283,6 +283,22 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
         highlightsWords.remove(index);
     }
 
+    /**
+     * Returns all highlighted messages.
+     *
+     * @return Highlighted messages
+     */
+    public Map<IrcChannel, IrcMessage> getHighlights() {
+        return highlights;
+    }
+
+    /**
+     * Clears highlights.
+     */
+    public void clearHighlights() {
+        highlights.clear();
+    }
+
     public Set<String> getKnownUsers() {
         Set<String> users = new LinkedHashSet<String>();
         for (Map.Entry<String, IrcChannel> c : connectedChannels.entrySet()) {
