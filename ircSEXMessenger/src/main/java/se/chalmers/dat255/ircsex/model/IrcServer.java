@@ -1,6 +1,7 @@
 package se.chalmers.dat255.ircsex.model;
 
 import android.util.Log;
+import android.widget.SearchView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +33,7 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
     private final ChannelDatabaseAdapter datasource;
     private final ServerDatabaseAdapter serverDatasource;
 
-    private final HashMap<String, String> channels;
+    private final ArrayList<SearchlistChannelItem> channels;
     private final ConcurrentMap<String, IrcChannel> connectedChannels;
 
     private IrcProtocolAdapter protocol;
@@ -73,7 +74,7 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
         datasource = new ChannelDatabaseAdapter();
         datasource.open();
 
-        channels = new HashMap<String, String>();
+        channels = new ArrayList<SearchlistChannelItem>();
         connectedChannels = new ConcurrentHashMap<String, IrcChannel>();
 
         NetworkStateHandler.addListener(this);
@@ -264,7 +265,7 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
         return users;
     }
 
-    public HashMap<String, String> getChannels() {
+    public ArrayList<SearchlistChannelItem> getChannels() {
         return channels;
     }
 
@@ -417,8 +418,9 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
     }
 
     @Override
-    public void channelListResponse(String name, String topic) {
-        channels.put(name, topic);
+    public void channelListResponse(String name, String topic, String users) {
+        int userCount = Integer.parseInt(users);
+        channels.add(new SearchlistChannelItem(name, userCount, topic));
     }
 
     @Override
