@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import se.chalmers.dat255.ircsex.R;
+import se.chalmers.dat255.ircsex.model.IrcChannel;
 import se.chalmers.dat255.ircsex.model.IrcMessage;
 import se.chalmers.dat255.ircsex.model.IrcUser;
 import se.chalmers.dat255.ircsex.model.Session;
@@ -159,6 +160,11 @@ public class UserSearchActivity extends SearchActivity implements SessionListene
 
     @Override
     public void onChannelMessage(String host, String channel, IrcMessage message) {
+
+    }
+
+    @Override
+    public void onHighlight(IrcChannel channel, IrcMessage message) {
 
     }
 

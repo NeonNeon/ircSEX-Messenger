@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import se.chalmers.dat255.ircsex.R;
+import se.chalmers.dat255.ircsex.model.IrcChannel;
 import se.chalmers.dat255.ircsex.model.IrcMessage;
 import se.chalmers.dat255.ircsex.model.IrcUser;
 import se.chalmers.dat255.ircsex.model.NetworkStateHandler;
@@ -493,6 +494,11 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
                 }
             }
         });
+    }
+
+    @Override
+    public void onHighlight(IrcChannel channel, IrcMessage message) {
+
     }
 
     @Override
