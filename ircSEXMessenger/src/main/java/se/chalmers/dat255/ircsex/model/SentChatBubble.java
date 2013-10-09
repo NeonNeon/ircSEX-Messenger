@@ -14,11 +14,11 @@ import se.chalmers.dat255.ircsex.model.IrcMessage;
  * Created by Johan on 2013-09-24.
  */
 public class SentChatBubble extends ChatBubble {
-    private final long timestamp;
+    private final ChatIrcMessage ircMessage;
 
-    public SentChatBubble(IrcMessage message) {
-        super(message.getMessage());
-        timestamp = System.currentTimeMillis();
+    public SentChatBubble(IrcMessage ircMessage) {
+        super(ircMessage);
+        this.ircMessage = (ChatIrcMessage) ircMessage;
     }
 
     @Override
@@ -48,10 +48,6 @@ public class SentChatBubble extends ChatBubble {
 
     @Override
     public String getTimestamp() {
-        if (System.currentTimeMillis()/1000L - timestamp < 60*60*24) {
-            return new SimpleDateFormat("HH:mm").format(timestamp);
-        } else {
-            return new SimpleDateFormat("yyyy-MM-dd HH:mm").format(timestamp);
-        }
+        return ircMessage.getReadableTimestamp();
     }
 }

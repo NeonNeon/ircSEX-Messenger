@@ -8,14 +8,19 @@ import se.chalmers.dat255.ircsex.model.ChannelItem;
  * Created by Johan on 2013-09-24.
  */
 public abstract class ChatBubble implements ChannelItem {
-    private final String message;
+    private final IrcMessage ircMessage;
 
-    protected ChatBubble(String message) {
-        this.message = message;
+    protected ChatBubble(IrcMessage ircMessage) {
+        this.ircMessage = ircMessage;
     }
 
     public String getMessage() {
-        return message;
+        return ircMessage.getMessage();
+    }
+
+    @Override
+    public IrcMessage getIrcMessage() {
+        return ircMessage;
     }
 
     public abstract int getGravity();

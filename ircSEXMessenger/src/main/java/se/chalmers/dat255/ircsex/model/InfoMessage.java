@@ -12,15 +12,20 @@ import se.chalmers.dat255.ircsex.model.IrcMessage;
  * Created by Johan on 2013-10-01.
  */
 public class InfoMessage implements ChannelItem {
-    private final String message;
+    private final InfoIrcMessage ircMessage;
 
-    public InfoMessage(IrcMessage message) {
-        this.message = message.getMessage();
+    public InfoMessage(IrcMessage ircMessage) {
+        this.ircMessage = (InfoIrcMessage) ircMessage;
     }
 
     @Override
     public String getMessage() {
-        return message;
+        return ircMessage.getMessage();
+    }
+
+    @Override
+    public IrcMessage getIrcMessage() {
+        return ircMessage;
     }
 
     @Override

@@ -22,14 +22,14 @@ import java.util.List;
 import se.chalmers.dat255.ircsex.R;
 import se.chalmers.dat255.ircsex.model.ChannelItem;
 import se.chalmers.dat255.ircsex.model.ChatBubble;
+import se.chalmers.dat255.ircsex.model.InfoIrcMessage;
+import se.chalmers.dat255.ircsex.model.InfoMessage;
 import se.chalmers.dat255.ircsex.model.ReceivedChatBubble;
 import se.chalmers.dat255.ircsex.model.SentChatBubble;
 
 /**
  * @author Johan Magnusson
  * Created: 2013-09-24
- *
- *
  */
 public class MessageArrayAdapter extends ArrayAdapter<ChannelItem> {
     private Context context;
@@ -39,7 +39,12 @@ public class MessageArrayAdapter extends ArrayAdapter<ChannelItem> {
 
     public MessageArrayAdapter(Context context, List<ChannelItem> backlog) {
         super(context, R.layout.received_chat_bubble);
+        boolean unreadLinePlaced = false;
         for (ChannelItem item : backlog) {
+            if (!unreadLinePlaced && !item.getIrcMessage().isRead()) {
+                add(new InfoMessage(new InfoIrcMessage("")));
+                unreadLinePlaced = true;
+            }
             add(item);
             animate = false;
         }
@@ -76,7 +81,7 @@ public class MessageArrayAdapter extends ArrayAdapter<ChannelItem> {
             TextView timestampView = (TextView) rowView.findViewById(R.id.chat_bubble_timestamp);
             timestampView.setText(((ChatBubble)channelItem).getTimestamp());
         }
-        messageView.setText(channelItem.getMessage());
+        messageView.setText(channelItem.getMessage() + " " + channelItem.getIrcMessage().isRead());
         wrapper.setGravity(channelItem.getGravity());
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -92,6 +97,7 @@ public class MessageArrayAdapter extends ArrayAdapter<ChannelItem> {
             rowView.startAnimation(animation);
             animate = false;
         }
+        channelItem.getIrcMessage().read();
         return rowView;
     }
 
@@ -104,7 +110,6 @@ public class MessageArrayAdapter extends ArrayAdapter<ChannelItem> {
         Resources resources = context.getResources();
         Bitmap bitmap = BitmapFactory.decodeResource(resources, channelItem.getNinePatchID());
         byte[] chunk = bitmap.getNinePatchChunk();
-//        NinePatch ninePatch = new NinePatch(bitmap, chunk, null);
         NinePatchDrawable ninePatchDrawable = new NinePatchDrawable(resources, bitmap, chunk, channelItem.getPadding(), null);
         ninePatchDrawable.setColorFilter(channelItem.getColor(), PorterDuff.Mode.MULTIPLY);
         return ninePatchDrawable;
