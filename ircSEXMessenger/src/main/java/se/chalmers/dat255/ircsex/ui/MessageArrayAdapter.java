@@ -52,10 +52,6 @@ public class MessageArrayAdapter extends ArrayAdapter<ChannelItem> {
         animate = true;
     }
 
-    private String getMonth(int month) {
-        return DateFormatSymbols.getInstance(Locale.getDefault()).getMonths()[month];
-    }
-
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ChannelItem channelItem = getItem(position);

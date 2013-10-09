@@ -3,10 +3,12 @@ package se.chalmers.dat255.ircsex.ui.search;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,11 +55,20 @@ public class MessageSearchActivity extends SearchActivity {
         List<IrcMessage> messages = session.getActiveChannel().getMessages();
         search = search.toLowerCase();
         clearAdapter();
-        for (IrcMessage message : messages) {
-            // TODO: Instantiate with reflection magic
+        try {
+            for (IrcMessage message : messages) {
+                if (message.getMessage().toLowerCase().contains(search)) {
+                    Class<? extends ChannelItem> channelItemClass = message.getChannelItem();
+                    ChannelItem ci = channelItemClass.getConstructor(IrcMessage.class).newInstance(message);
+                    result.add(ci);
+                }
+            }
+        } catch (java.lang.InstantiationException  | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            Log.e("IRCDEBUG", "Could not instantiate search results for search string: " + search, e);
+        } finally {
+            super.clearAdapter();
+            update();
         }
-        super.clearAdapter();
-        update();
     }
 
     @Override
