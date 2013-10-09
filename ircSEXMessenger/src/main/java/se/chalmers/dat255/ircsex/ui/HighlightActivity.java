@@ -2,6 +2,7 @@ package se.chalmers.dat255.ircsex.ui;
 
 import android.app.ListActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.BaseAdapter;
 import android.widget.SimpleAdapter;
 
@@ -27,7 +28,7 @@ public class HighlightActivity extends ListActivity {
     private Session session;
 
     public static final String TEXT1 = "text1";
-    public static final String TEXT2 = "text2";
+    public static final String TEXT2 = "text3";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +40,8 @@ public class HighlightActivity extends ListActivity {
         for (IrcChannel channel : highlights.keySet()) {
             Map<String, String> entry = new HashMap<String, String>();
             entry.put(TEXT1, channel.getChannelName());
-            entry.put(TEXT2, highlights.get(channel.getChannelName()).getMessage());
+            entry.put(TEXT2, highlights.get(channel).getMessage());
+            content.add(entry);
         }
 
         adapter = new SimpleAdapter(
