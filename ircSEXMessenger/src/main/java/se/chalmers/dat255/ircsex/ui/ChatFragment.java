@@ -13,12 +13,14 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
 import se.chalmers.dat255.ircsex.R;
 import se.chalmers.dat255.ircsex.model.IrcChannel;
 import se.chalmers.dat255.ircsex.model.ChatIrcMessage;
+import se.chalmers.dat255.ircsex.model.IrcMessage;
 
 public class ChatFragment extends Fragment {
     private ListView messageList;
@@ -52,14 +54,17 @@ public class ChatFragment extends Fragment {
 
     private void setArrayAdapter() {
         List<ChannelItem> backlog = new ArrayList<ChannelItem>(channel.getMessages().size());
-        for (ChatIrcMessage message : channel.getMessages()) {
-            if (message.getUser().isSelf()) {
-                backlog.add(new SentChatBubble(message));
-            } else {
-                backlog.add(new ReceivedChatBubble(message));
+        try {
+            for (IrcMessage message : channel.getMessages()) {
+                Class<? extends ChannelItem> channelItemClass = message.getChannelItem();
+                ChannelItem ci = channelItemClass.getConstructor(IrcMessage.class).newInstance(message);
+                backlog.add(ci);
             }
+        } catch (java.lang.InstantiationException  | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            Log.e("IRCDEBUG", "Could not instantiate backlog of channel " + channel.getChannelName(), e);
+        } finally {
+            messageArrayAdapter = new MessageArrayAdapter(getActivity(), backlog);
         }
-        messageArrayAdapter = new MessageArrayAdapter(getActivity(), backlog);
     }
 
     @Override
@@ -110,8 +115,8 @@ public class ChatFragment extends Fragment {
         scrollToBottom();
     }
 
-    public void addInfoMessage(String infoMessage) {
-        Log.d("IRCDEBUG", infoMessage);
+    public void addInfoMessage(IrcMessage infoMessage) {
+        Log.d("IRCDEBUG", infoMessage.toString());
         messageArrayAdapter.add(new InfoMessage(infoMessage));
         messageList.invalidate();
         scrollWhenNoBacklog();

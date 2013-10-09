@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 
 import se.chalmers.dat255.ircsex.ui.ChannelItem;
 import se.chalmers.dat255.ircsex.ui.ReceivedChatBubble;
+import se.chalmers.dat255.ircsex.ui.SentChatBubble;
 
 /**
  * Class to represent an message.
@@ -36,6 +37,6 @@ public class ChatIrcMessage extends IrcMessage {
 
     @Override
     public Class<? extends ChannelItem> getChannelItem() {
-        return ReceivedChatBubble.class;
+        return user.isSelf() ? SentChatBubble.class : ReceivedChatBubble.class;
     }
 }

@@ -16,6 +16,7 @@ import java.util.List;
 
 import se.chalmers.dat255.ircsex.R;
 import se.chalmers.dat255.ircsex.model.ChatIrcMessage;
+import se.chalmers.dat255.ircsex.model.IrcMessage;
 import se.chalmers.dat255.ircsex.model.IrcUser;
 import se.chalmers.dat255.ircsex.model.Session;
 import se.chalmers.dat255.ircsex.model.SessionListener;
@@ -139,17 +140,17 @@ public class UserSearchActivity extends SearchActivity implements SessionListene
     }
 
     @Override
-    public void onChannelUserJoin(String host, String channel, IrcUser user) {
+    public void onChannelUserJoin(String host, String channel, IrcMessage joinMessage) {
 
     }
 
     @Override
-    public void onChannelUserPart(String host, String channel, String nick) {
+    public void onChannelUserPart(String host, String channel, IrcMessage partMessage) {
 
     }
 
     @Override
-    public void onNickChange(String host, String oldNick, String newNick) {
+    public void onNickChange(String host, IrcMessage ircMessage) {
 
     }
 

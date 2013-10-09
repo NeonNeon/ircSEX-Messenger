@@ -5,6 +5,7 @@ import android.graphics.Rect;
 import android.view.Gravity;
 
 import se.chalmers.dat255.ircsex.R;
+import se.chalmers.dat255.ircsex.model.IrcMessage;
 
 /**
  * Created by Johan on 2013-10-01.
@@ -12,8 +13,8 @@ import se.chalmers.dat255.ircsex.R;
 public class InfoMessage implements ChannelItem {
     private final String message;
 
-    public InfoMessage(String message) {
-        this.message = message;
+    public InfoMessage(IrcMessage message) {
+        this.message = message.getMessage();
     }
 
     @Override

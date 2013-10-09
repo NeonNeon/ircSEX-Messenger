@@ -35,14 +35,9 @@ public class MessageArrayAdapter extends ArrayAdapter<ChannelItem> {
     private List<ChannelItem> channelItems = new ArrayList<ChannelItem>();
     private RelativeLayout wrapper;
     private boolean animate = true;
-    private Time time;
-    private int dayOfMonth;
 
     public MessageArrayAdapter(Context context, List<ChannelItem> backlog) {
         super(context, R.layout.received_chat_bubble);
-        time = new Time();
-        time.setToNow();
-        dayOfMonth = time.monthDay;
         for (ChannelItem item : backlog) {
             add(item);
             animate = false;
@@ -52,20 +47,9 @@ public class MessageArrayAdapter extends ArrayAdapter<ChannelItem> {
 
     @Override
     public void add(ChannelItem channelItem) {
-        checkForDateChange();
         channelItems.add(channelItem);
         super.add(channelItem);
         animate = true;
-    }
-
-    private void checkForDateChange() {
-        time.setToNow();
-        if (time.monthDay != dayOfMonth) {
-            dayOfMonth = time.monthDay;
-            InfoMessage dayChangeMessage = new InfoMessage(time.monthDay + " " + getMonth(time.month));
-            channelItems.add(dayChangeMessage);
-            super.add(dayChangeMessage);
-        }
     }
 
     private String getMonth(int month) {

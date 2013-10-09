@@ -301,7 +301,7 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
             user.changeNick(newNick);
             serverDatasource.updateNickname(host, newNick);
             for (SessionListener listener : sessionListeners) {
-                listener.onNickChange(host, oldNick, newNick);
+                listener.onNickChange(host, new InfoIrcMessage(oldNick + " is now known as " + newNick));
             }
         } else {
             for (IrcChannel channel : connectedChannels.values()) {
@@ -354,10 +354,12 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
                 ircUser.setSelf();
             }
 
-            connectedChannels.get(channelName).userJoined(ircUser);
+            IrcChannel ircChannel = connectedChannels.get(channelName);
+            ircChannel.userJoined(ircUser);
             for (SessionListener listener : sessionListeners) {
-                listener.onChannelUserChange(host, channelName, connectedChannels.get(channelName).getUsers());
-                listener.onChannelUserJoin(host, channelName, connectedChannels.get(channelName).getUser(nick));
+                listener.onChannelUserChange(host, channelName, ircChannel.getUsers());
+                listener.onChannelUserJoin(host, channelName,
+                        new InfoIrcMessage(ircChannel.getUser(nick).toString() + " has joined the channel"));
             }
         }
     }
@@ -371,23 +373,24 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
                 listener.onServerPart(host, channelName);
             }
         } else {
-            connectedChannels.get(channelName).userParted(nick);
+            IrcChannel ircChannel = connectedChannels.get(channelName);
+            ircChannel.userParted(nick);
             for (SessionListener listener : sessionListeners) {
-                listener.onChannelUserPart(host, channelName, nick);
-                listener.onChannelUserChange(host, channelName, connectedChannels.get(channelName).getUsers());
+                listener.onChannelUserChange(host, channelName, ircChannel.getUsers());
+                listener.onChannelUserPart(host, channelName, new InfoIrcMessage(nick + " has left the channel"));
             }
         }
     }
 
     @Override
-    public void userQuited(String nick, String quitMessage) {
+    public void userQuit(String nick, String quitMessage) {
         for (IrcChannel channel : connectedChannels.values()) {
             if (channel.hasUser(nick)) {
                 channel.userParted(nick);
                 String channelName = channel.getChannelName();
                 for (SessionListener listener : sessionListeners) {
-                    listener.onChannelUserPart(host, channelName, nick);
                     listener.onChannelUserChange(host, channelName, connectedChannels.get(channelName).getUsers());
+                    listener.onChannelUserPart(host, channelName, new InfoIrcMessage(nick + " has left the channel"));
                 }
             }
         }

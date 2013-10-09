@@ -58,25 +58,23 @@ public interface SessionListener {
      * Notifies the ui when a user has joined the channel
      * @param host
      * @param channel
-     * @param user
+     * @param joinMessage
      */
-    public void onChannelUserJoin(String host, String channel, IrcUser user);
+    public void onChannelUserJoin(String host, String channel, IrcMessage joinMessage);
 
     /**
      * Notifies the ui when a user has left the channel
      * @param host
      * @param channel
-     * @param nick
+     * @param partMessage
      */
-    public void onChannelUserPart(String host, String channel, String nick);
+    public void onChannelUserPart(String host, String channel, IrcMessage partMessage);
 
     /**
      * Notifies the ui when a user has changed nick.
-     *
-     * @param oldNick
-     * @param newNick
+     * @param ircMessage the resulting chat message
      */
-    public void onNickChange(String host, String oldNick, String newNick);
+    public void onNickChange(String host, IrcMessage ircMessage);
 
     /**
      * Receiving a message from another user.
