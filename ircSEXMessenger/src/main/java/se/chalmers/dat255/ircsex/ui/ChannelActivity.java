@@ -268,6 +268,10 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         session.joinChannel(session.getActiveServer().getHost(), channelName);
     }
 
+    private void queryUser(String user) {
+        session.getActiveServer().queryUser(IrcUser.extractUserName(user));
+    }
+
     private void leaveActiveChannel() {
         String channelName = session.getActiveChannel().getChannelName();
         session.partChannel(session.getActiveServer().getHost(), channelName);
@@ -345,6 +349,11 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
             case SearchActivity.RESULT_RETURN_CHANNEL:
                 String channel = data.getStringExtra(SearchActivity.EXTRA_CHANNEL);
                 joinChannel(channel);
+                break;
+            case SearchActivity.RESULT_RETURN_QUERY:
+                String queryTarget = data.getStringExtra(SearchActivity.EXTRA_CHANNEL);
+                queryUser(queryTarget);
+                drawerLayout.closeDrawer(rightDrawerContainer);
                 break;
             case Activity.RESULT_CANCELED:
                 if (requestCode == NoServersActivity.REQUEST_SERVER) {
@@ -479,7 +488,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     public void queryUser(View view) {
         view = ((LinearLayout) view).getChildAt(0);
         String user = ((TextView) ((LinearLayout) view).getChildAt(0)).getText().toString();
-        session.getActiveServer().queryUser(IrcUser.extractUserName(user));
+        queryUser(user);
         drawerLayout.closeDrawer(Gravity.END);
     }
 
@@ -613,12 +622,12 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
 
     public void leftDrawerSearch(View view) {
         Intent intent = new Intent(this, ChannelSearchActivity.class);
-        startActivity(intent);
+        startActivityForResult(intent, SearchActivity.REQUEST_CHANNEL);
     }
 
     public void rightDrawerSearch(View view) {
         Intent intent = new Intent(this, UserSearchActivity.class);
-        startActivity(intent);
+        startActivityForResult(intent, SearchActivity.REQUEST_CHANNEL);
 
     }
 }

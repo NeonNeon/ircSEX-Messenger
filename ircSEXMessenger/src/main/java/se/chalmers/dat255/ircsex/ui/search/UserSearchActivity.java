@@ -2,12 +2,14 @@ package se.chalmers.dat255.ircsex.ui.search;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -211,5 +213,15 @@ public class UserSearchActivity extends SearchActivity implements SessionListene
                 }
             });
         }
+    }
+
+    public void queryUser(View view) {
+        view = ((LinearLayout) view).getChildAt(0);
+        String user = ((TextView) ((LinearLayout) view).getChildAt(0)).getText().toString();
+        session.removeListener(this);
+        Intent data = new Intent();
+        data.putExtra(EXTRA_CHANNEL, user);
+        setResult(RESULT_RETURN_QUERY, data);
+        finish();
     }
 }

@@ -45,6 +45,12 @@ public class Session {
         }
     }
 
+    public void removeListener(SessionListener listener) {
+        for (IrcServer server : servers.values()) {
+            server.removeSessionListener(listener);
+        }
+    }
+
     public static Session getInstance(Context context, SessionListener listener) {
         if (instance == null) {
             instance = new Session(context, listener);
@@ -109,6 +115,9 @@ public class Session {
      * @param channel - Name of channel to join
      */
     public void joinChannel(String host, String channel) {
+        if (channel.charAt(0) != '#') {
+            channel = "#" + channel;
+        }
         servers.get(host).joinChannel(channel);
     }
 
