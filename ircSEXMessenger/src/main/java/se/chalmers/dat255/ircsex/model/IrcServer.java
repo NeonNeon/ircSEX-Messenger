@@ -1,11 +1,8 @@
 package se.chalmers.dat255.ircsex.model;
 
-import android.util.Log;
-import android.widget.SearchView;
-
 import java.util.ArrayList;
-import java.util.List;
 import java.util.HashMap;
+import java.util.List;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
@@ -35,6 +32,9 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
 
     private final ArrayList<SearchlistChannelItem> channels;
     private final ConcurrentMap<String, IrcChannel> connectedChannels;
+
+    private final List<String> highlightsWords;
+    private final Map<IrcChannel, IrcMessage> highlights;
 
     private IrcProtocolAdapter protocol;
 
@@ -76,6 +76,9 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
 
         channels = new ArrayList<SearchlistChannelItem>();
         connectedChannels = new ConcurrentHashMap<String, IrcChannel>();
+
+        highlightsWords = new ArrayList<String>();
+        highlights = new HashMap<IrcChannel, IrcMessage>();
 
         NetworkStateHandler.addListener(this);
         NetworkStateHandler.start();
@@ -253,6 +256,31 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
         if (!connectedChannels.containsKey(user)) {
             userJoined(user, this.user.getNick());
         }
+    }
+
+    /**
+     * Adds a string to be highlighted on.
+     *
+     * @param str String to be highlighted on
+     */
+    public void addHighlight(String str) {
+        highlightsWords.add(str);
+    }
+
+    /**
+     * Removes a highlightstring.
+     * @param str String to remove
+     */
+    public void removeHighlight(String str) {
+        highlightsWords.remove(str);
+    }
+
+    /**
+     * Removes a highlightstring by index.
+     * @param index Index to remove
+     */
+    public void removeHighlight(int index) {
+        highlightsWords.remove(index);
     }
 
     public Set<String> getKnownUsers() {
