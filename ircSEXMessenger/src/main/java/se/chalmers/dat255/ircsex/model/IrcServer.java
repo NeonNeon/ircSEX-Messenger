@@ -34,7 +34,7 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
     private final ConcurrentMap<String, IrcChannel> connectedChannels;
 
     private final List<String> highlightsWords;
-    private final Map<IrcChannel, IrcMessage> highlights;
+    private final List<IrcHighlight> highlights;
 
     private IrcProtocolAdapter protocol;
 
@@ -78,7 +78,9 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
         connectedChannels = new ConcurrentHashMap<String, IrcChannel>();
 
         highlightsWords = new ArrayList<String>();
-        highlights = new HashMap<IrcChannel, IrcMessage>();
+        highlights = new ArrayList<IrcHighlight>();
+        // Remove line below
+        addHighlight(user.getNick());
 
         NetworkStateHandler.addListener(this);
         NetworkStateHandler.start();
@@ -288,7 +290,7 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
      *
      * @return Highlighted messages
      */
-    public Map<IrcChannel, IrcMessage> getHighlights() {
+    public List<IrcHighlight> getHighlights() {
         return highlights;
     }
 
@@ -319,7 +321,7 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
 
     private boolean checkHighlight(String str) {
         for (String h : highlightsWords) {
-            if (str.contains(h)) {
+            if (str.toLowerCase().contains(h.toLowerCase())) {
                 return true;
             }
         }
@@ -495,7 +497,7 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
         IrcChannel ircChannel = connectedChannels.get(channel);
         IrcMessage ircMessage = ircChannel.newMessage(user, message);
         if (checkHighlight(message)) {
-            highlights.put(ircChannel, ircMessage);
+            highlights.add(new IrcHighlight(ircChannel, ircMessage));
             for (SessionListener listener : sessionListeners) {
                 listener.onHighlight(ircChannel, ircMessage);
             }
@@ -516,7 +518,7 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
         IrcChannel ircChannel = connectedChannels.get(user);
         IrcMessage ircMessage = ircChannel.newMessage(user, message);
         if (checkHighlight(message)) {
-            highlights.put(ircChannel, ircMessage);
+            highlights.add(new IrcHighlight(ircChannel, ircMessage));
             for (SessionListener listener : sessionListeners) {
                 listener.onHighlight(ircChannel, ircMessage);
             }

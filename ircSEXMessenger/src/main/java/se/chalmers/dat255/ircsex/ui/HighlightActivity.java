@@ -14,6 +14,7 @@ import java.util.Map;
 
 import se.chalmers.dat255.ircsex.R;
 import se.chalmers.dat255.ircsex.model.IrcChannel;
+import se.chalmers.dat255.ircsex.model.IrcHighlight;
 import se.chalmers.dat255.ircsex.model.IrcMessage;
 import se.chalmers.dat255.ircsex.model.Session;
 
@@ -28,7 +29,7 @@ public class HighlightActivity extends ListActivity {
     private Session session;
 
     public static final String TEXT1 = "text1";
-    public static final String TEXT2 = "text3";
+    public static final String TEXT2 = "text2";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,11 +37,11 @@ public class HighlightActivity extends ListActivity {
 
         session = Session.getInstance(this, null);
         content = new ArrayList<Map<String, String>>();
-        Map<IrcChannel, IrcMessage> highlights = session.getActiveServer().getHighlights();
-        for (IrcChannel channel : highlights.keySet()) {
+        List<IrcHighlight> highlights = session.getActiveServer().getHighlights();
+        for (IrcHighlight highlight : highlights) {
             Map<String, String> entry = new HashMap<String, String>();
-            entry.put(TEXT1, channel.getChannelName());
-            entry.put(TEXT2, highlights.get(channel).getMessage());
+            entry.put(TEXT1, highlight.getChannel().getChannelName());
+            entry.put(TEXT2, highlight.getMessage().getMessage());
             content.add(entry);
         }
 
@@ -49,7 +50,7 @@ public class HighlightActivity extends ListActivity {
                 content,
                 R.layout.channel_search_list_item,
                 new String[]{TEXT1, TEXT2},
-                new int[]{android.R.id.text1, R.id.text2});
+                new int[]{android.R.id.text1, R.id.text3});
         setListAdapter(adapter);
     }
 }
