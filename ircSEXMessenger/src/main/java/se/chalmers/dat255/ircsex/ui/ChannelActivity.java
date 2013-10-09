@@ -350,6 +350,10 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
                 String channel = data.getStringExtra(SearchActivity.EXTRA_CHANNEL);
                 joinChannel(channel);
                 break;
+            case HighlightActivity.RESULT_RETURN_HIGHLIGHT:
+                String highlightChannel = data.getStringExtra(HighlightActivity.EXTRA_HIGHLIGHT_CHANNEL);
+                selectItem(ircChannelSelector.indexOf(highlightChannel));
+                break;
             case Activity.RESULT_CANCELED:
                 if (requestCode == NoServersActivity.REQUEST_SERVER) {
                     finish();

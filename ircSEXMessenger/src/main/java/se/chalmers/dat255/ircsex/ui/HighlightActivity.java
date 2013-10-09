@@ -1,10 +1,14 @@
 package se.chalmers.dat255.ircsex.ui;
 
 import android.app.ListActivity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.BaseAdapter;
+import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,6 +27,9 @@ import se.chalmers.dat255.ircsex.model.Session;
  * Created by Oskar on 2013-10-09.
  */
 public class HighlightActivity extends ListActivity {
+
+    public static final int RESULT_RETURN_HIGHLIGHT = 40;
+    public static final String EXTRA_HIGHLIGHT_CHANNEL = "highlightChannelName";
 
     private List<Map<String, String>> content;
     private SimpleAdapter adapter;
@@ -54,5 +61,16 @@ public class HighlightActivity extends ListActivity {
                 new String[]{TEXT1, TEXT2, TEXT3},
                 new int[]{android.R.id.text1, R.id.text2, R.id.text3});
         setListAdapter(adapter);
+    }
+
+    @Override
+    protected void onListItemClick(ListView l, View v, int position, long id) {
+        super.onListItemClick(l, v, position, id);
+
+        String text = ((TextView) v.findViewById(android.R.id.text1)).getText().toString();
+        Intent data = new Intent();
+        data.putExtra(EXTRA_HIGHLIGHT_CHANNEL, text);
+        setResult(RESULT_RETURN_HIGHLIGHT, data);
+        finish();
     }
 }

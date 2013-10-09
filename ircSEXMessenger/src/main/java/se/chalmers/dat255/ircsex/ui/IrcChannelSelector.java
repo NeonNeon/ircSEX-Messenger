@@ -103,6 +103,16 @@ public class IrcChannelSelector {
         return connections.get(index);
     }
 
+    /**
+     * Return the index of the channel with matching string.
+     *
+     * @param channel Name of channel
+     * @return Index of channel
+     */
+    public int indexOf(String channel) {
+        return connections.indexOf(channel);
+    }
+
 
     /**
      * Removes the channel from the view and underlying datastructure.
