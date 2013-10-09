@@ -1,7 +1,5 @@
 package se.chalmers.dat255.ircsex.model;
 
-import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
@@ -205,7 +203,7 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
         if (NetworkStateHandler.isConnected()) {
             protocol.sendChannelMessage(channel, message);
             connectedChannels.get(channel).newMessage(user.getNick(), message);
-            IrcMessage ircMessage = new IrcMessage(user, message);
+            ChatIrcMessage ircMessage = new ChatIrcMessage(user, message);
             for (SessionListener listener : sessionListeners) {
                 listener.onSentMessage(host, channel, ircMessage);
             }
@@ -437,7 +435,7 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
     public void channelMessageReceived(String channel, String user, String message) {
         user = IrcUser.extractUserName(user);
 
-        IrcMessage ircMessage = connectedChannels.get(channel).newMessage(user, message);
+        ChatIrcMessage ircMessage = connectedChannels.get(channel).newMessage(user, message);
 
         for (SessionListener listener : sessionListeners) {
             listener.onChannelMessage(host, channel, ircMessage);
@@ -450,7 +448,7 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
         if (!connectedChannels.containsKey(user)) {
             queryUser(user);
         }
-        IrcMessage ircMessage = connectedChannels.get(user).newMessage(user, message);
+        ChatIrcMessage ircMessage = connectedChannels.get(user).newMessage(user, message);
         for (SessionListener listener : sessionListeners) {
             listener.onChannelMessage(host, user, ircMessage);
         }

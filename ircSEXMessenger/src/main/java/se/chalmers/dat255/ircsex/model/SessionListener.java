@@ -85,7 +85,7 @@ public interface SessionListener {
      * @param channel
      * @param message
      */
-    public void onChannelMessage(String host, String channel, IrcMessage message);
+    public void onChannelMessage(String host, String channel, ChatIrcMessage message);
 
     /**
      * Receiving message as confirmation of a sent message.
@@ -94,7 +94,7 @@ public interface SessionListener {
      * @param channel
      * @param message
      */
-    public void onSentMessage(String host, String channel, IrcMessage message);
+    public void onSentMessage(String host, String channel, ChatIrcMessage message);
 
     /**
      * This method sends a list of connected channels as a whois request resopnse.

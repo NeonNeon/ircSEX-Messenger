@@ -7,14 +7,14 @@ import java.text.SimpleDateFormat;
  *
  * Created by Oskar on 2013-09-24.
  */
-public class IrcMessage {
+public class ChatIrcMessage {
 
     private final IrcUser user;
     private final String message;
     private final long timestamp;
     private boolean read;
 
-    public IrcMessage(IrcUser user, String message) {
+    public ChatIrcMessage(IrcUser user, String message) {
         this.user = user;
         this.message = message;
         this.timestamp = System.currentTimeMillis();

@@ -18,7 +18,7 @@ import java.util.List;
 
 import se.chalmers.dat255.ircsex.R;
 import se.chalmers.dat255.ircsex.model.IrcChannel;
-import se.chalmers.dat255.ircsex.model.IrcMessage;
+import se.chalmers.dat255.ircsex.model.ChatIrcMessage;
 
 public class ChatFragment extends Fragment {
     private ListView messageList;
@@ -52,7 +52,7 @@ public class ChatFragment extends Fragment {
 
     private void setArrayAdapter() {
         List<ChannelItem> backlog = new ArrayList<ChannelItem>(channel.getMessages().size());
-        for (IrcMessage message : channel.getMessages()) {
+        for (ChatIrcMessage message : channel.getMessages()) {
             if (message.getUser().isSelf()) {
                 backlog.add(new SentChatBubble(message));
             } else {
@@ -97,13 +97,13 @@ public class ChatFragment extends Fragment {
         }
     }
 
-    public void addMessage(IrcMessage ircMessage) {
+    public void addMessage(ChatIrcMessage ircMessage) {
         messageArrayAdapter.add(new ReceivedChatBubble(ircMessage));
         messageList.invalidate();
         scrollWhenNoBacklog();
     }
 
-    public void addSentMessage(IrcMessage ircMessage) {
+    public void addSentMessage(ChatIrcMessage ircMessage) {
         messageArrayAdapter.add(new SentChatBubble(ircMessage));
         messageList.invalidate();
         messageEditText.setText("");

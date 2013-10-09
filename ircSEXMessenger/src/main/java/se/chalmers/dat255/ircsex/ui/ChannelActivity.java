@@ -35,7 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import se.chalmers.dat255.ircsex.R;
-import se.chalmers.dat255.ircsex.model.IrcMessage;
+import se.chalmers.dat255.ircsex.model.ChatIrcMessage;
 import se.chalmers.dat255.ircsex.model.IrcUser;
 import se.chalmers.dat255.ircsex.model.NetworkStateHandler;
 import se.chalmers.dat255.ircsex.model.Session;
@@ -483,7 +483,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     }
 
     @Override
-    public void onChannelMessage(String host, final String channel, final IrcMessage message) {
+    public void onChannelMessage(String host, final String channel, final ChatIrcMessage message) {
         ChannelActivity.this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -496,7 +496,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     }
 
     @Override
-    public void onSentMessage(String host, final String channel, final IrcMessage message) {
+    public void onSentMessage(String host, final String channel, final ChatIrcMessage message) {
         ChannelActivity.this.runOnUiThread(new Runnable() {
             @Override
             public void run() {

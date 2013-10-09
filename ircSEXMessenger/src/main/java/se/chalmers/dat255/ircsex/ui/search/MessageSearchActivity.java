@@ -10,7 +10,7 @@ import android.widget.ListView;
 import java.util.ArrayList;
 import java.util.List;
 
-import se.chalmers.dat255.ircsex.model.IrcMessage;
+import se.chalmers.dat255.ircsex.model.ChatIrcMessage;
 import se.chalmers.dat255.ircsex.model.Session;
 import se.chalmers.dat255.ircsex.ui.ChannelItem;
 import se.chalmers.dat255.ircsex.ui.MessageArrayAdapter;
@@ -52,10 +52,10 @@ public class MessageSearchActivity extends SearchActivity {
 
     @Override
     public void search(String search) {
-        List<IrcMessage> messages = session.getActiveChannel().getMessages();
+        List<ChatIrcMessage> messages = session.getActiveChannel().getMessages();
         search = search.toLowerCase();
         clearAdapter();
-        for (IrcMessage message : messages) {
+        for (ChatIrcMessage message : messages) {
             if (message.getMessage().toLowerCase().contains(search)) {
                 if (message.getUser().isSelf()) {
                     result.add(new SentChatBubble(message));

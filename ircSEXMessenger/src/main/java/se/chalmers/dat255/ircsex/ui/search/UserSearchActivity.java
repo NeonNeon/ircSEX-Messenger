@@ -1,25 +1,21 @@
 package se.chalmers.dat255.ircsex.ui.search;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ProgressBar;
-import android.widget.SearchView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import se.chalmers.dat255.ircsex.R;
-import se.chalmers.dat255.ircsex.model.IrcMessage;
+import se.chalmers.dat255.ircsex.model.ChatIrcMessage;
 import se.chalmers.dat255.ircsex.model.IrcUser;
 import se.chalmers.dat255.ircsex.model.Session;
 import se.chalmers.dat255.ircsex.model.SessionListener;
@@ -158,12 +154,12 @@ public class UserSearchActivity extends SearchActivity implements SessionListene
     }
 
     @Override
-    public void onChannelMessage(String host, String channel, IrcMessage message) {
+    public void onChannelMessage(String host, String channel, ChatIrcMessage message) {
 
     }
 
     @Override
-    public void onSentMessage(String host, String channel, IrcMessage message) {
+    public void onSentMessage(String host, String channel, ChatIrcMessage message) {
 
     }
 

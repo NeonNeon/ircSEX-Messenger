@@ -7,7 +7,7 @@ import android.view.Gravity;
 import java.text.SimpleDateFormat;
 
 import se.chalmers.dat255.ircsex.R;
-import se.chalmers.dat255.ircsex.model.IrcMessage;
+import se.chalmers.dat255.ircsex.model.ChatIrcMessage;
 
 /**
  * Created by Johan on 2013-09-24.
@@ -15,7 +15,7 @@ import se.chalmers.dat255.ircsex.model.IrcMessage;
 public class SentChatBubble extends ChatBubble {
     private final long timestamp;
 
-    public SentChatBubble(IrcMessage message) {
+    public SentChatBubble(ChatIrcMessage message) {
         super(message.getMessage());
         timestamp = System.currentTimeMillis();
     }
