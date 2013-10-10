@@ -295,6 +295,15 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
     }
 
     /**
+     * Reads a highlight.
+     *
+     * @param highlight Highlight to mark as read
+     */
+    public void readHighlight(IrcHighlight highlight) {
+        highlights.remove(highlight);
+    }
+
+    /**
      * Clears highlights.
      */
     public void clearHighlights() {
