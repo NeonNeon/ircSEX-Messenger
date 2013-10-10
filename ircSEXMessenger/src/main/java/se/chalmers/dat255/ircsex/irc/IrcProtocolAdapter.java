@@ -167,6 +167,19 @@ public class IrcProtocolAdapter implements Runnable {
     }
 
     /**
+     * Connect to the specified server with this identity and password.
+     *
+     * @param nick - the nick to use
+     * @param login - the login to use
+     * @param realName - the users realname
+     * @param password - the password to use
+     */
+    public void connect(String nick, String login, String realName, String password){
+        setPassword(password);
+        connect(nick, login, realName);
+    }
+
+    /**
      * Disconnect from the current server.
      *
      * @param message - the message to be displayed when quiting
@@ -208,6 +221,16 @@ public class IrcProtocolAdapter implements Runnable {
      */
     public void partChannel(String channel) {
         write("PART " + channel);
+    }
+
+
+    /**
+     * Set password for the IRC server.
+     *
+     * @param password - the password to use
+     */
+    private void setPassword(String password) {
+        write("PASS " + password);
     }
 
     /**
