@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
@@ -83,6 +84,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.activity_channel_main);
 
@@ -179,14 +181,18 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
 //                drawerLayout.openDrawer(Gravity.END);
 //                drawerOpen = true;
 //                break;
-            case R.id.action_settings:
+            case R.id.action_change_nick:
                 changeNick();
                 break;
             case R.id.action_invite_user:
                 inviteUser();
                 break;
+            case R.id.action_search:
+                Intent intent = new Intent(this, SettingsActivity.class);
+                startActivity(intent);
+                break;
             case R.id.search_messages:
-                Intent intent = new Intent(this, MessageSearchActivity.class);
+                intent = new Intent(this, MessageSearchActivity.class);
                 startActivity(intent);
                 break;
             default:

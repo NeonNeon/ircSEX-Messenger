@@ -7,7 +7,7 @@
     <string name="dialog_generic_close">Close</string>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
-    <string name="action_settings">Change nickname</string>
+    <string name="action_change_nick">Change nickname</string>
     <string name="noservers_not_connected">You\'re not connected to any servers yet :(</string>
     <string name="action_userlist">View users</string>
     <string name="add_server">Add server</string>
@@ -37,4 +37,7 @@
     <string name="dialog_query_user_hint">Recipient</string>
     <string name="search_messages">Search messages</string>
     <string name="highlights">Show Highlights</string>
+    <string name="show_join_leave">Join and leave messages</string>
+    <string name="show_join_leave_summ">Display a message when someone joins or leaves the channel</string>
+    <string name="action_settings">Settings</string>
 </resources>
