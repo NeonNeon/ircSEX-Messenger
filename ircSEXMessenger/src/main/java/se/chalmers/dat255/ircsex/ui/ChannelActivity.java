@@ -36,6 +36,7 @@ import java.util.List;
 
 import se.chalmers.dat255.ircsex.R;
 import se.chalmers.dat255.ircsex.model.IrcChannel;
+import se.chalmers.dat255.ircsex.model.IrcHighlight;
 import se.chalmers.dat255.ircsex.model.IrcMessage;
 import se.chalmers.dat255.ircsex.model.IrcUser;
 import se.chalmers.dat255.ircsex.model.NetworkStateHandler;
@@ -167,12 +168,8 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.channel_main, menu);
-        if (highlightButton == null) {
-            highlightButton = (LinearLayout) menu.findItem(R.id.highlightbadge).getActionView();
-            updateHighlightBadge();
-        } else {
-            highlightButton = (LinearLayout) menu.findItem(R.id.highlightbadge).getActionView();
-        }
+        highlightButton = (LinearLayout) menu.findItem(R.id.highlightbadge).getActionView();
+        updateHighlightBadge();
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -221,12 +218,19 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
                 startActivity(intent);
                 break;
             case R.id.highlightbadge:
-
+                showHighlight();
                 break;
             default:
                 return super.onOptionsItemSelected(item);
         }
         return true;
+    }
+
+    private void showHighlight() {
+        IrcHighlight highlight = session.getActiveServer().getHighlights().get(0);
+        selectItem(ircChannelSelector.indexOf(highlight.getChannel().toString()));
+        session.getActiveServer().readHighlight(highlight);
+        updateHighlightBadge();
     }
 
     private void inviteUser() {
@@ -512,16 +516,18 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     }
 
     private void updateHighlightBadge() {
-        ChannelActivity.this.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                int highlights = session.getActiveServer().getHighlights().size();
-                highlightButton.getChildAt(0).setBackgroundResource(
-                        highlights == 0 ? R.drawable.highlightbadge_background : R.drawable.highlightbadge_background_highlight);
-                ((TextView) ((LinearLayout) highlightButton.getChildAt(0)).getChildAt(0))
-                        .setText(Integer.toString(highlights));
-            }
-        });
+        if (session.getActiveServer() != null) {
+            ChannelActivity.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    int highlights = session.getActiveServer().getHighlights().size();
+                    highlightButton.getChildAt(0).setBackgroundResource(
+                            highlights == 0 ? R.drawable.highlightbadge_background : R.drawable.highlightbadge_background_highlight);
+                    ((TextView) ((LinearLayout) highlightButton.getChildAt(0)).getChildAt(0))
+                            .setText(Integer.toString(highlights));
+                }
+            });
+        }
     }
 
     @Override
