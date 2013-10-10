@@ -15,8 +15,8 @@
         android:title="@string/search_messages"
         android:icon="@drawable/ic_action_search"
         android:showAsAction="ifRoom" />
-    <item android:id="@+id/highlights"
-          android:title="@string/highlights"
-          android:icon="@android:drawable/button_onoff_indicator_off"
-          android:showAsAction="ifRoom" />
+    <item android:id="@+id/highlightbadge"
+        android:actionLayout="@layout/actionbar_highlight_button"
+        android:showAsAction="always">
+    </item>
 </menu>

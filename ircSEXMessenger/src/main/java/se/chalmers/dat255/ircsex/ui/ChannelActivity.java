@@ -167,7 +167,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.channel_main, menu);
-        highlightButton = menu.findItem(R.id.highlights);
+        highlightButton = menu.findItem(R.id.highlightbadge);
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -215,9 +215,8 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
                 Intent intent = new Intent(this, MessageSearchActivity.class);
                 startActivity(intent);
                 break;
-            case R.id.highlights:
-                Intent highlightIntent = new Intent(this, HighlightActivity.class);
-                startActivity(highlightIntent);
+            case R.id.highlightbadge:
+
                 break;
             default:
                 return super.onOptionsItemSelected(item);
@@ -351,10 +350,6 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
             case SearchActivity.RESULT_RETURN_CHANNEL:
                 String channel = data.getStringExtra(SearchActivity.EXTRA_CHANNEL);
                 joinChannel(channel);
-                break;
-            case HighlightActivity.RESULT_RETURN_HIGHLIGHT:
-                String highlightChannel = data.getStringExtra(HighlightActivity.EXTRA_HIGHLIGHT_CHANNEL);
-                selectItem(ircChannelSelector.indexOf(highlightChannel));
                 break;
             case Activity.RESULT_CANCELED:
                 if (requestCode == NoServersActivity.REQUEST_SERVER) {
