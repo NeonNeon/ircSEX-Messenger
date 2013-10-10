@@ -1,23 +1,22 @@
-package se.chalmers.dat255.ircsex.model.database;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+package se.chalmers.dat255.ircsex.model;
 
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
-import se.chalmers.dat255.ircsex.model.IrcServer;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import se.chalmers.dat255.ircsex.model.database.ContextManager;
+import se.chalmers.dat255.ircsex.model.database.DatabaseHelper;
 
 /**
  * Database adapter for servers table.
  *
  * Created by Oskar on 2013-09-18.
  */
-public class ServerDatabaseAdapter {
+public class ServerDAO {
 
     private SQLiteDatabase database;
     private final DatabaseHelper dbHelper;
@@ -29,9 +28,9 @@ public class ServerDatabaseAdapter {
             DatabaseHelper.SERVER_REALNAME};
 
     /**
-     * Creates an object of ServerDatabaseAdapter.
+     * Creates an object of ServerDAO.
      */
-    public ServerDatabaseAdapter() {
+    public ServerDAO() {
         dbHelper = new DatabaseHelper(ContextManager.SERVER_CONTEXT);
     }
 

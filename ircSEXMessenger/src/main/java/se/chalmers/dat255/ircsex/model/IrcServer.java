@@ -1,9 +1,9 @@
 package se.chalmers.dat255.ircsex.model;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -11,8 +11,6 @@ import java.util.concurrent.ConcurrentMap;
 
 import se.chalmers.dat255.ircsex.irc.IrcProtocolAdapter;
 import se.chalmers.dat255.ircsex.irc.IrcProtocolListener;
-import se.chalmers.dat255.ircsex.model.database.ChannelDatabaseAdapter;
-import se.chalmers.dat255.ircsex.model.database.ServerDatabaseAdapter;
 
 /**
  * This class lists and handles a server, including the protocol adapter and channels.
@@ -27,8 +25,8 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
     private final IrcUser user;
     private final String realName;
 
-    private final ChannelDatabaseAdapter datasource;
-    private final ServerDatabaseAdapter serverDatasource;
+    private final ChannelDAO datasource;
+    private final ServerDAO serverDatasource;
 
     private final HashMap<String, String> channels;
     private final ConcurrentMap<String, IrcChannel> connectedChannels;
@@ -66,9 +64,9 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
 
         sessionListeners = new ArrayList<SessionListener>();
 
-        serverDatasource = new ServerDatabaseAdapter();
+        serverDatasource = new ServerDAO();
         serverDatasource.open();
-        datasource = new ChannelDatabaseAdapter();
+        datasource = new ChannelDAO();
         datasource.open();
 
         channels = new HashMap<String, String>();
@@ -295,12 +293,6 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
         restoreChannels();
     }
 
-    // TODO: What?
-    // This will only send a notification to the current window.
-    // And since the messages are not persistent, it will then disappear.
-    // It would seem that we must first find all channels in which there is an oldNick user,
-    // and then notify those channels. In addition, the callback to ChannelActivity must
-    // contain the host name, otherwise the change nick message will appear in ALL channels.
     @Override
     public void nickChanged(String oldNick, String newNick) {
         if (user.isNamed(oldNick)) {

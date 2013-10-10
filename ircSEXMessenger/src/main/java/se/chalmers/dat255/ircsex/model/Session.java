@@ -5,7 +5,6 @@ import android.content.Context;
 import java.util.Map;
 
 import se.chalmers.dat255.ircsex.model.database.ContextManager;
-import se.chalmers.dat255.ircsex.model.database.ServerDatabaseAdapter;
 
 /**
  * This class represents an IRC session. It lists and handles servers.
@@ -20,7 +19,7 @@ public class Session {
     private IrcChannel activeChannel;
     private final Map<String, IrcServer> servers;
 
-    private final ServerDatabaseAdapter datasource;
+    private final ServerDAO datasource;
     private final SessionListener listener;
 
     /**
@@ -31,7 +30,7 @@ public class Session {
         ContextManager.SERVER_CONTEXT = context;
         this.listener = listener;
 
-        datasource = new ServerDatabaseAdapter();
+        datasource = new ServerDAO();
         datasource.open();
 
         servers = datasource.getAllIrcServers();

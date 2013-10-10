@@ -1,23 +1,24 @@
-package se.chalmers.dat255.ircsex.model.database;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+package se.chalmers.dat255.ircsex.model;
 
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 
-import se.chalmers.dat255.ircsex.model.IrcChannel;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import se.chalmers.dat255.ircsex.model.database.ContextManager;
+import se.chalmers.dat255.ircsex.model.database.DatabaseHelper;
 
 /**
  * Database adapter for channels table.
  *
  * Created by Oskar on 2013-09-18.
  */
-public class ChannelDatabaseAdapter {
+public class ChannelDAO {
 
     private SQLiteDatabase database;
     private final DatabaseHelper dbHelper;
@@ -26,9 +27,9 @@ public class ChannelDatabaseAdapter {
             DatabaseHelper.CHANNEL_NAME};
 
     /**
-     * Creates an object of ChannelDatabaseAdapter.
+     * Creates an object of ChannelDAO.
      */
-    public ChannelDatabaseAdapter() {
+    public ChannelDAO() {
         dbHelper = new DatabaseHelper(ContextManager.CHANNEL_CONTEXT);
     }
 
