@@ -13,7 +13,7 @@ class IrcProtocolAdapterTest extends Specification {
     MockIrcServer mockIrcServer
 
     def setup() {
-        ipa = new IrcProtocolAdapter("localhost", 80, subscriber)
+        ipa = new IrcProtocolAdapter(new NormalTaste("localhost", 80), subscriber)
         mockIrcServer = new MockIrcServer()
         ipa.output = mockIrcServer.getAdapterOutputStream()
     }

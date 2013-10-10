@@ -28,18 +28,14 @@ public class NormalTaste implements Taste {
 
     @Override
     public BufferedReader getInput() throws IOException {
-        if (!buffersCreated) {
-            createBuffers();
-        }
-        return input;
+        checkBuffers();
+        return input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
     }
 
     @Override
     public BufferedWriter getOutput() throws IOException {
-        if (!buffersCreated) {
-            createBuffers();
-        }
-        return output;
+        checkBuffers();
+        return output = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
     }
 
     @Override
@@ -49,9 +45,14 @@ public class NormalTaste implements Taste {
         socket.close();
     }
 
+    private void checkBuffers() throws IOException {
+        if (!buffersCreated) {
+            createBuffers();
+            buffersCreated = true;
+        }
+    }
+
     private void createBuffers() throws IOException {
         socket = new Socket(host, port);
-        input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        output = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
     }
 }

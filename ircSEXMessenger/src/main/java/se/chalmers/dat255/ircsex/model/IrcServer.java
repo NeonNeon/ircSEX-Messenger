@@ -10,6 +10,7 @@ import java.util.concurrent.ConcurrentMap;
 
 import se.chalmers.dat255.ircsex.irc.IrcProtocolAdapter;
 import se.chalmers.dat255.ircsex.irc.IrcProtocolListener;
+import se.chalmers.dat255.ircsex.irc.NormalTaste;
 
 /**
  * This class lists and handles a server, including the protocol adapter and channels.
@@ -105,7 +106,8 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
      * This includes making a connection in a new thread and logging in with the specified login/nick.
      */
     public void startProtocolAdapter() {
-        protocol = new IrcProtocolAdapter(host, port, this);
+        // TODO - should use Brewery
+        protocol = new IrcProtocolAdapter(new NormalTaste(host, port), this);
         new Thread(protocol).start();
     }
 
@@ -560,7 +562,8 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
     @Override
     public void serverDisconnected() {
         if (NetworkStateHandler.isConnected()) {
-            protocol = new IrcProtocolAdapter(host, port, this);
+            // TODO - should use Brewery
+            protocol = new IrcProtocolAdapter(new NormalTaste(host, port), this);
         }
     }
 
