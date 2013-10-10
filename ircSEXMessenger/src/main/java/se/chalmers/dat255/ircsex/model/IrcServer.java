@@ -85,6 +85,9 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
 
         highlightsWords = highlightDatasource.getHighlights();
         highlights = new ArrayList<IrcHighlight>();
+        if (highlightsWords.size() == 0) {
+            addHighlight(user.getNick());
+        }
 
         NetworkStateHandler.addListener(this);
         NetworkStateHandler.start();
