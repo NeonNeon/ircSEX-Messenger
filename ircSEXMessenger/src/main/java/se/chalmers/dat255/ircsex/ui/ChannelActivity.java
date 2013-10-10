@@ -226,11 +226,13 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     public void showHighlight(View view) {
         List<IrcHighlight> highlights = session.getActiveServer().getHighlights();
         IrcHighlight highlight = highlights.size() > 0 ? highlights.get(0) : session.getActiveServer().getLastMessage();
-        int index = ircChannelSelector.indexOf(highlight.getChannel().getChannelName());
-        if (index != -1) {
-            selectItem(index);
+        if (highlight != null) {
+            int index = ircChannelSelector.indexOf(highlight.getChannel().getChannelName());
+            if (index != -1) {
+                selectItem(index);
+            }
+            session.getActiveServer().readHighlight(highlight);
         }
-        session.getActiveServer().readHighlight(highlight);
         updateHighlightBadge();
     }
 

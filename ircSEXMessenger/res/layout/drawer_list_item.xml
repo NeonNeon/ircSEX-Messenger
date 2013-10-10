@@ -6,7 +6,7 @@
               android:layout_height="wrap_content"
               android:clickable="true"
               android:onClick="queryUser"
-              android:background="@drawable/drawer_user_click">
+              android:background="@drawable/user_click">
 
     <LinearLayout
         android:layout_width="wrap_content"

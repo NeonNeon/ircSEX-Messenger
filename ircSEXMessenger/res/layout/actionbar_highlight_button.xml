@@ -6,7 +6,8 @@
                 android:layout_gravity="right"
                 android:padding="10dp"
                 android:clickable="true"
-                android:onClick="showHighlight">
+                android:onClick="showHighlight"
+                android:background="@drawable/user_click">
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                   android:layout_height="fill_parent"
