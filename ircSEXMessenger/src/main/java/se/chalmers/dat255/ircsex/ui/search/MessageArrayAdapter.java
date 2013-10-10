@@ -1,12 +1,14 @@
 package se.chalmers.dat255.ircsex.ui.search;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.NinePatchDrawable;
 import android.os.Build;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,8 +24,10 @@ import java.util.List;
 import se.chalmers.dat255.ircsex.R;
 import se.chalmers.dat255.ircsex.model.ChannelItem;
 import se.chalmers.dat255.ircsex.model.ChatBubble;
+import se.chalmers.dat255.ircsex.model.InfoMessage;
 import se.chalmers.dat255.ircsex.model.ReceivedChatBubble;
 import se.chalmers.dat255.ircsex.model.SentChatBubble;
+import se.chalmers.dat255.ircsex.ui.SettingsActivity;
 
 /**
  * @author Johan Magnusson
@@ -34,9 +38,11 @@ public class MessageArrayAdapter extends ArrayAdapter<ChannelItem> {
     private List<ChannelItem> channelItems = new ArrayList<ChannelItem>();
     private RelativeLayout wrapper;
     private boolean animate = true;
+    private SharedPreferences sharedPreferences;
 
     public MessageArrayAdapter(Context context, List<ChannelItem> backlog) {
         super(context, R.layout.received_chat_bubble);
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         boolean unreadLinePlaced = false;
         for (ChannelItem item : backlog) {
             if (!(item instanceof SentChatBubble) && !unreadLinePlaced && !item.getIrcMessage().isRead()) {
@@ -51,9 +57,11 @@ public class MessageArrayAdapter extends ArrayAdapter<ChannelItem> {
 
     @Override
     public void add(ChannelItem channelItem) {
-        channelItems.add(channelItem);
-        super.add(channelItem);
-        animate = true;
+        if (!(channelItem instanceof InfoMessage) || sharedPreferences.getBoolean(SettingsActivity.PREF_SHOW_JOIN_LEAVE, true)) {
+            channelItems.add(channelItem);
+            super.add(channelItem);
+            animate = true;
+        }
     }
 
     @Override

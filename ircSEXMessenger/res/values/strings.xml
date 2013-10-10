@@ -36,8 +36,22 @@
     <string name="dialog_query_user_title">Send message to</string>
     <string name="dialog_query_user_hint">Recipient</string>
     <string name="search_messages">Search messages</string>
-    <string name="highlights">Show Highlights</string>
-    <string name="show_join_leave">Join and leave messages</string>
-    <string name="show_join_leave_summ">Display a message when someone joins or leaves the channel</string>
+    <string name="pref_show_join_leave">Join and leave messages</string>
+    <string name="pref_show_join_leave_summ">Display a message when someone joins or leaves the channel</string>
     <string name="action_settings">Settings</string>
+    <string name="pref_highlight">Highlight</string>
+    <string name="pref_highlight_summ"><![CDATA[Enter words to highlight, separated by <something>]]></string>
+    <string name="pref_appearance_settings">Appearance</string>
+    <string-array name="pref_appearance_entries">
+        <item>Small</item>
+        <item>Normal</item>
+        <item>Big</item>
+        <item>HUGE-ASS</item>
+    </string-array>
+    <string-array name="pref_appearance_values">
+        <item>12sp</item>
+        <item>14sp</item>
+        <item>16sp</item>
+        <item>20sp</item>
+    </string-array>
 </resources>
