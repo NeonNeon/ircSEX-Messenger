@@ -79,7 +79,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     private View whois;
     private static int selected = -1;
     private ChannelListOnClickListener channelDrawerOnClickListener;
-    private MenuItem highlightButton;
+    private LinearLayout highlightButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -167,7 +167,12 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.channel_main, menu);
-        highlightButton = menu.findItem(R.id.highlightbadge);
+        if (highlightButton == null) {
+            highlightButton = (LinearLayout) menu.findItem(R.id.highlightbadge).getActionView();
+            updateHighlightBadge();
+        } else {
+            highlightButton = (LinearLayout) menu.findItem(R.id.highlightbadge).getActionView();
+        }
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -503,10 +508,18 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
 
     @Override
     public void onHighlight(IrcChannel channel, IrcMessage message) {
+        updateHighlightBadge();
+    }
+
+    private void updateHighlightBadge() {
         ChannelActivity.this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                highlightButton.setIcon(android.R.drawable.button_onoff_indicator_on);
+                int highlights = session.getActiveServer().getHighlights().size();
+                highlightButton.getChildAt(0).setBackgroundResource(
+                        highlights == 0 ? R.drawable.highlightbadge_background : R.drawable.highlightbadge_background_highlight);
+                ((TextView) ((LinearLayout) highlightButton.getChildAt(0)).getChildAt(0))
+                        .setText(Integer.toString(highlights));
             }
         });
     }
