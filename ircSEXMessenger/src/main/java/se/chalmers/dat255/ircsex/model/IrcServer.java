@@ -26,6 +26,7 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
     private final String login;
     private final IrcUser user;
     private final String realName;
+    private IrcChannel activeChannel;
 
     private final ChannelDatabaseAdapter datasource;
     private final ServerDatabaseAdapter serverDatasource;
@@ -35,6 +36,7 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
 
     private final List<String> highlightsWords;
     private final List<IrcHighlight> highlights;
+    private IrcHighlight lastMessage;
 
     private IrcProtocolAdapter protocol;
 
@@ -328,9 +330,17 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
         protocol.listChannels();
     }
 
-    private boolean checkHighlight(String str) {
+    public void setActiveChannel(IrcChannel activeChannel) {
+        this.activeChannel = activeChannel;
+    }
+
+    public IrcHighlight getLastMessage() {
+        return lastMessage;
+    }
+
+    private boolean checkHighlight(IrcChannel channel, String str) {
         for (String h : highlightsWords) {
-            if (str.toLowerCase().contains(h.toLowerCase())) {
+            if (!channel.equals(activeChannel) && str.toLowerCase().contains(h.toLowerCase())) {
                 return true;
             }
         }
@@ -505,7 +515,8 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
 
         IrcChannel ircChannel = connectedChannels.get(channel);
         IrcMessage ircMessage = ircChannel.newMessage(user, message);
-        if (checkHighlight(message)) {
+        lastMessage = new IrcHighlight(ircChannel, ircMessage);
+        if (checkHighlight(ircChannel, message)) {
             highlights.add(0, new IrcHighlight(ircChannel, ircMessage));
             for (SessionListener listener : sessionListeners) {
                 listener.onHighlight(ircChannel, ircMessage);
@@ -526,7 +537,8 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
 
         IrcChannel ircChannel = connectedChannels.get(user);
         IrcMessage ircMessage = ircChannel.newMessage(user, message);
-        if (checkHighlight(message)) {
+        lastMessage = new IrcHighlight(ircChannel, ircMessage);
+        if (checkHighlight(ircChannel, message)) {
             highlights.add(0, new IrcHighlight(ircChannel, ircMessage));
             for (SessionListener listener : sessionListeners) {
                 listener.onHighlight(ircChannel, ircMessage);

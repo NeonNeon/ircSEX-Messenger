@@ -217,18 +217,19 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
                 Intent intent = new Intent(this, MessageSearchActivity.class);
                 startActivity(intent);
                 break;
-            case R.id.highlightbadge:
-                showHighlight();
-                break;
             default:
                 return super.onOptionsItemSelected(item);
         }
         return true;
     }
 
-    private void showHighlight() {
-        IrcHighlight highlight = session.getActiveServer().getHighlights().get(0);
-        selectItem(ircChannelSelector.indexOf(highlight.getChannel().toString()));
+    public void showHighlight(View view) {
+        List<IrcHighlight> highlights = session.getActiveServer().getHighlights();
+        IrcHighlight highlight = highlights.size() > 0 ? highlights.get(0) : session.getActiveServer().getLastMessage();
+        int index = ircChannelSelector.indexOf(highlight.getChannel().getChannelName());
+        if (index != -1) {
+            selectItem(index);
+        }
         session.getActiveServer().readHighlight(highlight);
         updateHighlightBadge();
     }
