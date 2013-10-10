@@ -110,7 +110,12 @@ public class IrcChannelSelector {
      * @return Index of channel
      */
     public int indexOf(String channel) {
-        return connections.indexOf(channel);
+        for (IrcConnectionItem item : connections) {
+            if (item.getText().equals(channel)) {
+                return connections.indexOf(item);
+            }
+        }
+        return -1;
     }
 
 
