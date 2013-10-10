@@ -152,7 +152,7 @@ public class UserSearchActivity extends SearchActivity implements SessionListene
     }
 
     @Override
-    public void onNickChange(String host, IrcMessage ircMessage) {
+    public void onNickChange(String host, String channel, IrcMessage ircMessage) {
 
     }
 

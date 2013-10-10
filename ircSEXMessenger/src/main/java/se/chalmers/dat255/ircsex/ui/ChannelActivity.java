@@ -518,8 +518,10 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     }
 
     @Override
-    public void onNickChange(String host, IrcMessage ircMessage) {
-        addInfoMessage(ircMessage);
+    public void onNickChange(String host, String channel, IrcMessage ircMessage) {
+        if (channel.equals(channelName)) {
+            addInfoMessage(ircMessage);
+        }
     }
 
     private void addInfoMessage(final IrcMessage infoMessage) {

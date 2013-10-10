@@ -72,9 +72,10 @@ public interface SessionListener {
 
     /**
      * Notifies the ui when a user has changed nick.
+     * @param channel
      * @param ircMessage the resulting chat message
      */
-    public void onNickChange(String host, IrcMessage ircMessage);
+    public void onNickChange(String host, String channel, IrcMessage ircMessage);
 
     /**
      * Receiving a message from another user.

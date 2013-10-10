@@ -78,6 +78,7 @@ public class IrcChannel {
             user.changeNick(newNick);
             users.remove(oldNick);
             users.put(newNick, user);
+            messages.add(new InfoIrcMessage(oldNick + " is now known as " + newNick));
         }
     }
 
