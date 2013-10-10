@@ -14,7 +14,7 @@ public class NormalTaste implements Taste {
 
     private String host;
     private int port;
-    private boolean buffersCreated;
+    private boolean socketCreated;
 
     private Socket socket;
     private BufferedReader input;
@@ -23,18 +23,18 @@ public class NormalTaste implements Taste {
     public NormalTaste(String host, int port) {
         this.host = host;
         this.port = port;
-        buffersCreated = false;
+        socketCreated = false;
     }
 
     @Override
     public BufferedReader getInput() throws IOException {
-        checkBuffers();
+        checkSocket();
         return input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
     }
 
     @Override
     public BufferedWriter getOutput() throws IOException {
-        checkBuffers();
+        checkSocket();
         return output = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
     }
 
@@ -45,14 +45,14 @@ public class NormalTaste implements Taste {
         socket.close();
     }
 
-    private void checkBuffers() throws IOException {
-        if (!buffersCreated) {
-            createBuffers();
-            buffersCreated = true;
+    private void checkSocket() throws IOException {
+        if (!socketCreated) {
+            createSocket();
+            socketCreated = true;
         }
     }
 
-    private void createBuffers() throws IOException {
+    private void createSocket() throws IOException {
         socket = new Socket(host, port);
     }
 }
