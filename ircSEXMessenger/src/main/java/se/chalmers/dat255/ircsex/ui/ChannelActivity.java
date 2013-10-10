@@ -53,7 +53,6 @@ import se.chalmers.dat255.ircsex.view.IrcServerHeader;
 public class ChannelActivity extends FragmentActivity implements SessionListener,
         JoinChannelDialogFragment.DialogListener, ChatFragment.ChatMessageSendListener,
         NetworkStateHandler.ConnectionListener {
-
     private static final String CHAT_FRAGMENT_TAG = "chat_fragment";
 
     private DrawerLayout drawerLayout;
@@ -63,22 +62,19 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     private ViewGroup rightDrawerContainer;
     private ActionBarDrawerToggle mDrawerToggle;
     private ArrayAdapter<IrcUser> userArrayAdapter;
+    private ProgressDialog serverConnectProgressDialog;
+    private AlertDialog whoisProgressDialog;
+    private AlertDialog whoisResultDialog;
     private List<IrcUser> users;
 
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
     private IrcChannelSelector ircChannelSelector;
-    private boolean drawerOpen;
     private ChatFragment fragment;
     private String channelName;
-
     private Session session;
-    private ProgressDialog serverConnectProgressDialog;
-    private AlertDialog whoisProgressDialog;
-    private AlertDialog whoisResultDialog;
     private View whois;
-    private static int selected = -1;
-    private ChannelListOnClickListener channelDrawerOnClickListener;
+    private int selected = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,10 +85,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         NetworkStateHandler.addListener(this);
 
         mTitle = mDrawerTitle = getTitle();
-        if (ircChannelSelector == null) {
-            ircChannelSelector = new IrcChannelSelector(this);
-        }
-        channelDrawerOnClickListener = new ChannelListOnClickListener();
+        ircChannelSelector = new IrcChannelSelector(this);
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
@@ -102,8 +95,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         rightDrawerContainer = (ViewGroup) findViewById(R.id.right_drawer);
         leftDrawer = (ListView) findViewById(R.id.left_drawer_list);
         leftDrawer.setAdapter(ircChannelSelector.getArrayAdapter());
-        leftDrawer.setItemsCanFocus(false);
-        leftDrawer.setOnItemClickListener(channelDrawerOnClickListener);
+        leftDrawer.setOnItemClickListener(new ChannelListOnClickListener());
         leftDrawer.setItemsCanFocus(false);
         rightDrawer = (ListView) findViewById(R.id.right_drawer_list);
         users = new ArrayList<IrcUser>();
@@ -122,14 +114,12 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
             @Override
             public void onDrawerClosed(View view) {
                 setTitle(mTitle);
-                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
 
             @Override
             public void onDrawerOpened(View drawerView) {
                 getActionBar().setTitle(mDrawerTitle);
                 getActionBar().setSubtitle(null);
-                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
         };
         drawerLayout.setDrawerListener(mDrawerToggle);
@@ -166,22 +156,11 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.channel_main, menu);
-
         return super.onCreateOptionsMenu(menu);
-    }
-
-    /* Called whenever we call invalidateOptionsMenu() */
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        // If the nav drawer is open, hide action items related to the content view
-        drawerOpen = (drawerLayout.isDrawerOpen(leftDrawerContainer) || drawerLayout.isDrawerOpen(rightDrawerContainer));
-        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // The action bar home/up action should open or close the drawer.
-        // ActionBarDrawerToggle will take care of this.
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             drawerLayout.closeDrawer(rightDrawerContainer);
             return true;
@@ -312,10 +291,8 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     }
 
     public void bubbleClicked(View view) {
-        String name = ((TextView)view.findViewById(R.id.chat_bubble_nick))
-                .getText().toString();
-        ((TextView)findViewById(R.id.fragment_chat_message))
-                .append(name + ": ");
+        String name = ((TextView)view.findViewById(R.id.chat_bubble_nick)).getText().toString();
+        ((TextView)findViewById(R.id.fragment_chat_message)).append(name + ": ");
     }
 
     private void selectItem(int position) {
@@ -630,6 +607,5 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     public void rightDrawerSearch(View view) {
         Intent intent = new Intent(this, UserSearchActivity.class);
         startActivityForResult(intent, SearchActivity.REQUEST_CHANNEL);
-
     }
 }
