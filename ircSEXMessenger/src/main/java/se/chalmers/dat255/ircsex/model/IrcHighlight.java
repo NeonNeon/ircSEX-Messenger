@@ -7,10 +7,12 @@ public class IrcHighlight {
 
     private final IrcChannel channel;
     private final IrcMessage message;
+    private boolean read;
 
     public IrcHighlight(IrcChannel channel, IrcMessage message) {
         this.channel = channel;
         this.message = message;
+        read = false;
     }
 
     public IrcMessage getMessage() {
@@ -19,5 +21,13 @@ public class IrcHighlight {
 
     public IrcChannel getChannel() {
         return channel;
+    }
+
+    public void read() {
+        read = true;
+    }
+
+    public boolean isRead() {
+        return read;
     }
 }

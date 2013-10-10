@@ -2,9 +2,11 @@ package se.chalmers.dat255.ircsex.ui;
 
 import android.app.ListActivity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
@@ -52,6 +54,7 @@ public class HighlightActivity extends ListActivity {
             entry.put(TEXT2, highlight.getMessage().getReadableTimestamp());
             entry.put(TEXT3, highlight.getMessage().getMessage());
             content.add(entry);
+            highlight.read();
         }
 
         adapter = new SimpleAdapter(
