@@ -87,6 +87,14 @@ public interface SessionListener {
     public void onChannelMessage(String host, String channel, ChatIrcMessage message);
 
     /**
+     * Receiving a hilightnotification.
+     *
+     * @param channel
+     * @param message
+     */
+    public void onHighlight(IrcChannel channel, IrcMessage message);
+
+    /**
      * Receiving message as confirmation of a sent message.
      *
      * @param host

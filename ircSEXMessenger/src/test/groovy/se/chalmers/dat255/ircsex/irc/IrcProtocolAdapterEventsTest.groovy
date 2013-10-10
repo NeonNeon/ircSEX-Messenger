@@ -161,14 +161,15 @@ class IrcProtocolAdapterEventsTest extends Specification {
     def "test channelListResponse event sent"() {
         when:
         def command = ":irc.chalmers.it 322 tord "
-        ipa.handleReply(command + channel + " :[ntr] " + topic)
+        ipa.handleReply(command + channel + " " + users + " :[ntr] " + topic)
 
         then:
-        1 * subscriber.channelListResponse(channel, topic)
+        1 * subscriber.channelListResponse(channel, topic, users)
 
         where:
         channel << ["#prit", "#svinstia", "#party"]
         topic << ["11,1< P.R.I.T. >11 | 2 Ohmsits 2013-12-07! Tagga! //P.R.I.T. '13", "festen fortsätter..", "Nu kör vi!!"]
+        users << ["2", "76", "23"]
 
     }
 }

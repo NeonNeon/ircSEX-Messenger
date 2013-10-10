@@ -95,7 +95,7 @@ public interface IrcProtocolListener {
      * @param name - the name of the channel
      * @param topic - the topic of the channel
      */
-    public void channelListResponse(String name, String topic);
+    public void channelListResponse(String name, String topic, String users);
 
     // ERRORS
 

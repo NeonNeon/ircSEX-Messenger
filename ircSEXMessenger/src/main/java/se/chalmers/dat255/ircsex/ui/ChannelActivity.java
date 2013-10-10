@@ -36,6 +36,8 @@ import java.util.List;
 
 import se.chalmers.dat255.ircsex.R;
 import se.chalmers.dat255.ircsex.model.ChatIrcMessage;
+import se.chalmers.dat255.ircsex.model.IrcChannel;
+import se.chalmers.dat255.ircsex.model.IrcHighlight;
 import se.chalmers.dat255.ircsex.model.IrcMessage;
 import se.chalmers.dat255.ircsex.model.IrcUser;
 import se.chalmers.dat255.ircsex.model.NetworkStateHandler;
@@ -79,6 +81,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     private View whois;
     private static int selected = -1;
     private ChannelListOnClickListener channelDrawerOnClickListener;
+    private LinearLayout highlightButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -166,6 +169,8 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.channel_main, menu);
+        highlightButton = (LinearLayout) menu.findItem(R.id.highlightbadge).getActionView();
+        updateHighlightBadge();
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -217,6 +222,19 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
                 return super.onOptionsItemSelected(item);
         }
         return true;
+    }
+
+    public void showHighlight(View view) {
+        List<IrcHighlight> highlights = session.getActiveServer().getHighlights();
+        IrcHighlight highlight = highlights.size() > 0 ? highlights.get(0) : session.getActiveServer().getLastMessage();
+        if (highlight != null) {
+            int index = ircChannelSelector.indexOf(highlight.getChannel().getChannelName());
+            if (index != -1) {
+                selectItem(index);
+            }
+            session.getActiveServer().readHighlight(highlight);
+        }
+        updateHighlightBadge();
     }
 
     private void inviteUser() {
@@ -503,6 +521,26 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
                 }
             }
         });
+    }
+
+    @Override
+    public void onHighlight(IrcChannel channel, IrcMessage message) {
+        updateHighlightBadge();
+    }
+
+    private void updateHighlightBadge() {
+        if (session.getActiveServer() != null) {
+            ChannelActivity.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    int highlights = session.getActiveServer().getHighlights().size();
+                    highlightButton.getChildAt(0).setBackgroundResource(
+                            highlights == 0 ? R.drawable.highlightbadge_background : R.drawable.highlightbadge_background_highlight);
+                    ((TextView) ((LinearLayout) highlightButton.getChildAt(0)).getChildAt(0))
+                            .setText(Integer.toString(highlights));
+                }
+            });
+        }
     }
 
     @Override

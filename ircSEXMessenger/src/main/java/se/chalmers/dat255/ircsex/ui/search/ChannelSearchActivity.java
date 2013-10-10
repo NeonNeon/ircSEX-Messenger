@@ -10,9 +10,10 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 import se.chalmers.dat255.ircsex.R;
+import se.chalmers.dat255.ircsex.model.SearchlistChannelItem;
 import se.chalmers.dat255.ircsex.model.Session;
 
 /**
@@ -21,7 +22,7 @@ import se.chalmers.dat255.ircsex.model.Session;
 public class ChannelSearchActivity extends SearchActivity {
 
     private ArrayList<HashMap<String,String>> result;
-    private Map<String, String> channels;
+    private List<SearchlistChannelItem> channels;
     private Session session;
 
     @Override
@@ -30,7 +31,7 @@ public class ChannelSearchActivity extends SearchActivity {
 
         session = Session.getInstance(this, null);
         session.getActiveServer().listChannels();
-        channels = new HashMap<String, String>();
+        channels = new ArrayList<SearchlistChannelItem>();
     }
 
     @Override
@@ -52,18 +53,17 @@ public class ChannelSearchActivity extends SearchActivity {
     @Override
     public void search(String search) {
         channels = session.getActiveServer().getChannels();
-        content = channels.keySet();
 
         search = search.toLowerCase();
 
         clearAdapter();
-        for (String entry : content) {
-            if (entry.toLowerCase().contains(search) // TODO: Improve efficiency
-                    || channels.get(entry).toLowerCase().contains(search)) {
+        for (SearchlistChannelItem entry : channels) {
+            if (entry.getName().toLowerCase().contains(search) // TODO: Improve efficiency
+                    || entry.getTopic().toLowerCase().contains(search)) {
                 HashMap<String, String> item = new HashMap<String, String>();
-                item.put(TEXT1, entry.substring(0, entry.lastIndexOf(" ")));
-                item.put(TEXT2, entry.substring(entry.lastIndexOf(" ")+1) + " users");
-                item.put(TEXT3, channels.get(entry));
+                item.put(TEXT1, entry.getName());
+                item.put(TEXT2, entry.getUsers() + " users");
+                item.put(TEXT3, entry.getTopic());
                 result.add(item);
             }
         }

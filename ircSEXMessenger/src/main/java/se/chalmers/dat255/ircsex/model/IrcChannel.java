@@ -164,4 +164,17 @@ public class IrcChannel {
     public void readMessage(ChatIrcMessage message) {
         message.read();
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        IrcChannel channel = (IrcChannel) o;
+        return channelName.equals(channel.channelName);
+    }
+
+    @Override
+    public int hashCode() {
+        return channelName.hashCode();
+    }
 }

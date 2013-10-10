@@ -155,6 +155,9 @@ public class Session {
 
     public void setActiveChannel(String activeChannel) {
         this.activeChannel = activeServer.getConnectedChannel(activeChannel);
+        if (this.activeChannel != null) {
+            this.activeServer.setActiveChannel(this.activeChannel);
+        }
     }
 
     public void changeNick(String newNick) {

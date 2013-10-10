@@ -10,6 +10,8 @@ import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.Arrays;
 
+import javax.crypto.AEADBadTagException;
+
 /**
  * This class is used to easily communicate with the IRC protocol.
  *
@@ -143,7 +145,9 @@ public class IrcProtocolAdapter implements Runnable {
             if ((index = reply.indexOf("#")) != -1) {
                 String channel = reply.substring(index, reply.indexOf(":", 1) - 1);
                 String topic = reply.substring(reply.indexOf("] ") + 2);
-                listener.channelListResponse(channel, topic);
+                String users = channel.substring(channel.indexOf(" ") + 1);
+                channel = channel.substring(0, channel.indexOf(" "));
+                listener.channelListResponse(channel, topic, users);
             }
         }
 
