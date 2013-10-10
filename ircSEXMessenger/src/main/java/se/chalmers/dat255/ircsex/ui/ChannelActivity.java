@@ -79,6 +79,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     private View whois;
     private static int selected = -1;
     private ChannelListOnClickListener channelDrawerOnClickListener;
+    private MenuItem highlightButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -166,6 +167,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.channel_main, menu);
+        highlightButton = menu.findItem(R.id.highlights);
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -506,7 +508,12 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
 
     @Override
     public void onHighlight(IrcChannel channel, IrcMessage message) {
-        // TODO
+        ChannelActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                highlightButton.setIcon(android.R.drawable.button_onoff_indicator_on);
+            }
+        });
     }
 
     @Override
