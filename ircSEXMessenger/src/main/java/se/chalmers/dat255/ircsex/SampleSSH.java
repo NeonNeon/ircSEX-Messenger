@@ -2,10 +2,14 @@ package se.chalmers.dat255.ircsex;
 
 import net.schmizz.sshj.*;
 import net.schmizz.sshj.common.IOUtils;
+import net.schmizz.sshj.connection.channel.direct.LocalPortForwarder;
 import net.schmizz.sshj.connection.channel.direct.Session;
+import net.schmizz.sshj.connection.channel.forwarded.RemotePortForwarder;
 import net.schmizz.sshj.transport.verification.HostKeyVerifier;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.ServerSocket;
 import java.security.PublicKey;
 import java.util.concurrent.TimeUnit;
 
@@ -14,7 +18,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class SampleSSH implements HostKeyVerifier {
 
-    private static String addr = "hubben.chalmers.it";
+    private static String addr = "levelinver.se";
     private static String user = "ircsex";
     private static String pass = "l";
 
@@ -29,16 +33,22 @@ public class SampleSSH implements HostKeyVerifier {
 
         try {
             ssh.authPassword(user, pass);
-            final Session session = ssh.startSession();
 
+            /*
+            * _We_ listen on localhost:8080 and forward all connections on to server, which then forwards it to
+            * google.com:80
+            */
+            final LocalPortForwarder.Parameters params
+                    = new LocalPortForwarder.Parameters("0.0.0.0", 1337, "localhost", 4444);
+            final ServerSocket ss = new ServerSocket();
+            ss.setReuseAddress(true);
+            ss.bind(new InetSocketAddress(params.getLocalHost(), params.getLocalPort()));
             try {
-                final Session.Command cmd = session.exec("ping -c 1 google.com");
-                System.out.println(IOUtils.readFully(cmd.getInputStream()).toString());
-                cmd.join(5, TimeUnit.SECONDS);
-                System.out.println("\n** exit status: " + cmd.getExitStatus());
+                ssh.newLocalPortForwarder(params, ss).listen();
             } finally {
-                session.close();
+                ss.close();
             }
+
         } finally {
             ssh.disconnect();
         }
