@@ -12,10 +12,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
+import se.chalmers.dat255.ircsex.model.ChannelItem;
 import se.chalmers.dat255.ircsex.model.IrcMessage;
 import se.chalmers.dat255.ircsex.model.Session;
-import se.chalmers.dat255.ircsex.model.ChannelItem;
-import se.chalmers.dat255.ircsex.ui.MessageArrayAdapter;
 
 /**
  * @author Johan Magnusson

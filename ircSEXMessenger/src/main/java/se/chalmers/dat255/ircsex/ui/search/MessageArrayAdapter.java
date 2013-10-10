@@ -1,4 +1,4 @@
-package se.chalmers.dat255.ircsex.ui;
+package se.chalmers.dat255.ircsex.ui.search;
 
 import android.content.Context;
 import android.content.res.Resources;

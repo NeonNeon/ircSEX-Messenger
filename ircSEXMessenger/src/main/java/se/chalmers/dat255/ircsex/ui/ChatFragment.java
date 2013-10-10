@@ -19,12 +19,13 @@ import java.util.List;
 
 import se.chalmers.dat255.ircsex.R;
 import se.chalmers.dat255.ircsex.model.ChannelItem;
+import se.chalmers.dat255.ircsex.model.ChatIrcMessage;
 import se.chalmers.dat255.ircsex.model.InfoMessage;
 import se.chalmers.dat255.ircsex.model.IrcChannel;
-import se.chalmers.dat255.ircsex.model.ChatIrcMessage;
 import se.chalmers.dat255.ircsex.model.IrcMessage;
 import se.chalmers.dat255.ircsex.model.ReceivedChatBubble;
 import se.chalmers.dat255.ircsex.model.SentChatBubble;
+import se.chalmers.dat255.ircsex.ui.search.MessageArrayAdapter;
 
 public class ChatFragment extends Fragment {
     private ListView messageList;
