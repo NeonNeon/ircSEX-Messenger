@@ -22,8 +22,6 @@ import java.util.List;
 import se.chalmers.dat255.ircsex.R;
 import se.chalmers.dat255.ircsex.model.ChannelItem;
 import se.chalmers.dat255.ircsex.model.ChatBubble;
-import se.chalmers.dat255.ircsex.model.InfoIrcMessage;
-import se.chalmers.dat255.ircsex.model.InfoMessage;
 import se.chalmers.dat255.ircsex.model.ReceivedChatBubble;
 import se.chalmers.dat255.ircsex.model.SentChatBubble;
 
@@ -41,8 +39,8 @@ public class MessageArrayAdapter extends ArrayAdapter<ChannelItem> {
         super(context, R.layout.received_chat_bubble);
         boolean unreadLinePlaced = false;
         for (ChannelItem item : backlog) {
-            if (!unreadLinePlaced && !item.getIrcMessage().isRead()) {
-                add(new InfoMessage(new InfoIrcMessage("")));
+            if (!(item instanceof SentChatBubble) && !unreadLinePlaced && !item.getIrcMessage().isRead()) {
+                add(new UnreadLine());
                 unreadLinePlaced = true;
             }
             add(item);
@@ -63,6 +61,9 @@ public class MessageArrayAdapter extends ArrayAdapter<ChannelItem> {
         ChannelItem channelItem = getItem(position);
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View rowView = inflater.inflate(channelItem.getLayoutID(), parent, false);
+        if (channelItem instanceof UnreadLine) {
+            return rowView;
+        }
         wrapper = (RelativeLayout) rowView.findViewById(R.id.channel_item_wrapper);
         TextView messageView = (TextView) rowView.findViewById(R.id.channel_item_message);
         android.view.animation.Animation animation;
@@ -81,7 +82,7 @@ public class MessageArrayAdapter extends ArrayAdapter<ChannelItem> {
             TextView timestampView = (TextView) rowView.findViewById(R.id.chat_bubble_timestamp);
             timestampView.setText(((ChatBubble)channelItem).getTimestamp());
         }
-        messageView.setText(channelItem.getMessage() + " " + channelItem.getIrcMessage().isRead());
+        messageView.setText(channelItem.getMessage());
         wrapper.setGravity(channelItem.getGravity());
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
