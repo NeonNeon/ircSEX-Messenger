@@ -12,6 +12,7 @@ import java.util.concurrent.ConcurrentMap;
 import se.chalmers.dat255.ircsex.irc.IrcProtocolAdapter;
 import se.chalmers.dat255.ircsex.irc.IrcProtocolListener;
 import se.chalmers.dat255.ircsex.model.database.ChannelDatabaseAdapter;
+import se.chalmers.dat255.ircsex.model.database.HighlightDatabaseAdapter;
 import se.chalmers.dat255.ircsex.model.database.ServerDatabaseAdapter;
 
 /**
@@ -30,6 +31,7 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
 
     private final ChannelDatabaseAdapter datasource;
     private final ServerDatabaseAdapter serverDatasource;
+    private final HighlightDatabaseAdapter highlightDatasource;
 
     private final ArrayList<SearchlistChannelItem> channels;
     private final ConcurrentMap<String, IrcChannel> connectedChannels;
@@ -75,14 +77,14 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
         serverDatasource.open();
         datasource = new ChannelDatabaseAdapter();
         datasource.open();
+        highlightDatasource = new HighlightDatabaseAdapter();
+        highlightDatasource.open();
 
         channels = new ArrayList<SearchlistChannelItem>();
         connectedChannels = new ConcurrentHashMap<String, IrcChannel>();
 
-        highlightsWords = new ArrayList<String>();
+        highlightsWords = highlightDatasource.getHighlights();
         highlights = new ArrayList<IrcHighlight>();
-        // Remove line below
-        addHighlight(user.getNick());
 
         NetworkStateHandler.addListener(this);
         NetworkStateHandler.start();
@@ -269,6 +271,7 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
      */
     public void addHighlight(String str) {
         highlightsWords.add(str);
+        highlightDatasource.addHighlight(str);
     }
 
     /**
@@ -277,6 +280,7 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
      */
     public void removeHighlight(String str) {
         highlightsWords.remove(str);
+        highlightDatasource.removeHighlight(str);
     }
 
     /**
@@ -284,7 +288,7 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
      * @param index Index to remove
      */
     public void removeHighlight(int index) {
-        highlightsWords.remove(index);
+        removeHighlight(highlightsWords.get(index));
     }
 
     /**

@@ -24,8 +24,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String CHANNEL_SERVER = "server";
     public static final String CHANNEL_NAME = "name";
 
+    public static final String TABLE_HIGHLIGHTS = "highlights";
+    public static final String HIGHLIGHT_ID = "id";
+    public static final String HIGHLIGHT_STRING = "string";
+
     private static final String DATABASE_NAME = "ircSEX.database";
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 8;
 
     // Database creation sql statement
     private static final String TABLE_SERVERS_CREATE = "create table " + TABLE_SERVERS + "("
@@ -38,7 +42,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String TABLE_CHANNELS_CREATE = "create table " + TABLE_CHANNELS + "("
             + CHANNEL_ID + " integer primary key autoincrement, "
             + CHANNEL_SERVER + " text, "
-            + CHANNEL_NAME + " integer);";
+            + CHANNEL_NAME + " text);";
+    private static final String TABLE_HIGHLIGHTS_CREATE = "create table " + TABLE_HIGHLIGHTS + "("
+            + HIGHLIGHT_ID + " integer primary key autoincrement, "
+            + HIGHLIGHT_STRING + " text);";
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -48,12 +55,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase database) {
         database.execSQL(TABLE_SERVERS_CREATE);
         database.execSQL(TABLE_CHANNELS_CREATE);
+        database.execSQL(TABLE_HIGHLIGHTS_CREATE);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_SERVERS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_CHANNELS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_HIGHLIGHTS);
         onCreate(db);
     }
 }
