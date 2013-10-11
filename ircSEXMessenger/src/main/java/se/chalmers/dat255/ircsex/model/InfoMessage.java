@@ -5,8 +5,6 @@ import android.graphics.Rect;
 import android.view.Gravity;
 
 import se.chalmers.dat255.ircsex.R;
-import se.chalmers.dat255.ircsex.model.ChannelItem;
-import se.chalmers.dat255.ircsex.model.IrcMessage;
 
 /**
  * Created by Johan on 2013-10-01.

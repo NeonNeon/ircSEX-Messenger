@@ -4,11 +4,7 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.view.Gravity;
 
-import java.text.SimpleDateFormat;
-
 import se.chalmers.dat255.ircsex.R;
-import se.chalmers.dat255.ircsex.model.ChatBubble;
-import se.chalmers.dat255.ircsex.model.IrcMessage;
 
 /**
  * Created by Johan on 2013-09-24.

@@ -2,8 +2,6 @@ package se.chalmers.dat255.ircsex.model;
 
 import android.graphics.Rect;
 
-import se.chalmers.dat255.ircsex.model.ChannelItem;
-
 /**
  * Created by Johan on 2013-09-24.
  */
