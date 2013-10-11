@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ActionMode;
 import android.widget.ImageView;
 
 import se.chalmers.dat255.ircsex.R;
@@ -14,21 +15,18 @@ import se.chalmers.dat255.ircsex.model.NetworkStateHandler;
  */
 public class NoInternetActivity extends Activity implements NetworkStateHandler.ConnectionListener {
 
-    private boolean online;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        online = false;
         NetworkStateHandler.addListener(this);
         setContentView(R.layout.activity_no_internet_connection);
         setImage();
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        setImage();
+    protected void onStop() {
+        super.onStop();
+        NetworkStateHandler.removeListener(this);
     }
 
     private void setImage() {
@@ -40,16 +38,11 @@ public class NoInternetActivity extends Activity implements NetworkStateHandler.
     }
 
     @Override
-    public void onBackPressed() {
-        if (online) {
-            super.onBackPressed();
-        }
-    }
+    public void onBackPressed() {}
 
     @Override
     public void onOnline() {
-        online = true;
-        onBackPressed();
+        finish();
     }
 
     @Override

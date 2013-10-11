@@ -1,23 +1,21 @@
-package se.chalmers.dat255.ircsex.ui;
+package se.chalmers.dat255.ircsex.model;
 
 import android.graphics.Rect;
 import android.view.Gravity;
 
 import se.chalmers.dat255.ircsex.R;
-import se.chalmers.dat255.ircsex.model.IrcMessage;
-import se.chalmers.dat255.ircsex.model.IrcUser;
 
 /**
  * Created by Johan on 2013-09-24.
  */
 public class ReceivedChatBubble extends ChatBubble {
     private final IrcUser ircUser;
-    private final IrcMessage ircMessage;
+    private final ChatIrcMessage ircMessage;
 
-    protected ReceivedChatBubble(IrcMessage ircMessage) {
-        super(ircMessage.getMessage());
-        this.ircMessage = ircMessage;
-        this.ircUser = ircMessage.getUser();
+    public ReceivedChatBubble(IrcMessage ircMessage) {
+        super(ircMessage);
+        this.ircMessage = (ChatIrcMessage) ircMessage;
+        this.ircUser = this.ircMessage.getUser();
     }
 
     public String getNick() {

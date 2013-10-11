@@ -1,13 +1,14 @@
-package se.chalmers.dat255.ircsex.model;
+package se.chalmers.dat255.ircsex.ui.search;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.NinePatchDrawable;
 import android.os.Build;
-import android.text.format.Time;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,37 +18,38 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import java.text.DateFormatSymbols;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import se.chalmers.dat255.ircsex.R;
-import se.chalmers.dat255.ircsex.ui.ChannelItem;
-import se.chalmers.dat255.ircsex.ui.DayChangeMessage;
-import se.chalmers.dat255.ircsex.ui.ReceivedChatBubble;
-import se.chalmers.dat255.ircsex.ui.SentChatBubble;
+import se.chalmers.dat255.ircsex.model.ChannelItem;
+import se.chalmers.dat255.ircsex.model.ChatBubble;
+import se.chalmers.dat255.ircsex.model.InfoMessage;
+import se.chalmers.dat255.ircsex.model.ReceivedChatBubble;
+import se.chalmers.dat255.ircsex.model.SentChatBubble;
+import se.chalmers.dat255.ircsex.ui.SettingsActivity;
+import se.chalmers.dat255.ircsex.ui.UnreadLine;
 
 /**
  * @author Johan Magnusson
  * Created: 2013-09-24
- *
- *
  */
 public class MessageArrayAdapter extends ArrayAdapter<ChannelItem> {
     private Context context;
     private List<ChannelItem> channelItems = new ArrayList<ChannelItem>();
     private RelativeLayout wrapper;
     private boolean animate = true;
-    private Time time;
-    private int dayOfMonth;
+    private SharedPreferences sharedPreferences;
 
     public MessageArrayAdapter(Context context, List<ChannelItem> backlog) {
         super(context, R.layout.received_chat_bubble);
-        time = new Time();
-        time.setToNow();
-        dayOfMonth = time.monthDay;
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        boolean unreadLinePlaced = false;
         for (ChannelItem item : backlog) {
+            if (!(item instanceof SentChatBubble) && !unreadLinePlaced && !item.getIrcMessage().isRead()) {
+                add(new UnreadLine());
+                unreadLinePlaced = true;
+            }
             add(item);
             animate = false;
         }
@@ -56,24 +58,11 @@ public class MessageArrayAdapter extends ArrayAdapter<ChannelItem> {
 
     @Override
     public void add(ChannelItem channelItem) {
-        checkForDateChange();
-        channelItems.add(channelItem);
-        super.add(channelItem);
-        animate = true;
-    }
-
-    private void checkForDateChange() {
-        time.setToNow();
-        if (time.monthDay != dayOfMonth) {
-            dayOfMonth = time.monthDay;
-            DayChangeMessage dayChangeMessage = new DayChangeMessage(time.monthDay + " " + getMonth(time.month));
-            channelItems.add(dayChangeMessage);
-            super.add(dayChangeMessage);
+        if (!(channelItem instanceof InfoMessage) || sharedPreferences.getBoolean(SettingsActivity.PREF_SHOW_JOIN_LEAVE, true)) {
+            channelItems.add(channelItem);
+            super.add(channelItem);
+            animate = true;
         }
-    }
-
-    private String getMonth(int month) {
-        return DateFormatSymbols.getInstance(Locale.getDefault()).getMonths()[month];
     }
 
     @Override
@@ -81,14 +70,16 @@ public class MessageArrayAdapter extends ArrayAdapter<ChannelItem> {
         ChannelItem channelItem = getItem(position);
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View rowView = inflater.inflate(channelItem.getLayoutID(), parent, false);
+        if (channelItem instanceof UnreadLine) {
+            return rowView;
+        }
         wrapper = (RelativeLayout) rowView.findViewById(R.id.channel_item_wrapper);
         TextView messageView = (TextView) rowView.findViewById(R.id.channel_item_message);
+        messageView.setTextSize(Float.parseFloat(sharedPreferences.getString(SettingsActivity.PREF_MESSAGE_FONT_SIZE, "14")));
         android.view.animation.Animation animation;
         if (channelItem instanceof ReceivedChatBubble) {
             TextView nickView = (TextView) rowView.findViewById(R.id.chat_bubble_nick);
-            TextView timestampView = (TextView) rowView.findViewById(R.id.chat_bubble_timestamp);
             nickView.setText(((ReceivedChatBubble) channelItem).getNick());
-            timestampView.setText(((ReceivedChatBubble)channelItem).getTimestamp());
             animation = AnimationUtils.loadAnimation(context, R.anim.left_to_right);
         }
         else if (channelItem instanceof SentChatBubble){
@@ -96,6 +87,10 @@ public class MessageArrayAdapter extends ArrayAdapter<ChannelItem> {
         }
         else {
             animation = AnimationUtils.loadAnimation(context, android.R.anim.fade_in);
+        }
+        if (channelItem instanceof ChatBubble) {
+            TextView timestampView = (TextView) rowView.findViewById(R.id.chat_bubble_timestamp);
+            timestampView.setText(((ChatBubble)channelItem).getTimestamp());
         }
         messageView.setText(channelItem.getMessage());
         wrapper.setGravity(channelItem.getGravity());
@@ -113,6 +108,7 @@ public class MessageArrayAdapter extends ArrayAdapter<ChannelItem> {
             rowView.startAnimation(animation);
             animate = false;
         }
+        channelItem.getIrcMessage().read();
         return rowView;
     }
 
@@ -125,7 +121,6 @@ public class MessageArrayAdapter extends ArrayAdapter<ChannelItem> {
         Resources resources = context.getResources();
         Bitmap bitmap = BitmapFactory.decodeResource(resources, channelItem.getNinePatchID());
         byte[] chunk = bitmap.getNinePatchChunk();
-//        NinePatch ninePatch = new NinePatch(bitmap, chunk, null);
         NinePatchDrawable ninePatchDrawable = new NinePatchDrawable(resources, bitmap, chunk, channelItem.getPadding(), null);
         ninePatchDrawable.setColorFilter(channelItem.getColor(), PorterDuff.Mode.MULTIPLY);
         return ninePatchDrawable;

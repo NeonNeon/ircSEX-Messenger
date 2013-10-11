@@ -7,7 +7,7 @@ import spock.lang.Specification
  */
 class IrcProtocolAdapterEventsTest extends Specification {
     IrcProtocolListener subscriber = Mock()
-    IrcProtocolAdapter ipa = new IrcProtocolAdapter("irc.chalmers.it", 80, subscriber)
+    IrcProtocolAdapter ipa = new IrcProtocolAdapter(new NormalTaste("irc.chalmers.it", 80), subscriber)
 
     def setup() {
     }
@@ -45,7 +45,7 @@ class IrcProtocolAdapterEventsTest extends Specification {
         ipa.handleReply(":" + user + command + quitMessage)
 
         then:
-        1 * subscriber.userQuited(user, quitMessage)
+        1 * subscriber.userQuit(user, quitMessage)
 
         where:
         user << ["oed", "Heissman", "Rascal"]
@@ -161,14 +161,15 @@ class IrcProtocolAdapterEventsTest extends Specification {
     def "test channelListResponse event sent"() {
         when:
         def command = ":irc.chalmers.it 322 tord "
-        ipa.handleReply(command + channel + " :[ntr] " + topic)
+        ipa.handleReply(command + channel + " " + users + " :[ntr] " + topic)
 
         then:
-        1 * subscriber.channelListResponse(channel, topic)
+        1 * subscriber.channelListResponse(channel, topic, users)
 
         where:
         channel << ["#prit", "#svinstia", "#party"]
         topic << ["11,1< P.R.I.T. >11 | 2 Ohmsits 2013-12-07! Tagga! //P.R.I.T. '13", "festen fortsätter..", "Nu kör vi!!"]
+        users << ["2", "76", "23"]
 
     }
 }

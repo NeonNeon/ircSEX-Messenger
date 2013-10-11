@@ -13,13 +13,19 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
 import se.chalmers.dat255.ircsex.R;
+import se.chalmers.dat255.ircsex.model.ChannelItem;
+import se.chalmers.dat255.ircsex.model.ChatIrcMessage;
+import se.chalmers.dat255.ircsex.model.InfoMessage;
 import se.chalmers.dat255.ircsex.model.IrcChannel;
 import se.chalmers.dat255.ircsex.model.IrcMessage;
-import se.chalmers.dat255.ircsex.model.MessageArrayAdapter;
+import se.chalmers.dat255.ircsex.model.ReceivedChatBubble;
+import se.chalmers.dat255.ircsex.model.SentChatBubble;
+import se.chalmers.dat255.ircsex.ui.search.MessageArrayAdapter;
 
 public class ChatFragment extends Fragment {
     private ListView messageList;
@@ -53,14 +59,23 @@ public class ChatFragment extends Fragment {
 
     private void setArrayAdapter() {
         List<ChannelItem> backlog = new ArrayList<ChannelItem>(channel.getMessages().size());
-        for (IrcMessage message : channel.getMessages()) {
-            if (message.getUser().isSelf()) {
-                backlog.add(new SentChatBubble(message.getMessage()));
-            } else {
-                backlog.add(new ReceivedChatBubble(message));
+        try {
+            for (IrcMessage message : channel.getMessages()) {
+                Class<? extends ChannelItem> channelItemClass = message.getChannelItem();
+                ChannelItem ci = channelItemClass.getConstructor(IrcMessage.class).newInstance(message);
+                backlog.add(ci);
             }
+        } catch (InvocationTargetException e) {
+            Log.e("IRCDEBUG", "Could not instantiate backlog of channel " + channel.getChannelName(), e);
+        } catch (NoSuchMethodException e) {
+            Log.e("IRCDEBUG", "Could not instantiate backlog of channel " + channel.getChannelName(), e);
+        } catch (java.lang.InstantiationException e) {
+            Log.e("IRCDEBUG", "Could not instantiate backlog of channel " + channel.getChannelName(), e);
+        } catch (IllegalAccessException e) {
+            Log.e("IRCDEBUG", "Could not instantiate backlog of channel " + channel.getChannelName(), e);
+        } finally {
+            messageArrayAdapter = new MessageArrayAdapter(getActivity(), backlog);
         }
-        messageArrayAdapter = new MessageArrayAdapter(getActivity(), backlog);
     }
 
     @Override
@@ -98,21 +113,21 @@ public class ChatFragment extends Fragment {
         }
     }
 
-    public void addMessage(IrcMessage ircMessage) {
+    public void addMessage(ChatIrcMessage ircMessage) {
         messageArrayAdapter.add(new ReceivedChatBubble(ircMessage));
         messageList.invalidate();
         scrollWhenNoBacklog();
     }
 
-    public void addSentMessage(IrcMessage ircMessage) {
-        messageArrayAdapter.add(new SentChatBubble(ircMessage.getMessage()));
+    public void addSentMessage(ChatIrcMessage ircMessage) {
+        messageArrayAdapter.add(new SentChatBubble(ircMessage));
         messageList.invalidate();
         messageEditText.setText("");
         scrollToBottom();
     }
 
-    public void addInfoMessage(String infoMessage) {
-        Log.d("IRCDEBUG", infoMessage);
+    public void addInfoMessage(IrcMessage infoMessage) {
+        Log.d("IRCDEBUG", infoMessage.toString());
         messageArrayAdapter.add(new InfoMessage(infoMessage));
         messageList.invalidate();
         scrollWhenNoBacklog();

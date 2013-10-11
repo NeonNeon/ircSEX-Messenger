@@ -32,8 +32,17 @@
             android:name=".ui.NoInternetActivity"
             android:label="@string/app_name"/>
         <activity
-            android:name=".ui.SearchActivity"
+            android:name=".ui.search.ChannelSearchActivity"
             android:label="@string/app_name"/>
+        <activity
+            android:name=".ui.search.UserSearchActivity"
+            android:label="@string/app_name"/>
+        <activity
+            android:name=".ui.search.MessageSearchActivity"
+            android:label="@string/app_name"/>
+        <activity
+            android:name=".ui.SettingsActivity"
+            android:label="@string/app_name" />
         <receiver android:name=".model.NetworkStateHandler">
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />

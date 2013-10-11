@@ -4,9 +4,7 @@ import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -80,6 +78,7 @@ public class IrcChannel {
             user.changeNick(newNick);
             users.remove(oldNick);
             users.put(newNick, user);
+            messages.add(new InfoIrcMessage(oldNick + " is now known as " + newNick));
         }
     }
 
@@ -89,9 +88,9 @@ public class IrcChannel {
      * @param user - The user who left
      */
     public void userParted(String user) {
-        Log.e("IRC", user + " quited");
+        Log.e("IRC", user + " quit");
         synchronized (users) {
-            Log.e("IRC", user + " quited");
+            Log.e("IRC", user + " quit");
             user = IrcUser.extractUserName(user);
             users.remove(user);
         }
@@ -138,12 +137,24 @@ public class IrcChannel {
      *
      * @param user User who sent the message
      * @param message Message to add
-     * @return The IrcMessage created from the message string and user string
+     * @return The ChatIrcMessage created from the message string and user string
      */
-    public IrcMessage newMessage(String user, String message) {
+    public ChatIrcMessage newChatMessage(String user, String message) {
+        return newChatMessage(user, message, false);
+    }
+
+    public ChatIrcMessage newChatMessage(String user, String message, boolean highlight) {
         synchronized (messages) {
             user = IrcUser.extractUserName(user);
-            IrcMessage ircMessage = new IrcMessage(users.get(user), message);
+            ChatIrcMessage ircMessage = new ChatIrcMessage(users.get(user), message);
+            messages.add(ircMessage);
+            return ircMessage;
+        }
+    }
+
+    public InfoIrcMessage newInfoMessage(String message) {
+        synchronized (messages) {
+            InfoIrcMessage ircMessage = new InfoIrcMessage(message);
             messages.add(ircMessage);
             return ircMessage;
         }
@@ -154,7 +165,20 @@ public class IrcChannel {
      *
      * @param message Message that will be marked as read
      */
-    public void readMessage(IrcMessage message) {
+    public void readMessage(ChatIrcMessage message) {
         message.read();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        IrcChannel channel = (IrcChannel) o;
+        return channelName.equals(channel.channelName);
+    }
+
+    @Override
+    public int hashCode() {
+        return channelName.hashCode();
     }
 }

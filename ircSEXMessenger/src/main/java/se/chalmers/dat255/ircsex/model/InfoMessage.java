@@ -1,4 +1,4 @@
-package se.chalmers.dat255.ircsex.ui;
+package se.chalmers.dat255.ircsex.model;
 
 import android.graphics.Color;
 import android.graphics.Rect;
@@ -10,15 +10,20 @@ import se.chalmers.dat255.ircsex.R;
  * Created by Johan on 2013-10-01.
  */
 public class InfoMessage implements ChannelItem {
-    private final String message;
+    private final InfoIrcMessage ircMessage;
 
-    public InfoMessage(String message) {
-        this.message = message;
+    public InfoMessage(IrcMessage ircMessage) {
+        this.ircMessage = (InfoIrcMessage) ircMessage;
     }
 
     @Override
     public String getMessage() {
-        return message;
+        return ircMessage.getMessage();
+    }
+
+    @Override
+    public IrcMessage getIrcMessage() {
+        return ircMessage;
     }
 
     @Override

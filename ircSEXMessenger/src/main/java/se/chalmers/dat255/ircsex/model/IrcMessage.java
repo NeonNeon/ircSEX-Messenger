@@ -1,29 +1,24 @@
 package se.chalmers.dat255.ircsex.model;
 
-import java.text.SimpleDateFormat;
-
 /**
- * Class to represent an message.
- *
- * Created by Oskar on 2013-09-24.
+ * Created by Wilhelm on 2013-10-09.
  */
-public class IrcMessage {
+public abstract class IrcMessage {
+    protected final String message;
+    private boolean read = false;
+    private boolean highlight = false;
 
-    private final IrcUser user;
-    private final String message;
-    private final long timestamp;
-    private boolean read;
-
-    public IrcMessage(IrcUser user, String message) {
-        this.user = user;
+    public IrcMessage(String message) {
         this.message = message;
-        this.timestamp = System.currentTimeMillis();
-        this.read = false;
+    }
+
+    public IrcMessage(String message, boolean highlight) {
+        this(message);
+        this.highlight = highlight;
     }
 
     /**
      * Checks if the message is read.
-     *
      * @return if the message is read
      */
     public boolean isRead() {
@@ -37,19 +32,21 @@ public class IrcMessage {
         read = true;
     }
 
+    /**
+     * Get the message
+     * @return
+     */
     public String getMessage() {
         return message;
     }
 
-    public IrcUser getUser() {
-        return user;
+    /**
+     * Returns whether the message i a highlight.
+     * @return
+     */
+    public boolean isHighlight() {
+        return highlight;
     }
 
-    public String getReadableTimestamp() {
-        if (System.currentTimeMillis()/1000L - timestamp < 60*60*24) {
-            return new SimpleDateFormat("HH:mm").format(timestamp);
-        } else {
-            return new SimpleDateFormat("yyyy-MM-dd HH:mm").format(timestamp);
-        }
-    }
+    public abstract Class<? extends ChannelItem> getChannelItem();
 }

@@ -1,37 +1,43 @@
-package se.chalmers.dat255.ircsex.model.database;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+package se.chalmers.dat255.ircsex.model;
 
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
-import se.chalmers.dat255.ircsex.model.IrcServer;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import se.chalmers.dat255.ircsex.model.database.ContextManager;
+import se.chalmers.dat255.ircsex.model.database.DatabaseHelper;
 
 /**
  * Database adapter for servers table.
  *
  * Created by Oskar on 2013-09-18.
  */
-public class ServerDatabaseAdapter {
+public class ServerDAO {
 
     private SQLiteDatabase database;
     private final DatabaseHelper dbHelper;
     private final String[] allColumns = { DatabaseHelper.SERVER_ID,
             DatabaseHelper.SERVER_HOST,
             DatabaseHelper.SERVER_PORT,
-            DatabaseHelper.SERVER_LOGIN,
             DatabaseHelper.SERVER_NICK,
-            DatabaseHelper.SERVER_REALNAME};
+            DatabaseHelper.SERVER_LOGIN,
+            DatabaseHelper.SERVER_REALNAME,
+            DatabaseHelper.SERVER_PASSWORD,
+            DatabaseHelper.SERVER_USE_SSL,
+            DatabaseHelper.SERVER_USE_SSH,
+            DatabaseHelper.SERVER_SSH_HOSTNAME,
+            DatabaseHelper.SERVER_SSH_USERNAME,
+            DatabaseHelper.SERVER_SSH_PASSWORD
+    };
 
     /**
-     * Creates an object of ServerDatabaseAdapter.
+     * Creates an object of ServerDAO.
      */
-    public ServerDatabaseAdapter() {
+    public ServerDAO() {
         dbHelper = new DatabaseHelper(ContextManager.SERVER_CONTEXT);
     }
 
@@ -54,19 +60,21 @@ public class ServerDatabaseAdapter {
     /**
      * Adds a server to the servers table.
      *
-     * @param host - Server address
-     * @param port - Server port
-     * @param login - Server login username
-     * @param nick - Nickname
-     * @param realname - IRL Name
+     * @param data
      */
-    public void addServer(String host, int port, String login, String nick, String realname) {
+    public void addServer(ServerConnectionData data) {
         ContentValues values = new ContentValues();
-        values.put(DatabaseHelper.SERVER_HOST, host);
-        values.put(DatabaseHelper.SERVER_PORT, port);
-        values.put(DatabaseHelper.SERVER_LOGIN, login);
-        values.put(DatabaseHelper.SERVER_NICK, nick);
-        values.put(DatabaseHelper.SERVER_REALNAME, realname);
+        values.put(DatabaseHelper.SERVER_HOST, data.getServer());
+        values.put(DatabaseHelper.SERVER_PORT, data.getPort());
+        values.put(DatabaseHelper.SERVER_LOGIN, data.getLogin());
+        values.put(DatabaseHelper.SERVER_NICK, data.getNickname());
+        values.put(DatabaseHelper.SERVER_REALNAME, data.getRealname());
+        values.put(DatabaseHelper.SERVER_PASSWORD, data.getPassword());
+        values.put(DatabaseHelper.SERVER_USE_SSL, data.isUsingSsl());
+        values.put(DatabaseHelper.SERVER_USE_SSH, data.isUsingSsh());
+        values.put(DatabaseHelper.SERVER_SSH_HOSTNAME, data.getSshHostname());
+        values.put(DatabaseHelper.SERVER_SSH_USERNAME, data.getSshUsername());
+        values.put(DatabaseHelper.SERVER_SSH_PASSWORD, data.getSshPassword());
         long insertId = database.insert(DatabaseHelper.TABLE_SERVERS, null, values);
         Cursor cursor = database.query(DatabaseHelper.TABLE_SERVERS,
                 allColumns, DatabaseHelper.SERVER_ID + " = " + insertId, null,
@@ -120,12 +128,20 @@ public class ServerDatabaseAdapter {
     }
 
     private IrcServer cursorToServer(Cursor cursor) {
-        IrcServer server = new IrcServer(   cursor.getString(1),
-                                            cursor.getInt(2),
-                                            cursor.getString(3),
-                                            cursor.getString(4),
-                                            cursor.getString(5));
-        return server;
+        ServerConnectionData data = new ServerConnectionData(
+                cursor.getString(1),
+                cursor.getInt(2),
+                cursor.getString(3),
+                cursor.getString(4),
+                cursor.getString(5),
+                cursor.getString(6),
+                cursor.getInt(7) == 1,
+                cursor.getInt(8) == 1,
+                cursor.getString(9),
+                cursor.getString(10),
+                cursor.getString(11)
+        );
+        return new IrcServer(data);
     }
 
     public void drop() {

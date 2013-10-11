@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <EditTextPreference
+        android:key="pref_highlight"
+        android:title="@string/pref_highlight"
+        android:summary="@string/pref_highlight_summ" />
+    <CheckBoxPreference
+        android:key="pref_show_join_leave"
+        android:title="@string/pref_show_join_leave"
+        android:summary="@string/pref_show_join_leave_summ"
+        android:defaultValue="true" />
+    <PreferenceCategory
+        android:key="pref_appearance_settings"
+        android:title="@string/pref_appearance_settings">
+        <ListPreference
+            android:key="pref_message_font_size"
+            android:title="@string/pref_message_font_size"
+            android:summary="@string/pref_message_font_size_summ"
+            android:entries="@array/pref_message_font_size_entries"
+            android:entryValues="@array/pref_message_font_size_values"
+            android:defaultValue="14" />
+    </PreferenceCategory>
+</PreferenceScreen>

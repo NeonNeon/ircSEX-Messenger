@@ -1,16 +1,10 @@
 package se.chalmers.dat255.ircsex.model;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.util.Log;
 
 import java.util.Map;
 
 import se.chalmers.dat255.ircsex.model.database.ContextManager;
-import se.chalmers.dat255.ircsex.model.database.ServerDatabaseAdapter;
 
 /**
  * This class represents an IRC session. It lists and handles servers.
@@ -25,7 +19,7 @@ public class Session {
     private IrcChannel activeChannel;
     private final Map<String, IrcServer> servers;
 
-    private final ServerDatabaseAdapter datasource;
+    private final ServerDAO datasource;
     private final SessionListener listener;
 
     /**
@@ -36,62 +30,53 @@ public class Session {
         ContextManager.SERVER_CONTEXT = context;
         this.listener = listener;
 
-        datasource = new ServerDatabaseAdapter();
+        datasource = new ServerDAO();
         datasource.open();
 
         servers = datasource.getAllIrcServers();
+    }
+
+    private void addListener(SessionListener listener) {
         for (IrcServer server : servers.values()) {
-            server.addSessionListener(listener);
+            if (listener != null) {
+                server.addSessionListener(listener);
+            }
         }
     }
 
+    public void removeListener(SessionListener listener) {
+        for (IrcServer server : servers.values()) {
+            server.removeSessionListener(listener);
+        }
+    }
 
+    public static Session getInstance() {
+        if (instance == null) {
+            throw new IllegalStateException("You're not allowed to call getInstance yet. There is no instance!");
+        }
+        return instance;
+    }
 
     public static Session getInstance(Context context, SessionListener listener) {
         if (instance == null) {
             instance = new Session(context, listener);
         }
+        instance.addListener(listener);
         return instance;
     }
 
     /**
      * Adds a server and connects to it.
      *
-     * @param host - Server address
-     * @param port - Server port
-     * @param nick - Nickname
+     * @param data all data used to connect
+     * @param sessionListener
      */
-    public void addServer(String host, int port, String nick, se.chalmers.dat255.ircsex.model.SessionListener sessionListener) {
-        addServer(host, port, nick, nick, sessionListener);
-    }
-
-    /**
-     * Adds a server and connects to it.
-     *
-     * @param host - Server address
-     * @param port - Server port
-     * @param login - Server login username
-     * @param nick - Nickname
-     */
-    public void addServer(String host, int port, String login, String nick, se.chalmers.dat255.ircsex.model.SessionListener sessionListener) {
-        addServer(host, port, login, nick, "", sessionListener);
-    }
-
-    /**
-     * Adds a server and connects to it.
-     *
-     * @param host - Server address
-     * @param port - Server port
-     * @param login - Server login username
-     * @param nick - Nickname
-     * @param realName - IRL name
-     */
-    public void addServer(String host, int port, String login, String nick, String realName, se.chalmers.dat255.ircsex.model.SessionListener sessionListener) {
-        IrcServer ircServer = new IrcServer(host, port, login, nick, realName);
-        servers.put(host, ircServer);
+    public void addServer(ServerConnectionData data, se.chalmers.dat255.ircsex.model.SessionListener sessionListener) {
+        IrcServer ircServer = new IrcServer(data);
+        servers.put(data.getServer(), ircServer);
         ircServer.addSessionListener(sessionListener);
         NetworkStateHandler.notify(ircServer);
-        datasource.addServer(host, port, login, nick, realName);
+        datasource.addServer(data);
     }
 
     /**
@@ -110,6 +95,9 @@ public class Session {
      * @param channel - Name of channel to join
      */
     public void joinChannel(String host, String channel) {
+        if (channel.charAt(0) != '#') {
+            channel = "#" + channel;
+        }
         servers.get(host).joinChannel(channel);
     }
 
@@ -148,6 +136,9 @@ public class Session {
 
     public void setActiveChannel(String activeChannel) {
         this.activeChannel = activeServer.getConnectedChannel(activeChannel);
+        if (this.activeChannel != null) {
+            this.activeServer.setActiveChannel(this.activeChannel);
+        }
     }
 
     public void changeNick(String newNick) {

@@ -16,5 +16,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/channel_item_message" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/chat_bubble_timestamp"
+            android:layout_below="@+id/channel_item_message"
+            android:textColor="#FFc0c0c0"
+            android:textSize="12sp" />
+
     </RelativeLayout>
 </LinearLayout>

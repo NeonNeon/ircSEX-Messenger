@@ -52,13 +52,7 @@ There are SNAPSHOT artifacts kept from every release. These are located in the `
     $ adb install <.apk name>
 
 
-##License
-THE BEER-WARE LICENSE (Revision π):  
-Five students at a technical university wrote this code.  
-As long as you retain this notice you can do whatever you want
-with it. If we meet some day, and you think this stuff is
-worth it, you are more than welcome to buy us a beer or two.
-
+##Brewers
 Wilhelm Hedman  
 Joel Thorstensson  
 Oskar Nyberg  

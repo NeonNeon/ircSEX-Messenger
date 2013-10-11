@@ -8,9 +8,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * This class is used to easily communicate with the IRC protocol.
@@ -20,29 +18,25 @@ import java.util.List;
 public class IrcProtocolAdapter implements Runnable {
 
     private boolean running = true;
-    private Socket socket;
+    private Taste taste;
     private BufferedReader input;
     private BufferedWriter output;
-
-    private final String host;
-    private final int port;
 
     private IrcProtocolListener listener;
 
     /**
      * Creates a socket connection to the specified server.
      *
-     * @param host - the server to connect to
-     * @param port - the port to use
+     * @param taste - the taste of the IPA
+     * @param listener - the listener to use
      */
-    public IrcProtocolAdapter(String host, int port, IrcProtocolListener listener) {
-        this.host = host;
-        this.port = port;
+    public IrcProtocolAdapter(Taste taste, IrcProtocolListener listener) {
+        this.taste = taste;
         this.listener = listener;
     }
 
     public void run() {
-        createBuffers(host, port);
+        createBuffers();
         String line = "";
         do {
             Log.e("IRC", line);
@@ -57,11 +51,10 @@ public class IrcProtocolAdapter implements Runnable {
         } while(running && line != null);
     }
 
-    private void createBuffers(String host, int port) {
+    private void createBuffers() {
         try {
-            socket = new Socket(host, port);
-            input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            output = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+            output = taste.getOutput();
+            input = taste.getInput();
         } catch (IOException e) {
             e.printStackTrace();
             listener.serverDisconnected();
@@ -94,7 +87,7 @@ public class IrcProtocolAdapter implements Runnable {
             write("PONG " + reply.substring(5));
         }
         else if ((index = reply.indexOf("JOIN ")) != -1) {
-            listener.userJoined(reply.substring(index + 6),
+            listener.userJoined(reply.substring(reply.indexOf('#')),
                     reply.substring(1, reply.indexOf('!')));
         }
         else if ((index = reply.indexOf("PART")) != -1) {
@@ -104,16 +97,16 @@ public class IrcProtocolAdapter implements Runnable {
         else if ((index = reply.indexOf("QUIT")) != -1) {
             String message = reply.substring(index + 6);
             String user = reply.substring(1, reply.indexOf('!'));
-            listener.userQuited(user, message);
+            listener.userQuit(user, message);
         }
         else if ((index = reply.indexOf("NICK ")) != -1) {
             listener.nickChanged(reply.substring(reply.indexOf(':') + 1, reply.indexOf('!')),
                     reply.substring(index + 6));
         }
-        else if (reply.contains(":+wx")) { // TODO: This is hardcoded.
+        else if (reply.contains("MODE")) { // TODO: This is hardcoded.
             listener.serverRegistered();
         }
-        else if (reply.contains(host + " 353")) {
+        else if (reply.contains(" 353")) {
             index = reply.indexOf("=");
             String channel = reply.substring(index + 2, reply.indexOf(" ", index + 2));
 
@@ -145,7 +138,9 @@ public class IrcProtocolAdapter implements Runnable {
             if ((index = reply.indexOf("#")) != -1) {
                 String channel = reply.substring(index, reply.indexOf(":", 1) - 1);
                 String topic = reply.substring(reply.indexOf("] ") + 2);
-                listener.channelListResponse(channel, topic);
+                String users = channel.substring(channel.indexOf(" ") + 1);
+                channel = channel.substring(0, channel.indexOf(" "));
+                listener.channelListResponse(channel, topic, users);
             }
         }
 
@@ -176,9 +171,7 @@ public class IrcProtocolAdapter implements Runnable {
     public void disconnect(String message) {
         write("QUIT :" + message);
         try {
-            input.close();
-            output.close();
-            socket.close();
+            taste.close();
         } catch (IOException e) {
             e.printStackTrace();
         } finally {

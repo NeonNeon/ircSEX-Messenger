@@ -13,6 +13,7 @@
             android:layout_marginRight="4dp"
             android:layout_marginBottom="4dp"
             android:hint="@string/hint_server"
+            android:text="irc.chalmers.it"
             android:inputType="textVisiblePassword"/>
     <EditText
             android:id="@+id/dialog_serverconnect_port"
@@ -23,6 +24,7 @@
             android:layout_marginRight="4dp"
             android:layout_marginBottom="4dp"
             android:hint="@string/hint_port"
+            android:text="6667"
             android:inputType="number"/>
     <EditText
             android:id="@+id/dialog_serverconnect_nickname"
@@ -34,4 +36,43 @@
             android:layout_marginBottom="16dp"
             android:hint="@string/hint_nickname"
             android:inputType="textVisiblePassword" />
+
+    <CheckBox
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Connect through ssh tunnel"
+        android:id="@+id/dialog_ssh_checkBox"
+        android:onClick="SshCheckBoxClicked" />
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:visibility="gone"
+        android:id="@+id/sshconnect_layout"
+        android:focusable="false"
+        android:focusableInTouchMode="false">
+
+        <EditText
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/dialog_sshconnect_hostname"
+            android:hint="Hostname"
+            android:inputType="textVisiblePassword" />
+
+        <EditText
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/dialog_sshconnect_username"
+            android:hint="Username"
+            android:inputType="textVisiblePassword" />
+
+        <EditText
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            android:ems="10"
+            android:id="@+id/dialog_sshconnect_password"
+            android:hint="Password" />
+    </LinearLayout>
 </LinearLayout>

@@ -1,4 +1,4 @@
-package se.chalmers.dat255.ircsex.ui;
+package se.chalmers.dat255.ircsex.model;
 
 import android.graphics.Rect;
 
@@ -9,27 +9,32 @@ import android.graphics.Rect;
 public interface ChannelItem {
 
     /**
-     * @return - the message to be displayed on the item
+     * @return The message to be displayed on the item
      */
     public String getMessage();
 
     /**
-     * @return - the alignment of the item
+     * @return The IrcMessage associated with the ChannelItem
+     */
+    public IrcMessage getIrcMessage();
+
+    /**
+     * @return The alignment of the item
      */
     public int getGravity();
 
     /**
-     * @return - the padding in form of a rectangle, as the NinePatchDrawable class requires
+     * @return The padding in form of a rectangle, as the NinePatchDrawable class requires
      */
     public abstract Rect getPadding();
 
     /**
-     * @return - the background overlay color
+     * @return The background overlay color
      */
     public abstract int getColor();
 
     /**
-     * @return - ID of the drawable 9patch resource
+     * @return ID of the drawable 9patch resource
      */
     public abstract int getNinePatchID();
 
