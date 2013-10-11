@@ -175,8 +175,8 @@ public class IrcProtocolAdapter implements Runnable {
      * @param password - the password to use
      */
     public void connect(String nick, String login, String realName, String password){
-        setPassword(password);
         connect(nick, login, realName);
+        setPassword(password);
     }
 
     /**
