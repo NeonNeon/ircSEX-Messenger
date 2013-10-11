@@ -26,7 +26,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String CHANNEL_NAME = "name";
 
     private static final String DATABASE_NAME = "ircSEX.database";
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 6;
 
     // Database creation sql statement
     private static final String TABLE_SERVERS_CREATE = "create table " + TABLE_SERVERS + "("
@@ -35,7 +35,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + SERVER_PORT + " integer, "
             + SERVER_LOGIN + " text, "
             + SERVER_NICK + " text, "
-            + SERVER_REALNAME + " text"
+            + SERVER_REALNAME + " text, "
             + SERVER_PASSWORD + " text);";
     private static final String TABLE_CHANNELS_CREATE = "create table " + TABLE_CHANNELS + "("
             + CHANNEL_ID + " integer primary key autoincrement, "
