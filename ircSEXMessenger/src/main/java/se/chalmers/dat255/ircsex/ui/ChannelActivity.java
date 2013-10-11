@@ -347,7 +347,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
                         data.getStringExtra(NoServersActivity.EXTRA_SERVER),
                         Integer.parseInt(data.getStringExtra(NoServersActivity.EXTRA_PORT)),
                         data.getStringExtra(NoServersActivity.EXTRA_NICKNAME),
-                        "banned",
+                        "ircsex",
                         "Realname",
                         "password",
                         false,
