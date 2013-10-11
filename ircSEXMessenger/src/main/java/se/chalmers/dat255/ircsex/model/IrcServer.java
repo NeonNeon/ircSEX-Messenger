@@ -1,13 +1,8 @@
 package se.chalmers.dat255.ircsex.model;
 
-import android.util.Log;
-
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -277,6 +272,10 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
     public void addHighlight(String str) {
         highlightsWords.add(str);
         highlightDatasource.addHighlight(str);
+    }
+
+    public List<String> getHighlightWords() {
+        return highlightsWords;
     }
 
     /**

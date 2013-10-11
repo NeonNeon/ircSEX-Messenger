@@ -15,9 +15,10 @@
         android:title="@string/pref_appearance_settings">
         <ListPreference
             android:key="pref_message_font_size"
-            android:title="Message font size"
-            android:entries="@array/pref_appearance_entries"
-            android:entryValues="@array/pref_appearance_values"
+            android:title="@string/pref_message_font_size"
+            android:summary="@string/pref_message_font_size_summ"
+            android:entries="@array/pref_message_font_size_entries"
+            android:entryValues="@array/pref_message_font_size_values"
             android:defaultValue="14" />
     </PreferenceCategory>
 </PreferenceScreen>

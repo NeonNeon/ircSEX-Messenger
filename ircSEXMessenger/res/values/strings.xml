@@ -42,13 +42,15 @@
     <string name="pref_highlight">Highlight</string>
     <string name="pref_highlight_summ"><![CDATA[Enter words to highlight, separated by <something>]]></string>
     <string name="pref_appearance_settings">Appearance</string>
-    <string-array name="pref_appearance_entries">
+    <string name="pref_message_font_size">Message font size</string>
+    <string name="pref_message_font_size_summ">Normal</string>
+    <string-array name="pref_message_font_size_entries">
         <item>Small</item>
         <item>Normal</item>
         <item>Big</item>
         <item>HUGE-ASS</item>
     </string-array>
-    <string-array name="pref_appearance_values">
+    <string-array name="pref_message_font_size_values">
         <item>12</item>
         <item>14</item>
         <item>16</item>
