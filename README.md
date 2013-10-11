@@ -21,6 +21,8 @@ need for change - and we’re here to do it!
 ##Dependencies
 - Android SDK - API 16
 - Android SDK - support-v4
+
+For unit tests:
 - Groovy - 1.8.6
 - Spock Framework - 0.6-groovy-1.8
 
@@ -29,13 +31,25 @@ All dependencies are declared in full in the `pom.xml`. They will be downloaded 
 ##Get it now!
 The project uses Maven.
 
-To generate the project `.apk`, simply run the Maven phases `clean` and `install`. 
+To build the project, run the Maven goal `install` with
+    
+    $ mvn install
 
-    mvn clean install
+To only run the unit tests, run the Maven goal `test` with
+    
+    $ mvn test
 
-To only run the unit tests, execute the Maven phase `test`.
+To deploy the application to a connected Android device, execute the task
+    
+    $ mvn android:deploy
 
-    mvn test
+To uninstall the application from a connected Android device, execute the task
+    
+    $ mvn android:undeploy
+
+There are SNAPSHOT artifacts kept from every release. These are located in the `ircSEX-Messenger/apk` directory. To install an old SNAPSHOT, run
+    
+    $ adb install <.apk name>
 
 
 ##Brewers
