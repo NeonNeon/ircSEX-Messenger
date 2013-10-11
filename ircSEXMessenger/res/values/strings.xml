@@ -36,4 +36,6 @@
     <string name="dialog_query_user_title">Send message to</string>
     <string name="dialog_query_user_hint">Recipient</string>
     <string name="search_messages">Search messages</string>
+    <string name="hint_username">Username</string>
+    <string name="hint_password">Password</string>
 </resources>
