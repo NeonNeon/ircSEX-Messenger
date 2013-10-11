@@ -570,9 +570,9 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
         user = IrcUser.extractUserName(user);
 
         IrcChannel ircChannel = connectedChannels.get(channel);
-        ChatIrcMessage ircMessage = connectedChannels.get(channel).newChatMessage(user, message);
-
+        ChatIrcMessage ircMessage;
         if (!ircChannel.getChannelName().equals(activeChannel) && checkHighlight(ircChannel, message)) {
+            ircMessage = connectedChannels.get(channel).newChatMessage(user, message, true);
             if (getHighlightChannels().contains(ircChannel.getChannelName())) {
                 readHighlight(ircChannel.getChannelName());
             }
@@ -581,10 +581,13 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
                 readLastMessage(ircChannel.getChannelName());
             }
         } else if (!ircChannel.getChannelName().equals(activeChannel.getChannelName())) {
+            ircMessage = connectedChannels.get(channel).newChatMessage(user, message);
             if (getLastMessageChannels().contains((ircChannel.getChannelName()))) {
                 readLastMessage(ircChannel.getChannelName());
             }
             lastMessages.add(0, new IrcHighlight(ircChannel, ircMessage));
+        } else {
+            ircMessage = connectedChannels.get(channel).newChatMessage(user, message);
         }
 
         for (SessionListener listener : sessionListeners) {

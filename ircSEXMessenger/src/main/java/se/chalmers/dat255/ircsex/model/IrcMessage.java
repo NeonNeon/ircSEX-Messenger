@@ -40,5 +40,13 @@ public abstract class IrcMessage {
         return message;
     }
 
+    /**
+     * Returns whether the message i a highlight.
+     * @return
+     */
+    public boolean isHighlight() {
+        return highlight;
+    }
+
     public abstract Class<? extends ChannelItem> getChannelItem();
 }

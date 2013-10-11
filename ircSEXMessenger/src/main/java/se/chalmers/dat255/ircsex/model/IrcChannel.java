@@ -140,6 +140,10 @@ public class IrcChannel {
      * @return The ChatIrcMessage created from the message string and user string
      */
     public ChatIrcMessage newChatMessage(String user, String message) {
+        return newChatMessage(user, message, false);
+    }
+
+    public ChatIrcMessage newChatMessage(String user, String message, boolean highlight) {
         synchronized (messages) {
             user = IrcUser.extractUserName(user);
             ChatIrcMessage ircMessage = new ChatIrcMessage(users.get(user), message);
