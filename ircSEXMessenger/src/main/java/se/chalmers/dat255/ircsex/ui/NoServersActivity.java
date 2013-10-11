@@ -21,6 +21,8 @@ public class NoServersActivity extends FragmentActivity implements ServerConnect
     public static final String EXTRA_SERVER = "server";
     public static final String EXTRA_PORT = "port";
     public static final String EXTRA_NICKNAME = "nickname";
+    public static final String EXTRA_USERNAME = "username";
+    public static final String EXTRA_PASSWORD = "password";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,10 +41,14 @@ public class NoServersActivity extends FragmentActivity implements ServerConnect
         String server = ((TextView)dialog.findViewById(R.id.dialog_serverconnect_server)).getText().toString();
         String port = ((TextView)dialog.findViewById(R.id.dialog_serverconnect_port)).getText().toString();
         String nickname = ((TextView)dialog.findViewById(R.id.dialog_serverconnect_nickname)).getText().toString();
+        String username = ((TextView)dialog.findViewById(R.id.dialog_serverconnect_username)).getText().toString();
+        String password = ((TextView)dialog.findViewById(R.id.dialog_serverconnect_password)).getText().toString();
         Intent data = new Intent();
         data.putExtra(EXTRA_SERVER, server);
         data.putExtra(EXTRA_PORT, port);
         data.putExtra(EXTRA_NICKNAME, nickname);
+        data.putExtra(EXTRA_USERNAME, username);
+        data.putExtra(EXTRA_PASSWORD, password);
         setResult(RESULT_RETURN_DATA, data);
         finish();
     }

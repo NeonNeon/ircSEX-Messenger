@@ -343,8 +343,16 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
                 String server = data.getStringExtra(NoServersActivity.EXTRA_SERVER);
                 String port = data.getStringExtra(NoServersActivity.EXTRA_PORT);
                 String nickname = data.getStringExtra(NoServersActivity.EXTRA_NICKNAME);
+                String username = data.getStringExtra(NoServersActivity.EXTRA_USERNAME);
+                String password = data.getStringExtra(NoServersActivity.EXTRA_PASSWORD);
+
                 // Maybe validate here, or maybe somewhere else? Should we even validate?
-                startServer(server, Integer.parseInt(port), nickname);
+                 if(password.equals("")){
+                     startServer(server, Integer.parseInt(port), nickname);
+                 } else {
+                     startServer(server, Integer.parseInt(port), nickname, username, password);
+                 }
+
                 break;
             case SearchActivity.RESULT_RETURN_CHANNEL:
                 String channel = data.getStringExtra(SearchActivity.EXTRA_CHANNEL);
@@ -361,6 +369,11 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
                 }
                 break;
         }
+    }
+
+    private void startServer(String server, int port, String nickname, String username, String password) {
+        session.addPasswordServer(server, port, nickname, username, password, this);
+        showConnectionDialog(getString(R.string.dialog_connect_connecting) + " " + server);
     }
 
     private void startServer(String server, int port, String nickname) {
