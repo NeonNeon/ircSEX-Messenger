@@ -74,6 +74,7 @@ public class MessageArrayAdapter extends ArrayAdapter<ChannelItem> {
         }
         wrapper = (RelativeLayout) rowView.findViewById(R.id.channel_item_wrapper);
         TextView messageView = (TextView) rowView.findViewById(R.id.channel_item_message);
+        messageView.setTextSize(Float.parseFloat(sharedPreferences.getString(SettingsActivity.PREF_MESSAGE_FONT_SIZE, "14")));
         android.view.animation.Animation animation;
         if (channelItem instanceof ReceivedChatBubble) {
             TextView nickView = (TextView) rowView.findViewById(R.id.chat_bubble_nick);
