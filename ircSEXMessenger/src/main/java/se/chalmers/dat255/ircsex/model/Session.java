@@ -50,6 +50,13 @@ public class Session {
         }
     }
 
+    public static Session getInstance() {
+        if (instance == null) {
+            throw new IllegalStateException("You're not allowed to call getInstance yet. There is no instance!");
+        }
+        return instance;
+    }
+
     public static Session getInstance(Context context, SessionListener listener) {
         if (instance == null) {
             instance = new Session(context, listener);
