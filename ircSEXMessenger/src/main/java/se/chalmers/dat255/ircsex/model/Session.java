@@ -82,7 +82,7 @@ public class Session {
     }
 
     /**
-     * Adds a server and connects to it.
+     * Adds a server with a and connects to it.
      *
      * @param host - Server address
      * @param port - Server port
@@ -91,12 +91,41 @@ public class Session {
      * @param realName - IRL name
      */
     public void addServer(String host, int port, String login, String nick, String realName, se.chalmers.dat255.ircsex.model.SessionListener sessionListener) {
-        IrcServer ircServer = new IrcServer(host, port, login, nick, realName);
+        addServer(host, port, login, nick, realName, "", sessionListener);
+    }
+
+    /**
+     * Adds a server with a password and connects to it.
+     *
+     * @param host - Server address
+     * @param port - Server port
+     * @param login - Server login username
+     * @param nick - Nickname
+     * @param realName - IRL name
+     * @param password - The server password
+     */
+    public void addServer(String host, int port, String login, String nick, String realName, String password, se.chalmers.dat255.ircsex.model.SessionListener sessionListener) {
+        IrcServer ircServer = new IrcServer(host, port, login, nick, realName, password);
         servers.put(host, ircServer);
         ircServer.addSessionListener(sessionListener);
         NetworkStateHandler.notify(ircServer);
-        datasource.addServer(host, port, login, nick, realName);
+        datasource.addServer(host, port, login, nick, realName, password);
     }
+
+    /**
+     * Adds a server with a password and connects to it.
+     *
+     * @param host - Server address
+     * @param port - Server port
+     * @param login - Server login username
+     * @param nick - Nickname
+     * @param password - The server password
+     */
+    public void addPasswordServer(String host, int port, String login, String nick, String password, se.chalmers.dat255.ircsex.model.SessionListener sessionListener) {
+        addServer(host, port, login, nick, "", password, sessionListener);
+    }
+
+
 
     /**
      * Disconnects and removes a server.
