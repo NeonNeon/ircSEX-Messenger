@@ -25,7 +25,8 @@ public class ServerDAO {
             DatabaseHelper.SERVER_PORT,
             DatabaseHelper.SERVER_LOGIN,
             DatabaseHelper.SERVER_NICK,
-            DatabaseHelper.SERVER_REALNAME};
+            DatabaseHelper.SERVER_REALNAME,
+            DatabaseHelper.SERVER_PASSWORD};
 
     /**
      * Creates an object of ServerDAO.
@@ -59,13 +60,14 @@ public class ServerDAO {
      * @param nick - Nickname
      * @param realname - IRL Name
      */
-    public void addServer(String host, int port, String login, String nick, String realname) {
+    public void addServer(String host, int port, String login, String nick, String realname, String password) {
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.SERVER_HOST, host);
         values.put(DatabaseHelper.SERVER_PORT, port);
         values.put(DatabaseHelper.SERVER_LOGIN, login);
         values.put(DatabaseHelper.SERVER_NICK, nick);
         values.put(DatabaseHelper.SERVER_REALNAME, realname);
+        values.put(DatabaseHelper.SERVER_PASSWORD, password);
         long insertId = database.insert(DatabaseHelper.TABLE_SERVERS, null, values);
         Cursor cursor = database.query(DatabaseHelper.TABLE_SERVERS,
                 allColumns, DatabaseHelper.SERVER_ID + " = " + insertId, null,
