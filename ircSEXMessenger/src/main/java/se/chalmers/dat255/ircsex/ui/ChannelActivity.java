@@ -123,20 +123,11 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
             }
         };
         drawerLayout.setDrawerListener(mDrawerToggle);
-        if (session == null) {
-            session = Session.getInstance(this, this);
-            if (session.containsServers()) {
-                showConnectionDialog(getString(R.string.dialog_connect_reconnect));
-            } else {
-                startNoServersActivity();
-            }
-        }
-        else {
-            fragment = (ChatFragment) getFragmentManager().findFragmentByTag(CHAT_FRAGMENT_TAG);
-            fragment.bringUpToSpeed(this, session.getActiveChannel());
-            setTitle(channelName);
-            updateUserList(session.getActiveChannel().getUsers());
-            Log.e("IRCDEBUG", "Post select: " +  fragment.toString());
+        session = Session.getInstance(this, this);
+        if (session.containsServers()) {
+            showConnectionDialog(getString(R.string.dialog_connect_reconnect));
+        } else {
+            startNoServersActivity();
         }
     }
 
