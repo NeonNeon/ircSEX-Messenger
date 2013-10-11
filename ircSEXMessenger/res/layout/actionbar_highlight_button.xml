@@ -6,14 +6,13 @@
                 android:layout_gravity="right"
                 android:padding="10dp"
                 android:clickable="true"
-                android:onClick="showHighlight"
-                android:background="@drawable/user_click">
+                android:onClick="showHighlight">
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                   android:layout_height="fill_parent"
                   android:layout_width="30dp"
                   android:gravity="center"
-                  android:background="@drawable/highlightbadge_background">
+                  android:background="@drawable/highlightbadge_background_disabled">
 
         <TextView android:id="@+id/actionbar_notifcation_textview"
                 android:layout_width="wrap_content"
