@@ -33,7 +33,8 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
             List<String> databaseHighlights = ircServer.getHighlightWords();
             String[] highlightArray = sharedPreferences.getString(SettingsActivity.PREF_HIGHLIGHT, "").split(";");
             List<String> highlights = Arrays.asList(highlightArray);
-            for (String highlight : highlightArray) {
+            for (String highlight : highlights) {
+                highlight = highlight.trim();
                 if (!databaseHighlights.contains(highlight)) {
                     Log.e("IRCDEBUG", "ADDED HIGHLIGHT" + highlight);
                     ircServer.addHighlight(highlight);
