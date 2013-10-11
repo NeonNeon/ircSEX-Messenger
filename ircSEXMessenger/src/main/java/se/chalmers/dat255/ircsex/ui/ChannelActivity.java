@@ -226,13 +226,18 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
 
     public void showHighlight(View view) {
         List<IrcHighlight> highlights = session.getActiveServer().getHighlights();
-        IrcHighlight highlight = highlights.size() > 0 ? highlights.get(0) : session.getActiveServer().getLastMessage();
-        if (highlight != null) {
+        List<IrcHighlight> lastMessages = session.getActiveServer().getLastMessages();
+        if (highlights.size() > 0 || lastMessages.size() > 0) {
+            IrcHighlight highlight = highlights.size() > 0 ? highlights.get(0) : lastMessages.get(0);
             int index = ircChannelSelector.indexOf(highlight.getChannel().getChannelName());
             if (index != -1) {
                 selectItem(index);
             }
-            session.getActiveServer().readHighlight(highlight);
+            if (highlights.size() > 0) {
+                session.getActiveServer().readHighlight(highlight);
+            } else {
+                session.getActiveServer().readLastMessage(highlight);
+            }
         }
         updateHighlightBadge();
     }
@@ -534,13 +539,28 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
                 @Override
                 public void run() {
                     int highlights = session.getActiveServer().getHighlights().size();
-                    highlightButton.getChildAt(0).setBackgroundResource(
-                            highlights == 0 ? R.drawable.highlightbadge_background : R.drawable.highlightbadge_background_highlight);
-                    ((TextView) ((LinearLayout) highlightButton.getChildAt(0)).getChildAt(0))
-                            .setText(Integer.toString(highlights));
+                    int lastMessages = session.getActiveServer().getLastMessages().size();
+                    if (highlights > 0) {
+                        highlightButton.getChildAt(0).setBackgroundResource(R.drawable.highlightbadge_background_highlight);
+                        highlightButton.setBackground(getResources().getDrawable(R.drawable.user_click));
+                        setHighlightButtonText(Integer.toString(highlights));
+                    } else if (lastMessages > 0) {
+                        highlightButton.getChildAt(0).setBackgroundResource(R.drawable.highlightbadge_background);
+                        highlightButton.setBackground(getResources().getDrawable(R.drawable.user_click));
+                        setHighlightButtonText(Integer.toString(lastMessages));
+                    } else {
+                        highlightButton.getChildAt(0).setBackgroundResource(R.drawable.highlightbadge_background_disabled);
+                        highlightButton.setBackground(null);
+                        setHighlightButtonText(Integer.toString(0));
+                    }
                 }
             });
         }
+    }
+
+    private void setHighlightButtonText(String text) {
+        ((TextView) ((LinearLayout) highlightButton.getChildAt(0)).getChildAt(0))
+                .setText(text);
     }
 
     @Override
