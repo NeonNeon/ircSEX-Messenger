@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.preference.PreferenceFragment;
 import android.util.Log;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -33,18 +34,22 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
             List<String> databaseHighlights = ircServer.getHighlightWords();
             String[] highlightArray = sharedPreferences.getString(SettingsActivity.PREF_HIGHLIGHT, "").split(";");
             List<String> highlights = Arrays.asList(highlightArray);
-            for (String highlight : highlights) {
+            for (String highlight : highlightArray) {
                 highlight = highlight.trim();
                 if (!databaseHighlights.contains(highlight)) {
                     Log.e("IRCDEBUG", "ADDED HIGHLIGHT" + highlight);
                     ircServer.addHighlight(highlight);
                 }
             }
+            List<String> highlightsToBeRemoved = new ArrayList<String>();
             for (String highlight : databaseHighlights) {
                 if (!highlights.contains(highlight) && !highlight.equals(ircServer.getUser().getNick())) {
                     Log.e("IRCDEBUG", "REMOVED HIGHLIGHT" + highlight);
-                    ircServer.removeHighlight(highlight);
+                    highlightsToBeRemoved.add(highlight);
                 }
+            }
+            for (String highlightToBeRemoved : highlightsToBeRemoved) {
+                ircServer.removeHighlight(highlightToBeRemoved);
             }
         }
     }
