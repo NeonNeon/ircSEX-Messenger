@@ -28,6 +28,7 @@ import se.chalmers.dat255.ircsex.model.InfoMessage;
 import se.chalmers.dat255.ircsex.model.ReceivedChatBubble;
 import se.chalmers.dat255.ircsex.model.SentChatBubble;
 import se.chalmers.dat255.ircsex.ui.SettingsActivity;
+import se.chalmers.dat255.ircsex.ui.UnreadLine;
 
 /**
  * @author Johan Magnusson
