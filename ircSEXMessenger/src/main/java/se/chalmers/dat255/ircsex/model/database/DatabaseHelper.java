@@ -18,6 +18,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String SERVER_LOGIN = "login";
     public static final String SERVER_NICK = "nick";
     public static final String SERVER_REALNAME = "realname";
+    public static final String SERVER_PASSWORD = "password";
 
     public static final String TABLE_CHANNELS = "channels";
     public static final String CHANNEL_ID = "id";
@@ -34,7 +35,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + SERVER_PORT + " integer, "
             + SERVER_LOGIN + " text, "
             + SERVER_NICK + " text, "
-            + SERVER_REALNAME + " text);";
+            + SERVER_REALNAME + " text"
+            + SERVER_PASSWORD + " text);";
     private static final String TABLE_CHANNELS_CREATE = "create table " + TABLE_CHANNELS + "("
             + CHANNEL_ID + " integer primary key autoincrement, "
             + CHANNEL_SERVER + " text, "
