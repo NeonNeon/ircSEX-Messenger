@@ -10,8 +10,6 @@ import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.Arrays;
 
-import javax.crypto.AEADBadTagException;
-
 /**
  * This class is used to easily communicate with the IRC protocol.
  *
