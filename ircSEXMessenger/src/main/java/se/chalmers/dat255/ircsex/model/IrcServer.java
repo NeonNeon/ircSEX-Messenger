@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import se.chalmers.dat255.ircsex.irc.Brewery;
 import se.chalmers.dat255.ircsex.irc.IrcProtocolAdapter;
 import se.chalmers.dat255.ircsex.irc.IrcProtocolListener;
 import se.chalmers.dat255.ircsex.irc.NormalTaste;
@@ -107,7 +108,8 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
      */
     public void startProtocolAdapter() {
         // TODO - should use Brewery
-        protocol = new IrcProtocolAdapter(new NormalTaste(host, port), this);
+//        protocol = new IrcProtocolAdapter(new NormalTaste(host, port), this);
+        protocol = Brewery.getSSHIPA("levelinver.se", "ircsex", "l", 4444, this);
         new Thread(protocol).start();
     }
 
@@ -454,6 +456,10 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
             IrcUser user = new IrcUser(nick, status);
             if (user.equals(this.user)) {
                 user.setSelf();
+            }
+            Log.e("IRCB", channelName);
+            for (String s : connectedChannels.keySet()) {
+                System.out.println(s);
             }
             connectedChannels.get(channelName).userJoined(user);
         }

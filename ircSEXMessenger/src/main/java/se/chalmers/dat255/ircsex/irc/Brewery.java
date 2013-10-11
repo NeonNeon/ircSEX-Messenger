@@ -11,6 +11,12 @@ public class Brewery {
         return getIPAWithTaste(new NormalTaste(host, port), listener);
     }
 
+    public static IrcProtocolAdapter getSSHIPA(String address, String user,
+                                               String pass, int ircPort,
+                                               IrcProtocolListener listener) {
+        return getIPAWithTaste(new SSHTaste(address, user, pass, ircPort), listener);
+    }
+
     private static IrcProtocolAdapter getIPAWithTaste(Taste taste,
                                                       IrcProtocolListener listener) {
         return new IrcProtocolAdapter(taste, listener);

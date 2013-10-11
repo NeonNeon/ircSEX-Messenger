@@ -42,7 +42,7 @@ public class SampleSSH implements HostKeyVerifier {
                     = new LocalPortForwarder.Parameters("0.0.0.0", 1337, "localhost", 4444);
             final ServerSocket ss = new ServerSocket();
             ss.setReuseAddress(true);
-            ss.bind(new InetSocketAddress(params.getLocalHost(), params.getLocalPort()));
+            ss.bind(new InetSocketAddress(params.getLocalPort()));
             try {
                 ssh.newLocalPortForwarder(params, ss).listen();
             } finally {

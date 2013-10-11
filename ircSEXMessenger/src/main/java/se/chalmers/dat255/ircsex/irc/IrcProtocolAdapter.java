@@ -87,7 +87,7 @@ public class IrcProtocolAdapter implements Runnable {
             write("PONG " + reply.substring(5));
         }
         else if ((index = reply.indexOf("JOIN ")) != -1) {
-            listener.userJoined(reply.substring(index + 6),
+            listener.userJoined(reply.substring(reply.indexOf('#')),
                     reply.substring(1, reply.indexOf('!')));
         }
         else if ((index = reply.indexOf("PART")) != -1) {
@@ -103,7 +103,7 @@ public class IrcProtocolAdapter implements Runnable {
             listener.nickChanged(reply.substring(reply.indexOf(':') + 1, reply.indexOf('!')),
                     reply.substring(index + 6));
         }
-        else if (reply.contains(":+wx")) { // TODO: This is hardcoded.
+        else if (reply.contains("MODE")) { // TODO: This is hardcoded.
             listener.serverRegistered();
         }
         else if (reply.contains(" 353")) {

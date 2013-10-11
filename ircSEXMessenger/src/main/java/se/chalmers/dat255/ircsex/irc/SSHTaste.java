@@ -44,7 +44,7 @@ public class SSHTaste implements Taste, HostKeyVerifier {
         this.address = address;
         this.user = user;
         this.pass = pass;
-        this.ircPort = this.ircPort;
+        this.ircPort = ircPort;
         socketCreated = false;
     }
 
@@ -75,6 +75,7 @@ public class SSHTaste implements Taste, HostKeyVerifier {
     }
 
     private void createSocket() throws IOException {
+        createSSHTunnel();
         socket = new Socket(LOCALHOST, 1337);
     }
 
@@ -89,7 +90,18 @@ public class SSHTaste implements Taste, HostKeyVerifier {
 
         serverSocket = new ServerSocket();
         serverSocket.setReuseAddress(true);
-        serverSocket.bind(new InetSocketAddress(params.getLocalHost(), params.getLocalPort()));
+        serverSocket.bind(new InetSocketAddress(params.getLocalPort()));
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    ssh.newLocalPortForwarder(params, serverSocket).listen();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
     @Override
