@@ -282,7 +282,10 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
                 reconnecting = false;
                 startProtocolAdapter();
             } else {
-                protocol.connect(user.getNick(), login, realName);
+                if(password.equals(""))
+                    protocol.connect(user.getNick(), login, realName);
+                else
+                    protocol.connect(user.getNick(), login, realName, password);
                 for (SessionListener listener : sessionListeners) {
                     listener.onConnectionEstablished(host);
                 }
