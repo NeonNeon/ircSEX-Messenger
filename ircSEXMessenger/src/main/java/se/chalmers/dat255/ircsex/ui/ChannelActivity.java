@@ -78,7 +78,6 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     private Session session;
     private View whois;
     private int selected = -1;
-    private ChannelListOnClickListener channelDrawerOnClickListener;
     private LinearLayout highlightButton;
 
     @Override
