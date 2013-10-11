@@ -42,6 +42,7 @@ import se.chalmers.dat255.ircsex.model.IrcHighlight;
 import se.chalmers.dat255.ircsex.model.IrcMessage;
 import se.chalmers.dat255.ircsex.model.IrcUser;
 import se.chalmers.dat255.ircsex.model.NetworkStateHandler;
+import se.chalmers.dat255.ircsex.model.ServerConnectionData;
 import se.chalmers.dat255.ircsex.model.Session;
 import se.chalmers.dat255.ircsex.model.SessionListener;
 import se.chalmers.dat255.ircsex.ui.dialog.JoinChannelDialogFragment;
@@ -342,8 +343,21 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
                 String server = data.getStringExtra(NoServersActivity.EXTRA_SERVER);
                 String port = data.getStringExtra(NoServersActivity.EXTRA_PORT);
                 String nickname = data.getStringExtra(NoServersActivity.EXTRA_NICKNAME);
+                ServerConnectionData ConnectionData = new ServerConnectionData(
+                        data.getStringExtra(NoServersActivity.EXTRA_SERVER),
+                        Integer.parseInt(data.getStringExtra(NoServersActivity.EXTRA_PORT)),
+                        data.getStringExtra(NoServersActivity.EXTRA_NICKNAME),
+                        "banned",
+                        "Realname",
+                        "password",
+                        false,
+                        data.getBooleanExtra(NoServersActivity.EXTRA_USE_SSH, false),
+                        data.getStringExtra(NoServersActivity.EXTRA_SSH_HOSTNAME),
+                        data.getStringExtra(NoServersActivity.EXTRA_SSH_USERNAME),
+                        data.getStringExtra(NoServersActivity.EXTRA_SSH_PASSWORD)
+                );
                 // Maybe validate here, or maybe somewhere else? Should we even validate?
-                startServer(server, Integer.parseInt(port), nickname);
+                startServer(ConnectionData);
                 break;
             case SearchActivity.RESULT_RETURN_CHANNEL:
                 String channel = data.getStringExtra(SearchActivity.EXTRA_CHANNEL);
@@ -362,9 +376,9 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         }
     }
 
-    private void startServer(String server, int port, String nickname) {
-        session.addServer(server, port, nickname, this);
-        showConnectionDialog(getString(R.string.dialog_connect_connecting) + " " + server);
+    private void startServer(ServerConnectionData data) {
+        session.addServer(data, this);
+        showConnectionDialog(getString(R.string.dialog_connect_connecting) + " " + data.getServer());
     }
 
     @Override

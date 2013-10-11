@@ -9,6 +9,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.lang.reflect.InvocationTargetException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -20,11 +21,14 @@ import java.security.PublicKey;
 public class SSHTaste implements Taste, HostKeyVerifier {
 
     private static final String LOCALHOST = "localhost";
-    private String address;
-    private String user;
-    private String pass;
+    private static final int LOCALPORT = 1337;
+    private String sshAddress;
+    private String sshUser;
+    private String sshPass;
+    private String ircHost;
     private int ircPort;
-    private boolean socketCreated;
+    private Taste socketTaste;
+    private boolean tunnelCreated;
 
     private SSHClient ssh;
     private ServerSocket serverSocket;
@@ -35,58 +39,72 @@ public class SSHTaste implements Taste, HostKeyVerifier {
     /**
      * Create a taste that uses ssh.
      *
-     * @param address - the address to the ssh server
-     * @param user - the ssh user
-     * @param pass - the password for the ssh user
+     * @param sshAddress - the address to the ssh server
+     * @param sshUser - the ssh user
+     * @param sshPass - the password for the ssh user
      * @param ircPort - the ircPort to use for the irc server
      */
-    public SSHTaste(String address, String user, String pass, int ircPort) {
-        this.address = address;
-        this.user = user;
-        this.pass = pass;
+    public SSHTaste(String sshAddress, String sshUser, String sshPass,
+                    String ircHost, int ircPort,
+                    Class<? extends Taste> socketTaste) {
+        this.sshAddress = sshAddress;
+        this.sshUser = sshUser;
+        this.sshPass = sshPass;
+        this.ircHost = ircHost;
         this.ircPort = ircPort;
-        socketCreated = false;
+        try {
+            this.socketTaste = socketTaste.getConstructor(String.class, int.class)
+                    .newInstance(LOCALHOST, LOCALPORT);
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+        tunnelCreated = false;
     }
 
     @Override
     public BufferedReader getInput() throws IOException {
-        checkSocket();
-        return input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        checkTunnel();
+        return socketTaste.getInput();
     }
 
     @Override
     public BufferedWriter getOutput() throws IOException {
-        checkSocket();
-        return output = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+        checkTunnel();
+        return socketTaste.getOutput();
     }
 
     @Override
     public void close() throws IOException {
-        input.close();
-        output.close();
-        socket.close();
+        socketTaste.close();
+        ssh.close();
     }
 
-    private void checkSocket() throws IOException {
-        if (!socketCreated) {
+    private void checkTunnel() throws IOException {
+        if (!tunnelCreated) {
             createSocket();
-            socketCreated = true;
+            tunnelCreated = true;
         }
     }
 
     private void createSocket() throws IOException {
-        createSSHTunnel();
-        socket = new Socket(LOCALHOST, 1337);
+        createTunnel();
+        socket = new Socket(LOCALHOST, LOCALPORT);
     }
 
-    private void createSSHTunnel() throws IOException {
+    private void createTunnel() throws IOException {
         ssh = new SSHClient();
         ssh.addHostKeyVerifier(this);
-        ssh.connect(address);
-        ssh.authPassword(user, pass);
+        ssh.connect(sshAddress);
+        ssh.authPassword(sshUser, sshPass);
 
         final LocalPortForwarder.Parameters params
-                = new LocalPortForwarder.Parameters("0.0.0.0", 1337, "localhost", ircPort);
+                = new LocalPortForwarder.Parameters(LOCALHOST, LOCALPORT, ircHost, ircPort);
 
         serverSocket = new ServerSocket();
         serverSocket.setReuseAddress(true);

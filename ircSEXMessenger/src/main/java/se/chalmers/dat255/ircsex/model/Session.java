@@ -68,41 +68,15 @@ public class Session {
     /**
      * Adds a server and connects to it.
      *
-     * @param host - Server address
-     * @param port - Server port
-     * @param nick - Nickname
+     * @param data all data used to connect
+     * @param sessionListener
      */
-    public void addServer(String host, int port, String nick, se.chalmers.dat255.ircsex.model.SessionListener sessionListener) {
-        addServer(host, port, "banned", nick, sessionListener);
-    }
-
-    /**
-     * Adds a server and connects to it.
-     *
-     * @param host - Server address
-     * @param port - Server port
-     * @param login - Server login username
-     * @param nick - Nickname
-     */
-    public void addServer(String host, int port, String login, String nick, se.chalmers.dat255.ircsex.model.SessionListener sessionListener) {
-        addServer(host, port, login, nick, "", sessionListener);
-    }
-
-    /**
-     * Adds a server and connects to it.
-     *
-     * @param host - Server address
-     * @param port - Server port
-     * @param login - Server login username
-     * @param nick - Nickname
-     * @param realName - IRL name
-     */
-    public void addServer(String host, int port, String login, String nick, String realName, se.chalmers.dat255.ircsex.model.SessionListener sessionListener) {
-        IrcServer ircServer = new IrcServer(host, port, login, nick, realName);
-        servers.put(host, ircServer);
+    public void addServer(ServerConnectionData data, se.chalmers.dat255.ircsex.model.SessionListener sessionListener) {
+        IrcServer ircServer = new IrcServer(data);
+        servers.put(data.getServer(), ircServer);
         ircServer.addSessionListener(sessionListener);
         NetworkStateHandler.notify(ircServer);
-        datasource.addServer(host, port, login, nick, realName);
+        datasource.addServer(data);
     }
 
     /**
