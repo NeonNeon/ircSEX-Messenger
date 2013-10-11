@@ -24,6 +24,7 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
     private final String login;
     private final IrcUser user;
     private final String realName;
+    private final String password;
 
     private final ChannelDAO datasource;
     private final ServerDAO serverDatasource;
@@ -55,12 +56,17 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
      * @param realName - IRL name
      */
     public IrcServer(String host, int port, String login, String nick, String realName) {
+        this(host, port, login, nick, realName, "");
+    }
+
+    public IrcServer(String host, int port, String login, String nick, String realName, String password) {
         this.host = host;
         this.port = port;
         this.login = login;
         this.user = new IrcUser(nick, IrcUser.NO_STATUS);
         this.user.setSelf();
         this.realName = realName;
+        this.password = password;
 
         sessionListeners = new ArrayList<SessionListener>();
 
