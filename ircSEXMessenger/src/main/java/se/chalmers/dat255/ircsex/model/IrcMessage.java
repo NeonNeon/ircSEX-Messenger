@@ -6,9 +6,15 @@ package se.chalmers.dat255.ircsex.model;
 public abstract class IrcMessage {
     protected final String message;
     private boolean read = false;
+    private boolean highlight = false;
 
     public IrcMessage(String message) {
         this.message = message;
+    }
+
+    public IrcMessage(String message, boolean highlight) {
+        this(message);
+        this.highlight = highlight;
     }
 
     /**

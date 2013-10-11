@@ -344,6 +344,8 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     private void selectItem(int position) {
         channelName = ircChannelSelector.getItem(position).getText();
         session.setActiveChannel(channelName);
+        session.getActiveServer().readHighlight(channelName);
+        session.getActiveServer().readLastMessage(channelName);
 
         fragment = new ChatFragment(this, session.getActiveChannel());
         Bundle args = new Bundle();
