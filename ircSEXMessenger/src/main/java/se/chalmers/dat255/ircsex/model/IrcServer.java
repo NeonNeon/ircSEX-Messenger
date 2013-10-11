@@ -539,11 +539,9 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
         IrcChannel ircChannel = connectedChannels.get(user);
         ChatIrcMessage ircMessage = connectedChannels.get(user).newChatMessage(user, message);
         lastMessage = new IrcHighlight(ircChannel, ircMessage);
-        if (checkHighlight(ircChannel, message)) {
-            highlights.add(0, new IrcHighlight(ircChannel, ircMessage));
-            for (SessionListener listener : sessionListeners) {
-                listener.onHighlight(ircChannel, ircMessage);
-            }
+        highlights.add(0, new IrcHighlight(ircChannel, ircMessage));
+        for (SessionListener listener : sessionListeners) {
+            listener.onHighlight(ircChannel, ircMessage);
         }
 
         for (SessionListener listener : sessionListeners) {
