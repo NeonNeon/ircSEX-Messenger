@@ -88,11 +88,8 @@ public interface SessionListener {
 
     /**
      * Receiving a hilightnotification.
-     *
-     * @param channel
-     * @param message
      */
-    public void onHighlight(IrcChannel channel, IrcMessage message);
+    public void onHighlightChange();
 
     /**
      * Receiving message as confirmation of a sent message.

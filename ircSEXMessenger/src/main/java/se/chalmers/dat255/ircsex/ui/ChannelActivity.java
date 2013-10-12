@@ -332,7 +332,9 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         setTitle(channelName);
         drawerLayout.closeDrawer(leftDrawerContainer);
         selected = position;
-        updateUserList(session.getActiveChannel().getUsers());
+        if (session.getActiveChannel() != null) {
+            updateUserList(session.getActiveChannel().getUsers());
+        }
     }
 
     @Override
@@ -523,7 +525,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     }
 
     @Override
-    public void onHighlight(IrcChannel channel, IrcMessage message) {
+    public void onHighlightChange() {
         updateHighlightBadge();
     }
 

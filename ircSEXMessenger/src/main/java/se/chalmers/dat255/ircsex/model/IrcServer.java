@@ -334,6 +334,10 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
      */
     public void readHighlight(IrcHighlight highlight) {
         highlights.remove(highlight);
+
+        for (SessionListener listener : sessionListeners) {
+            listener.onHighlightChange();
+        }
     }
 
     /**
@@ -341,6 +345,10 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
      */
     public void readLastMessage(IrcHighlight lastMessage) {
         lastMessages.remove(lastMessage);
+
+        for (SessionListener listener : sessionListeners) {
+            listener.onHighlightChange();
+        }
     }
 
     public void readHighlight(String highlight) {
@@ -349,6 +357,22 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
 
     public void readLastMessage(String lastMessage) {
         readLastMessage(getLastMessageByChannel(lastMessage));
+    }
+
+    private void newHighlight(IrcHighlight highlight) {
+        highlights.add(0, highlight);
+
+        for (SessionListener listener : sessionListeners) {
+            listener.onHighlightChange();
+        }
+    }
+
+    private void newLastMessage(IrcHighlight lastmessage) {
+        lastMessages.add(0, lastmessage);
+
+        for (SessionListener listener : sessionListeners) {
+            listener.onHighlightChange();
+        }
     }
 
     /**
@@ -563,7 +587,7 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
             if (getHighlightChannels().contains(ircChannel.getChannelName())) {
                 readHighlight(ircChannel.getChannelName());
             }
-            highlights.add(0, new IrcHighlight(ircChannel, ircMessage));
+            newHighlight(new IrcHighlight(ircChannel, ircMessage));
             if (getLastMessageChannels().contains((ircChannel.getChannelName()))) {
                 readLastMessage(ircChannel.getChannelName());
             }
@@ -572,14 +596,13 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
             if (getLastMessageChannels().contains((ircChannel.getChannelName()))) {
                 readLastMessage(ircChannel.getChannelName());
             }
-            lastMessages.add(0, new IrcHighlight(ircChannel, ircMessage));
+            newLastMessage(new IrcHighlight(ircChannel, ircMessage));
         } else {
             ircMessage = connectedChannels.get(channel).newChatMessage(user, message);
         }
 
         for (SessionListener listener : sessionListeners) {
             listener.onChannelMessage(serverConnectionData.getServer(), channel, ircMessage);
-            listener.onHighlight(ircChannel, ircMessage);
         }
     }
 
@@ -596,10 +619,7 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
             if (getHighlightChannels().contains(ircChannel.getChannelName())) {
                 readHighlight(ircChannel.getChannelName());
             }
-            highlights.add(0, new IrcHighlight(ircChannel, ircMessage));
-        }
-        for (SessionListener listener : sessionListeners) {
-            listener.onHighlight(ircChannel, ircMessage);
+            newHighlight(new IrcHighlight(ircChannel, ircMessage));
         }
 
         for (SessionListener listener : sessionListeners) {

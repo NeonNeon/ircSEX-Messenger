@@ -141,7 +141,9 @@ public class ChatFragment extends Fragment {
     }
 
     private void scrollToBottom() {
-        messageList.setSelection(messageArrayAdapter.getCount()-1);
+        if (messageArrayAdapter != null) {
+            messageList.setSelection(messageArrayAdapter.getCount()-1);
+        }
     }
 
     public interface ChatMessageSendListener {
