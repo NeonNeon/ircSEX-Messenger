@@ -418,6 +418,8 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
     public void nickChanged(String oldNick, String newNick) {
         if (user.isNamed(oldNick)) {
             user.changeNick(newNick);
+            removeHighlight(oldNick);
+            addHighlight(newNick);
             serverDatasource.updateNickname(serverConnectionData.getServer(), newNick);
         }
         for (IrcChannel channel : connectedChannels.values()) {
