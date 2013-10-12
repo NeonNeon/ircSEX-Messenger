@@ -519,7 +519,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     }
 
     @Override
-    public void onHighlight(IrcChannel channel, IrcMessage message) {
+    public void onHighlightChange() {
         updateHighlightBadge();
     }
 
