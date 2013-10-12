@@ -9,7 +9,6 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
-import java.awt.Checkbox;
 
 import se.chalmers.dat255.ircsex.R;
 import se.chalmers.dat255.ircsex.ui.dialog.ServerConnectDialogFragment;
