@@ -163,7 +163,7 @@ public class UserSearchActivity extends SearchActivity implements SessionListene
     }
 
     @Override
-    public void onHighlight(IrcChannel channel, IrcMessage message) {
+    public void onHighlightChange() {
 
     }
 
