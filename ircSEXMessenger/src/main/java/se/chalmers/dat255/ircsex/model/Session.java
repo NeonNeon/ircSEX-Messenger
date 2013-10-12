@@ -20,15 +20,13 @@ public class Session {
     private final Map<String, IrcServer> servers;
 
     private final ServerDAO datasource;
-    private final SessionListener listener;
 
     /**
      * Creates an Session object.
      */
-    private Session(Context context, SessionListener listener) {
+    private Session(Context context) {
         ContextManager.CHANNEL_CONTEXT = context;
         ContextManager.SERVER_CONTEXT = context;
-        this.listener = listener;
 
         datasource = new ServerDAO();
         datasource.open();
@@ -36,17 +34,25 @@ public class Session {
         servers = datasource.getAllIrcServers();
     }
 
-    private void addListener(SessionListener listener) {
+    private void addListener(WhoisListener listener) {
         for (IrcServer server : servers.values()) {
             if (listener != null) {
-                server.addSessionListener(listener);
+                if (listener instanceof SessionListener) {
+                    server.addSessionListener((SessionListener) listener);
+                } else {
+                    server.addWhoisListener(listener);
+                }
             }
         }
     }
 
-    public void removeListener(SessionListener listener) {
+    public void removeListener(WhoisListener listener) {
         for (IrcServer server : servers.values()) {
-            server.removeSessionListener(listener);
+            if (listener instanceof SessionListener) {
+                server.removeSessionListener((SessionListener) listener);
+            } else {
+                server.removeWhoisListener(listener);
+            }
         }
     }
 
@@ -57,9 +63,9 @@ public class Session {
         return instance;
     }
 
-    public static Session getInstance(Context context, SessionListener listener) {
+    public static Session getInstance(Context context, WhoisListener listener) {
         if (instance == null) {
-            instance = new Session(context, listener);
+            instance = new Session(context);
         }
         instance.addListener(listener);
         return instance;

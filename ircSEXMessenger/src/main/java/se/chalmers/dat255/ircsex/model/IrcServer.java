@@ -38,6 +38,7 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
     private IrcProtocolAdapter protocol;
 
     private List<SessionListener> sessionListeners;
+    private List<WhoisListener> whoisListeners;
 
     private boolean reconnecting;
 
@@ -52,6 +53,7 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
         this.user.setSelf();
 
         sessionListeners = new ArrayList<SessionListener>();
+        whoisListeners = new ArrayList<WhoisListener>();
 
         serverDatasource = new ServerDAO();
         serverDatasource.open();
@@ -180,6 +182,11 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
      */
     public void addSessionListener(SessionListener listener) {
         sessionListeners.add(listener);
+        addWhoisListener(listener);
+    }
+
+    public void addWhoisListener(WhoisListener listener) {
+        whoisListeners.add(listener);
     }
 
     /**
@@ -189,6 +196,11 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
      */
     public void removeSessionListener(SessionListener listener) {
         sessionListeners.remove(listener);
+        removeWhoisListener(listener);
+    }
+
+    public void removeWhoisListener(WhoisListener listener) {
+        whoisListeners.remove(listener);
     }
 
     /**
@@ -538,21 +550,21 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
 
     @Override
     public void whoisChannels(String nick, List<String> channels) {
-        for (SessionListener listener : sessionListeners) {
+        for (WhoisListener listener : whoisListeners) {
             listener.whoisChannels(nick, channels);
         }
     }
 
     @Override
     public void whoisRealname(String nick, String realname) {
-        for (SessionListener listener : sessionListeners) {
+        for (WhoisListener listener : whoisListeners) {
             listener.whoisRealname(nick, realname);
         }
     }
 
     @Override
     public void whoisIdleTime(String nick, int seconds) {
-        for (SessionListener listener : sessionListeners) {
+        for (WhoisListener listener : whoisListeners) {
             listener.whoisIdleTime(nick, IrcUser.formatIdleTime(seconds));
         }
     }

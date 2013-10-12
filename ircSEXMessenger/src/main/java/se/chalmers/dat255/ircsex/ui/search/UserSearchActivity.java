@@ -23,11 +23,12 @@ import se.chalmers.dat255.ircsex.model.IrcMessage;
 import se.chalmers.dat255.ircsex.model.IrcUser;
 import se.chalmers.dat255.ircsex.model.Session;
 import se.chalmers.dat255.ircsex.model.SessionListener;
+import se.chalmers.dat255.ircsex.model.WhoisListener;
 
 /**
  * Created by Oskar on 2013-10-07.
  */
-public class UserSearchActivity extends SearchActivity implements SessionListener {
+public class UserSearchActivity extends SearchActivity implements WhoisListener {
 
     private ArrayList<String> result;
     private Session session;
@@ -105,71 +106,6 @@ public class UserSearchActivity extends SearchActivity implements SessionListene
 
             whoisResultDialog.show();
         }
-    }
-
-    @Override
-    public void onConnectionEstablished(String host) {
-
-    }
-
-    @Override
-    public void onRegistrationCompleted(String host) {
-
-    }
-
-    @Override
-    public void onDisconnect(String host) {
-
-    }
-
-    @Override
-    public void onServerDisconnect(String host, String message) {
-
-    }
-
-    @Override
-    public void onServerJoin(String host, String channelName) {
-
-    }
-
-    @Override
-    public void onServerPart(String host, String channelName) {
-
-    }
-
-    @Override
-    public void onChannelUserChange(String host, String channel, List<IrcUser> users) {
-
-    }
-
-    @Override
-    public void onChannelUserJoin(String host, String channel, IrcMessage joinMessage) {
-
-    }
-
-    @Override
-    public void onChannelUserPart(String host, String channel, IrcMessage partMessage) {
-
-    }
-
-    @Override
-    public void onNickChange(String host, String channel, IrcMessage ircMessage) {
-
-    }
-
-    @Override
-    public void onChannelMessage(String host, String channel, ChatIrcMessage message) {
-
-    }
-
-    @Override
-    public void onHighlightChange() {
-
-    }
-
-    @Override
-    public void onSentMessage(String host, String channel, ChatIrcMessage message) {
-
     }
 
     @Override
