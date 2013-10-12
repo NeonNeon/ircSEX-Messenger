@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * Created by Wilhelm on 2013-09-19.
  */
-public interface SessionListener {
+public interface SessionListener extends WhoisListener {
     /**
      * Fired when the socked has been opened.
      * @param host Host to which the socket has been opened.
@@ -99,25 +99,4 @@ public interface SessionListener {
      * @param message
      */
     public void onSentMessage(String host, String channel, ChatIrcMessage message);
-
-    /**
-     * This method sends a list of connected channels as a whois request resopnse.
-     * @param nick - the nick of the requested whois
-     * @param channels - the channels the nick is connected to
-     */
-    public void whoisChannels(String nick, List<String> channels);
-
-    /**
-     * This method sends the nicks realname as a whois request resopnse.
-     * @param nick
-     * @param realname
-     */
-    public void whoisRealname(String nick, String realname);
-
-    /**
-     * This method sends the nicks idletime as a whois request resopnse.
-     * @param nick
-     * @param formattedIdleTime
-     */
-    public void whoisIdleTime(String nick, String formattedIdleTime);
 }
