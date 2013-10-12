@@ -511,7 +511,11 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
             @Override
             public void run() {
                 if (channel.equals(channelName)) {
-                    fragment.addMessage(message);
+                    if(message.getUser().isSelf()){
+                        fragment.addSentMessage(message);
+                    }else{
+                        fragment.addMessage(message);
+                    }
                     Log.e("IRCDEBUG", "onChannelMessage to: " + fragment.toString());
                 }
             }
