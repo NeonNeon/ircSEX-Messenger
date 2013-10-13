@@ -79,7 +79,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     private Session session;
     private View whois;
     private int selected = -1;
-    private LinearLayout highlightButton;
+    private Menu menu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -151,9 +151,10 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        this.menu = menu;
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.channel_main, menu);
-        highlightButton = (LinearLayout) menu.findItem(R.id.highlightbadge).getActionView();
+        LinearLayout highlightButton = (LinearLayout) menu.findItem(R.id.highlightbadge).getActionView();
         updateHighlightBadge();
         return super.onCreateOptionsMenu(menu);
     }
@@ -534,27 +535,28 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
             ChannelActivity.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                    LinearLayout highlightButton = (LinearLayout) menu.findItem(R.id.highlightbadge).getActionView();
                     int highlights = session.getActiveServer().getHighlights().size();
                     int lastMessages = session.getActiveServer().getLastMessages().size();
                     if (highlights > 0) {
                         highlightButton.getChildAt(0).setBackgroundResource(R.drawable.highlightbadge_background_highlight);
                         highlightButton.setBackground(getResources().getDrawable(R.drawable.user_click));
-                        setHighlightButtonText(Integer.toString(highlights));
+                        setHighlightButtonText(Integer.toString(highlights), highlightButton);
                     } else if (lastMessages > 0) {
                         highlightButton.getChildAt(0).setBackgroundResource(R.drawable.highlightbadge_background);
                         highlightButton.setBackground(getResources().getDrawable(R.drawable.user_click));
-                        setHighlightButtonText(Integer.toString(lastMessages));
+                        setHighlightButtonText(Integer.toString(lastMessages), highlightButton);
                     } else {
                         highlightButton.getChildAt(0).setBackgroundResource(R.drawable.highlightbadge_background_disabled);
                         highlightButton.setBackground(null);
-                        setHighlightButtonText(Integer.toString(0));
+                        setHighlightButtonText(Integer.toString(0), highlightButton);
                     }
                 }
             });
         }
     }
 
-    private void setHighlightButtonText(String text) {
+    private void setHighlightButtonText(String text, LinearLayout highlightButton) {
         ((TextView) ((LinearLayout) highlightButton.getChildAt(0)).getChildAt(0))
                 .setText(text);
     }
@@ -647,8 +649,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
 
     @Override
     public void onOffline() {
-        Intent noInternetIntent = new Intent(this, NoInternetActivity.class);
-        startActivity(noInternetIntent);
+
     }
 
     private void showWhoisDialog(final String nick) {
