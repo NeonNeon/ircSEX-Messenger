@@ -349,10 +349,10 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
                         data.getStringExtra(NoServersActivity.EXTRA_SERVER),
                         Integer.parseInt(data.getStringExtra(NoServersActivity.EXTRA_PORT)),
                         data.getStringExtra(NoServersActivity.EXTRA_NICKNAME),
-                        "ircsex",
+                        data.getStringExtra(NoServersActivity.EXTRA_USERNAME),
                         "Realname",
-                        "password",
-                        false,
+                        data.getStringExtra(NoServersActivity.EXTRA_PASSWORD),
+                        false, // use ssl
                         data.getBooleanExtra(NoServersActivity.EXTRA_USE_SSH, false),
                         data.getStringExtra(NoServersActivity.EXTRA_SSH_HOSTNAME),
                         data.getStringExtra(NoServersActivity.EXTRA_SSH_USERNAME),

@@ -433,7 +433,13 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
                 reconnecting = false;
                 startProtocolAdapter();
             } else {
-                protocol.connect(user.getNick(), serverConnectionData.getLogin(), serverConnectionData.getRealname());
+                if(serverConnectionData.getPassword().equals("")) {
+                    protocol.connect(user.getNick(), serverConnectionData.getLogin(),
+                            serverConnectionData.getRealname());
+                } else {
+                    protocol.connect(user.getNick(), serverConnectionData.getLogin(),
+                            serverConnectionData.getRealname(), serverConnectionData.getPassword());
+                }
                 for (SessionListener listener : sessionListeners) {
                     listener.onConnectionEstablished(serverConnectionData.getServer());
                 }

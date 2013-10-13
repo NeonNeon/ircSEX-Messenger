@@ -23,6 +23,8 @@ public class NoServersActivity extends FragmentActivity implements ServerConnect
     public static final String EXTRA_SERVER = "server";
     public static final String EXTRA_PORT = "port";
     public static final String EXTRA_NICKNAME = "nickname";
+    public static final String EXTRA_USERNAME = "username";
+    public static final String EXTRA_PASSWORD = "password";
     public static final String EXTRA_USE_SSH = "useSsh";
     public static final String EXTRA_SSH_HOSTNAME = "sshHostname";
     public static final String EXTRA_SSH_USERNAME = "sshUsername";
@@ -54,6 +56,8 @@ public class NoServersActivity extends FragmentActivity implements ServerConnect
         String server = ((TextView)dialog.findViewById(R.id.dialog_serverconnect_server)).getText().toString();
         String port = ((TextView)dialog.findViewById(R.id.dialog_serverconnect_port)).getText().toString();
         String nickname = ((TextView)dialog.findViewById(R.id.dialog_serverconnect_nickname)).getText().toString();
+        String username = ((TextView)dialog.findViewById(R.id.dialog_serverconnect_username)).getText().toString();
+        String password = ((TextView)dialog.findViewById(R.id.dialog_serverconnect_password)).getText().toString();
         boolean useSsh = ((CheckBox)dialog.findViewById(R.id.dialog_ssh_checkBox)).isChecked();
         String sshHostname = ((TextView)dialog.findViewById(R.id.dialog_sshconnect_hostname)).getText().toString();
         String sshUsername = ((TextView)dialog.findViewById(R.id.dialog_sshconnect_username)).getText().toString();
@@ -62,6 +66,8 @@ public class NoServersActivity extends FragmentActivity implements ServerConnect
         data.putExtra(EXTRA_SERVER, server);
         data.putExtra(EXTRA_PORT, port);
         data.putExtra(EXTRA_NICKNAME, nickname);
+        data.putExtra(EXTRA_USERNAME, username);
+        data.putExtra(EXTRA_PASSWORD, password);
         data.putExtra(EXTRA_USE_SSH, useSsh);
         data.putExtra(EXTRA_SSH_HOSTNAME, sshHostname);
         data.putExtra(EXTRA_SSH_USERNAME, sshUsername);

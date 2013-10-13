@@ -56,4 +56,6 @@
         <item>16</item>
         <item>20</item>
     </string-array>
+    <string name="hint_username">Username</string>
+    <string name="hint_password">Password</string>
 </resources>

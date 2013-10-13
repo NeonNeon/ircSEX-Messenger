@@ -72,7 +72,7 @@ public class Session {
     }
 
     /**
-     * Adds a server and connects to it.
+     * Adds a server with a and connects to it.
      *
      * @param data all data used to connect
      * @param sessionListener
