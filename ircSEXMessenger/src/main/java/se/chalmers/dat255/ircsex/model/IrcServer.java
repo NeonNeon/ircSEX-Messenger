@@ -409,7 +409,9 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
     }
 
     public void listChannels() {
-        protocol.listChannels();
+        if (NetworkStateHandler.isConnected()) {
+            protocol.listChannels();
+        }
     }
 
     public void setActiveChannel(IrcChannel activeChannel) {
