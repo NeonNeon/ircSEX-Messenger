@@ -88,8 +88,6 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.activity_channel_main);
 
-        NetworkStateHandler.addListener(this);
-
         mTitle = mDrawerTitle = getTitle();
         ircChannelSelector = new IrcChannelSelector(this);
 
@@ -135,6 +133,8 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         } else {
             startNoServersActivity();
         }
+
+        NetworkStateHandler.addListener(this);
     }
 
     private void showConnectionDialog(String message) {
@@ -645,11 +645,33 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
 
     @Override
     public void onOnline() {
+        if (menu != null) {
+            menu.findItem(R.id.search_messages).setEnabled(true);
+            menu.findItem(R.id.search_messages).setIcon(R.drawable.ic_action_search);
+            menu.findItem(R.id.action_invite_user).setEnabled(true);
+            menu.findItem(R.id.action_add_server).setEnabled(true);
+            menu.findItem(R.id.action_change_nick).setEnabled(true);
+            menu.findItem(R.id.action_join_channel).setEnabled(true);
+            menu.findItem(R.id.action_leave_channel).setEnabled(true);
+            drawerLayout.findViewById(R.id.channel_search_drawer_button).setEnabled(true);
+            ((LinearLayout) drawerLayout.findViewById(R.id.channel_search_drawer_button)).getChildAt(0).setEnabled(true);
+            ((TextView) ((LinearLayout) drawerLayout.findViewById(R.id.channel_search_drawer_button)).getChildAt(0)).setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_action_search, 0, 0, 0);
+        }
     }
 
     @Override
     public void onOffline() {
-
+        if (menu != null) {
+            menu.findItem(R.id.search_messages).setEnabled(false);
+            menu.findItem(R.id.search_messages).setIcon(android.R.drawable.ic_menu_search);
+            menu.findItem(R.id.action_invite_user).setEnabled(false);
+            menu.findItem(R.id.action_add_server).setEnabled(false);
+            menu.findItem(R.id.action_change_nick).setEnabled(false);
+            menu.findItem(R.id.action_join_channel).setEnabled(false);
+            menu.findItem(R.id.action_leave_channel).setEnabled(false);
+            drawerLayout.findViewById(R.id.channel_search_drawer_button).setEnabled(false);
+            ((TextView) ((LinearLayout) drawerLayout.findViewById(R.id.channel_search_drawer_button)).getChildAt(0)).setCompoundDrawablesWithIntrinsicBounds(android.R.drawable.ic_menu_search, 0, 0, 0);
+        }
     }
 
     private void showWhoisDialog(final String nick) {
