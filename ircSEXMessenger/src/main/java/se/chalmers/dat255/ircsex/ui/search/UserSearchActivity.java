@@ -66,7 +66,6 @@ public class UserSearchActivity extends SearchActivity implements WhoisListener,
             }
         }
         update();
-        adjustToConnectivity();
     }
 
     public void userInfo(View view) {
