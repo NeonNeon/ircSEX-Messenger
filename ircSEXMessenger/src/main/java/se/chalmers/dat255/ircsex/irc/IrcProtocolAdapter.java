@@ -20,6 +20,7 @@ public class IrcProtocolAdapter implements Runnable {
     private static final String BLANK = " ";
     private static final String COLON = ":";
     private static final String HASHTAG = "#";
+    private static final String BANG = "!";
 
     private boolean running = true;
     private Taste taste;
@@ -72,12 +73,48 @@ public class IrcProtocolAdapter implements Runnable {
      */
     private void handleReply(String reply) {
         System.out.println(reply);
+
+        String[] parts = reply.split(BLANK, 3);
+
+        switch (parts[1]) {
+            case IrcProtocolStrings.PRIVMSG:
+                handlePrivmsg(parts);
+                break;
+            case IrcProtocolStrings.JOIN:
+                listener.userJoined(
+                        parts[2].substring(parts[2].indexOf(COLON) + 1),
+                        parts[0].substring(1, parts[0].indexOf(BANG)));
+                break;
+            case IrcProtocolStrings.PART:
+                listener.userParted(
+                        parts[2],
+                        parts[0].substring(1, parts[0].indexOf(BANG)));
+                break;
+            case IrcProtocolStrings.QUIT:
+                listener.userQuit(
+                        parts[0].substring(1, parts[0].indexOf(BANG)),
+                        parts[2].substring(parts[2].indexOf(COLON) + 1));
+                break;
+        }
+
         handleReplyOld(reply);
     }
+
+    private void handlePrivmsg(String[] parts) {
+        String nick = parts[0].substring(1, parts[0].indexOf(BANG));
+        String channel = parts[2].substring(0, parts[2].indexOf(BLANK));
+        String msg = parts[2].substring(parts[2].indexOf(COLON) + 1);
+        if (channel.contains(HASHTAG)) {
+            listener.channelMessageReceived(channel, nick, msg);
+        } else {
+            listener.queryMessageReceived(nick, msg);
+        }
+    }
+
     private void handleReplyOld(String reply) {
         //TODO - handle more cases
         int index;
-        if ((index = reply.indexOf("PRIVMSG")) != -1) {
+        if ((index = reply.indexOf("PRasdfIVMSG")) != -1) {
             String nick = reply.substring(1, reply.indexOf('!'));
             int msgIndex = reply.indexOf(':', 1);
             String channel = reply.substring(index + 8, msgIndex - 1);
@@ -93,15 +130,15 @@ public class IrcProtocolAdapter implements Runnable {
         else if (reply.startsWith("PING ")) {
             write("PONG " + reply.substring(5));
         }
-        else if ((index = reply.indexOf("JOIN ")) != -1) {
+        else if ((index = reply.indexOf("JOasdfIN ")) != -1) {
             listener.userJoined(reply.substring(reply.indexOf('#')),
                     reply.substring(1, reply.indexOf('!')));
         }
-        else if ((index = reply.indexOf("PART")) != -1) {
+        else if ((index = reply.indexOf("PAasdRT")) != -1) {
             listener.userParted(reply.substring(index + 5),
                     reply.substring(1, reply.indexOf('!')));
         }
-        else if ((index = reply.indexOf("QUIT")) != -1) {
+        else if ((index = reply.indexOf("QUIsadfT")) != -1) {
             String message = reply.substring(index + 6);
             String user = reply.substring(1, reply.indexOf('!'));
             listener.userQuit(user, message);
@@ -138,7 +175,6 @@ public class IrcProtocolAdapter implements Runnable {
             int index3 = reply.indexOf(' ', index2);
             String nick = reply.substring(index2, index3);
             int idleTime = Integer.parseInt(reply.substring(index3 + 1, reply.indexOf(' ', index3 + 1)));
-            System.out.println(nick+"|"+idleTime);
             listener.whoisIdleTime(nick, idleTime);
         }
         else if (reply.contains("322 ")) {
