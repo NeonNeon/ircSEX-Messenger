@@ -114,34 +114,8 @@ public class IrcProtocolAdapter implements Runnable {
     private void handleReplyOld(String reply) {
         //TODO - handle more cases
         int index;
-        if ((index = reply.indexOf("PRasdfIVMSG")) != -1) {
-            String nick = reply.substring(1, reply.indexOf('!'));
-            int msgIndex = reply.indexOf(':', 1);
-            String channel = reply.substring(index + 8, msgIndex - 1);
-            String message = reply.substring(msgIndex + 1);
-
-            if (channel.contains("#")) {
-                listener.channelMessageReceived(channel, nick, message);
-            }
-            else {
-                listener.queryMessageReceived(nick, message);
-            }
-        }
-        else if (reply.startsWith("PING ")) {
+        if (reply.startsWith("PING ")) {
             write("PONG " + reply.substring(5));
-        }
-        else if ((index = reply.indexOf("JOasdfIN ")) != -1) {
-            listener.userJoined(reply.substring(reply.indexOf('#')),
-                    reply.substring(1, reply.indexOf('!')));
-        }
-        else if ((index = reply.indexOf("PAasdRT")) != -1) {
-            listener.userParted(reply.substring(index + 5),
-                    reply.substring(1, reply.indexOf('!')));
-        }
-        else if ((index = reply.indexOf("QUIsadfT")) != -1) {
-            String message = reply.substring(index + 6);
-            String user = reply.substring(1, reply.indexOf('!'));
-            listener.userQuit(user, message);
         }
         else if ((index = reply.indexOf("NICK ")) != -1) {
             listener.nickChanged(reply.substring(reply.indexOf(':') + 1, reply.indexOf('!')),
