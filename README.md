@@ -21,6 +21,7 @@ need for change - and we’re here to do it!
 ##Dependencies
 - Android SDK - API 16
 - Android SDK - support-v4
+- sshj - 0.9.0 
 
 For unit tests:
 - Groovy - 1.8.6
