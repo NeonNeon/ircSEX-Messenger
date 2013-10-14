@@ -21,6 +21,7 @@ import se.chalmers.dat255.ircsex.model.ChatIrcMessage;
 import se.chalmers.dat255.ircsex.model.IrcChannel;
 import se.chalmers.dat255.ircsex.model.IrcMessage;
 import se.chalmers.dat255.ircsex.model.IrcUser;
+import se.chalmers.dat255.ircsex.model.NetworkStateHandler;
 import se.chalmers.dat255.ircsex.model.Session;
 import se.chalmers.dat255.ircsex.model.SessionListener;
 import se.chalmers.dat255.ircsex.model.WhoisListener;
@@ -28,7 +29,7 @@ import se.chalmers.dat255.ircsex.model.WhoisListener;
 /**
  * Created by Oskar on 2013-10-07.
  */
-public class UserSearchActivity extends SearchActivity implements WhoisListener {
+public class UserSearchActivity extends SearchActivity implements WhoisListener, NetworkStateHandler.ConnectionListener {
 
     private ArrayList<String> result;
     private Session session;
@@ -43,6 +44,8 @@ public class UserSearchActivity extends SearchActivity implements WhoisListener 
 
         session = Session.getInstance(this, this);
         content = session.getActiveServer().getKnownUsers();
+
+        NetworkStateHandler.addListener(this);
     }
 
     @Override
@@ -165,5 +168,23 @@ public class UserSearchActivity extends SearchActivity implements WhoisListener 
         data.putExtra(EXTRA_CHANNEL, user);
         setResult(RESULT_RETURN_QUERY, data);
         finish();
+    }
+
+    @Override
+    public void onOnline() {
+        for (int i=0; i<getListView().getChildCount(); i++) {
+            LinearLayout layout = (LinearLayout) getListView().getChildAt(i);
+            layout.setClickable(true);
+            layout.findViewById(R.id.userInfoButton).setClickable(true);
+        }
+    }
+
+    @Override
+    public void onOffline() {
+        for (int i=0; i<getListView().getChildCount(); i++) {
+            LinearLayout layout = (LinearLayout) getListView().getChildAt(i);
+            layout.setClickable(false);
+            layout.findViewById(R.id.userInfoButton).setClickable(false);
+        }
     }
 }
