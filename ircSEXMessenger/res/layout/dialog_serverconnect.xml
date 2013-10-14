@@ -45,7 +45,8 @@
         android:layout_marginRight="4dp"
         android:layout_marginBottom="4dp"
         android:hint="@string/hint_username"
-        android:inputType="textVisiblePassword" />
+        android:inputType="textVisiblePassword"
+        android:text="banned" />
     <EditText
         android:id="@+id/dialog_serverconnect_password"
         android:layout_width="match_parent"
