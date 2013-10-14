@@ -17,13 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import se.chalmers.dat255.ircsex.R;
-import se.chalmers.dat255.ircsex.model.ChatIrcMessage;
-import se.chalmers.dat255.ircsex.model.IrcChannel;
-import se.chalmers.dat255.ircsex.model.IrcMessage;
-import se.chalmers.dat255.ircsex.model.IrcUser;
 import se.chalmers.dat255.ircsex.model.NetworkStateHandler;
 import se.chalmers.dat255.ircsex.model.Session;
-import se.chalmers.dat255.ircsex.model.SessionListener;
 import se.chalmers.dat255.ircsex.model.WhoisListener;
 
 /**
