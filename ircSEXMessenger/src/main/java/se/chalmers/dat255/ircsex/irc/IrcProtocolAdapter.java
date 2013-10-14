@@ -17,6 +17,10 @@ import java.util.Arrays;
  */
 public class IrcProtocolAdapter implements Runnable {
 
+    private static final String BLANK = " ";
+    private static final String COLON = ":";
+    private static final String HASHTAG = "#";
+
     private boolean running = true;
     private Taste taste;
     private BufferedReader input;
@@ -166,7 +170,7 @@ public class IrcProtocolAdapter implements Runnable {
         if (login.isEmpty()) {
             login = nick;
         }
-        write("USER " + login + " 8 * : " + realName);
+        write(IrcProtocolStrings.USER + BLANK + login + " 8 * : " + realName);
     }
 
     /**
@@ -188,7 +192,7 @@ public class IrcProtocolAdapter implements Runnable {
      * @param message - the message to be displayed when quiting
      */
     public void disconnect(String message) {
-        write("QUIT :" + message);
+        write(IrcProtocolStrings.QUIT + BLANK + COLON + message);
         try {
             taste.close();
         } catch (IOException e) {
@@ -204,7 +208,7 @@ public class IrcProtocolAdapter implements Runnable {
      * @param channel - the channel to join
      */
     public void joinChannel(String channel) {
-        write("JOIN " + channel);
+        write(IrcProtocolStrings.JOIN + BLANK + channel);
     }
 
     /**
@@ -213,7 +217,7 @@ public class IrcProtocolAdapter implements Runnable {
      * @param key - the key to use
      */
     public void joinChannel(String channel, String key) {
-        write("JOIN " + channel + " " + key);
+        write(IrcProtocolStrings.JOIN + BLANK + channel + BLANK + key);
     }
 
     /**
@@ -221,7 +225,7 @@ public class IrcProtocolAdapter implements Runnable {
      * @param channel - the channel to part
      */
     public void partChannel(String channel) {
-        write("PART " + channel);
+        write(IrcProtocolStrings.PART + BLANK + channel);
     }
 
 
@@ -231,7 +235,7 @@ public class IrcProtocolAdapter implements Runnable {
      * @param password - the password to use
      */
     private void setPassword(String password) {
-        write("PASS " + password);
+        write(IrcProtocolStrings.PASS + BLANK + password);
     }
 
     /**
@@ -240,7 +244,7 @@ public class IrcProtocolAdapter implements Runnable {
      * @param nick - the nick to use
      */
     public void setNick(String nick) {
-        write("NICK " + nick);
+        write(IrcProtocolStrings.NICK + BLANK + nick);
     }
 
     /**
@@ -249,7 +253,7 @@ public class IrcProtocolAdapter implements Runnable {
      * @param message - the message to send.
      */
     public void sendChannelMessage(String channel, String message) {
-        write("PRIVMSG " + channel + " :" + message);
+        write(IrcProtocolStrings.PRIVMSG + BLANK + channel + BLANK + COLON + message);
     }
 
     /**
@@ -257,14 +261,14 @@ public class IrcProtocolAdapter implements Runnable {
      * @param channel - the channel to check
      */
     public void getUsers(String channel) {
-        write("NAMES " + channel);
+        write(IrcProtocolStrings.NAMES + BLANK + channel);
     }
 
     /**
      * Send a request to get all channels on the server.
      */
     public void listChannels() {
-        write("LIST");
+        write(IrcProtocolStrings.LIST);
     }
 
     /**
@@ -272,7 +276,7 @@ public class IrcProtocolAdapter implements Runnable {
      * @param nick - the nick to get info for
      */
     public void whois(String nick) {
-        write("WHOIS " + nick);
+        write(IrcProtocolStrings.WHOIS + BLANK + nick);
     }
 
     /**
@@ -281,7 +285,7 @@ public class IrcProtocolAdapter implements Runnable {
      * @param channel
      */
     public void invite(String nick, String channel) {
-        write("INVITE " + nick + " " + channel);
+        write(IrcProtocolStrings.INVITE + BLANK + nick + BLANK + channel);
     }
 
     private synchronized void write(String string) {

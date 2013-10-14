@@ -11,6 +11,7 @@ public class IrcProtocolStrings {
     public static final String JOIN = "JOIN";
     public static final String PART = "PART";
     public static final String NICK = "NICK";
+    public static final String PASS = "PASS";
     public static final String MODE = "MODE";
     public static final String USER = "USER";
     public static final String QUIT = "QUIT";
