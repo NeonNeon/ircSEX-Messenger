@@ -78,7 +78,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     private Session session;
     private View whois;
     private int selected = -1;
-    private LinearLayout highlightButton;
+    private Menu menu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,8 +86,6 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.activity_channel_main);
-
-        NetworkStateHandler.addListener(this);
 
         mTitle = mDrawerTitle = getTitle();
         ircChannelSelector = new IrcChannelSelector(this);
@@ -134,6 +132,12 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         } else {
             startNoServersActivity();
         }
+
+        NetworkStateHandler.addListener(this);
+        if (!NetworkStateHandler.isConnected()) {
+            Intent intent = new Intent(this, NoInternetActivity.class);
+            startActivity(intent);
+        }
     }
 
     private void showConnectionDialog(String message) {
@@ -150,9 +154,9 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        this.menu = menu;
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.channel_main, menu);
-        highlightButton = (LinearLayout) menu.findItem(R.id.highlightbadge).getActionView();
         updateHighlightBadge();
         return super.onCreateOptionsMenu(menu);
     }
@@ -486,6 +490,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
             this.users.add(user);
         }
         userArrayAdapter.notifyDataSetChanged();
+        adjustToConnectivity();
     }
 
     public void userInfo(View view) {
@@ -530,31 +535,33 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     }
 
     private void updateHighlightBadge() {
+        LinearLayout highlightButton = (LinearLayout) menu.findItem(R.id.highlightbadge).getActionView();
         if (session.getActiveServer() != null && highlightButton.getChildAt(0) != null) {
             ChannelActivity.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                    LinearLayout highlightButton = (LinearLayout) menu.findItem(R.id.highlightbadge).getActionView();
                     int highlights = session.getActiveServer().getHighlights().size();
                     int lastMessages = session.getActiveServer().getLastMessages().size();
                     if (highlights > 0) {
                         highlightButton.getChildAt(0).setBackgroundResource(R.drawable.highlightbadge_background_highlight);
                         highlightButton.setBackground(getResources().getDrawable(R.drawable.user_click));
-                        setHighlightButtonText(Integer.toString(highlights));
+                        setHighlightButtonText(Integer.toString(highlights), highlightButton);
                     } else if (lastMessages > 0) {
                         highlightButton.getChildAt(0).setBackgroundResource(R.drawable.highlightbadge_background);
                         highlightButton.setBackground(getResources().getDrawable(R.drawable.user_click));
-                        setHighlightButtonText(Integer.toString(lastMessages));
+                        setHighlightButtonText(Integer.toString(lastMessages), highlightButton);
                     } else {
                         highlightButton.getChildAt(0).setBackgroundResource(R.drawable.highlightbadge_background_disabled);
                         highlightButton.setBackground(null);
-                        setHighlightButtonText(Integer.toString(0));
+                        setHighlightButtonText(Integer.toString(0), highlightButton);
                     }
                 }
             });
         }
     }
 
-    private void setHighlightButtonText(String text) {
+    private void setHighlightButtonText(String text, LinearLayout highlightButton) {
         ((TextView) ((LinearLayout) highlightButton.getChildAt(0)).getChildAt(0))
                 .setText(text);
     }
@@ -643,12 +650,49 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
 
     @Override
     public void onOnline() {
+        if (menu != null) {
+            menu.findItem(R.id.search_messages).setEnabled(true);
+            menu.findItem(R.id.search_messages).setIcon(R.drawable.ic_action_search);
+            menu.findItem(R.id.action_invite_user).setEnabled(true);
+            menu.findItem(R.id.action_add_server).setEnabled(true);
+            menu.findItem(R.id.action_change_nick).setEnabled(true);
+            menu.findItem(R.id.action_join_channel).setEnabled(true);
+            menu.findItem(R.id.action_leave_channel).setEnabled(true);
+            drawerLayout.findViewById(R.id.channel_search_drawer_button).setEnabled(true);
+            ((LinearLayout) drawerLayout.findViewById(R.id.channel_search_drawer_button))
+                    .getChildAt(0).setEnabled(true);
+            ((TextView) ((LinearLayout) drawerLayout
+                    .findViewById(R.id.channel_search_drawer_button)).getChildAt(0))
+                    .setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_action_search, 0, 0, 0);
+            adjustToConnectivity();
+        }
     }
 
     @Override
     public void onOffline() {
-        Intent noInternetIntent = new Intent(this, NoInternetActivity.class);
-        startActivity(noInternetIntent);
+        if (menu != null) {
+            menu.findItem(R.id.search_messages).setEnabled(false);
+            menu.findItem(R.id.search_messages).setIcon(android.R.drawable.ic_menu_search);
+            menu.findItem(R.id.action_invite_user).setEnabled(false);
+            menu.findItem(R.id.action_add_server).setEnabled(false);
+            menu.findItem(R.id.action_change_nick).setEnabled(false);
+            menu.findItem(R.id.action_join_channel).setEnabled(false);
+            menu.findItem(R.id.action_leave_channel).setEnabled(false);
+            drawerLayout.findViewById(R.id.channel_search_drawer_button).setEnabled(false);
+            ((TextView) ((LinearLayout) drawerLayout
+                    .findViewById(R.id.channel_search_drawer_button)).getChildAt(0))
+                    .setCompoundDrawablesWithIntrinsicBounds(android.R.drawable.ic_menu_search, 0, 0, 0);
+            adjustToConnectivity();
+        }
+    }
+
+    private void adjustToConnectivity() {
+        boolean connectivity = NetworkStateHandler.isConnected();
+        for (int i=0; i<rightDrawer.getChildCount(); i++) {
+            LinearLayout layout = (LinearLayout) rightDrawer.getChildAt(i);
+            layout.setClickable(connectivity);
+            layout.findViewById(R.id.userInfoButton).setClickable(connectivity);
+        }
     }
 
     private void showWhoisDialog(final String nick) {

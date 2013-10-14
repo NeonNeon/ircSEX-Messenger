@@ -12,8 +12,26 @@
             android:text="No Internet connection"
             android:layout_gravity="center|center_vertical"
             android:paddingTop="15dp"/>
-    <ImageView
+
+    <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent">
+        <ImageView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/noInternetImage"/>
+
+        </LinearLayout>
+
+    <LinearLayout
+            android:layout_height="fill_parent"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/noInternetImage"/>
+            android:gravity="center_horizontal|bottom">
+        <Button
+                android:text="Retry"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_marginBottom="50dp"
+                android:onClick="retry"/>
+    </LinearLayout>
 </LinearLayout>

@@ -19,6 +19,7 @@
             android:id="@+id/left_drawer"
             android:background="#EEE">
         <LinearLayout
+                android:id="@+id/channel_search_drawer_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
@@ -57,6 +58,7 @@
             android:background="#EEE">
 
         <LinearLayout
+                android:id="@+id/user_search_drawer_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
