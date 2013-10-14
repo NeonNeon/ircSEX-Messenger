@@ -37,7 +37,6 @@ import java.util.List;
 
 import se.chalmers.dat255.ircsex.R;
 import se.chalmers.dat255.ircsex.model.ChatIrcMessage;
-import se.chalmers.dat255.ircsex.model.IrcChannel;
 import se.chalmers.dat255.ircsex.model.IrcHighlight;
 import se.chalmers.dat255.ircsex.model.IrcMessage;
 import se.chalmers.dat255.ircsex.model.IrcUser;
@@ -326,7 +325,8 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         Bundle args = new Bundle();
         fragment.setArguments(args);
         FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.channel_layout, fragment, CHAT_FRAGMENT_TAG).addToBackStack(CHAT_FRAGMENT_TAG).commit();
+        fragmentManager.beginTransaction().replace(R.id.channel_layout, fragment, CHAT_FRAGMENT_TAG)
+                .addToBackStack(CHAT_FRAGMENT_TAG).commitAllowingStateLoss();
 
         leftDrawer.setItemChecked(position, true);
         setTitle(channelName);
@@ -513,9 +513,9 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
             @Override
             public void run() {
                 if (channel.equals(channelName)) {
-                    if(message.getUser().isSelf()){
+                    if (message.getUser().isSelf()) {
                         fragment.addSentMessage(message);
-                    }else{
+                    } else {
                         fragment.addMessage(message);
                     }
                     Log.e("IRCDEBUG", "onChannelMessage to: " + fragment.toString());
@@ -530,7 +530,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     }
 
     private void updateHighlightBadge() {
-        if (session.getActiveServer() != null) {
+        if (session.getActiveServer() != null && highlightButton.getChildAt(0) != null) {
             ChannelActivity.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
