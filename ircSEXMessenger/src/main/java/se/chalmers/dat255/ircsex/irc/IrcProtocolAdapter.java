@@ -95,6 +95,10 @@ public class IrcProtocolAdapter implements Runnable {
                         parts[0].substring(1, parts[0].indexOf(BANG)),
                         parts[2].substring(parts[2].indexOf(COLON) + 1));
                 break;
+            case IrcProtocolStrings.NICK:
+                listener.nickChanged(
+                        parts[0].substring(1, parts[0].indexOf(BANG)),
+                        parts[2].substring(parts[2].indexOf(COLON) + 1));
         }
 
         handleReplyOld(reply);
@@ -116,10 +120,6 @@ public class IrcProtocolAdapter implements Runnable {
         int index;
         if (reply.startsWith("PING ")) {
             write("PONG " + reply.substring(5));
-        }
-        else if ((index = reply.indexOf("NICK ")) != -1) {
-            listener.nickChanged(reply.substring(reply.indexOf(':') + 1, reply.indexOf('!')),
-                    reply.substring(index + 6));
         }
         else if (reply.contains("MODE")) { // TODO: This is hardcoded.
             listener.serverRegistered();
