@@ -629,12 +629,13 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
     @Override
     public void queryMessageReceived(String user, String message) {
         user = IrcUser.extractUserName(user);
-        if (!connectedChannels.containsKey(user)) {
+        boolean queryIsOpen = connectedChannels.containsKey(user);
+        if (!queryIsOpen) {
             queryUser(user);
         }
 
         IrcChannel ircChannel = connectedChannels.get(user);
-        ChatIrcMessage ircMessage = connectedChannels.get(user).newChatMessage(user, message);
+        ChatIrcMessage ircMessage = ircChannel.newChatMessage(user, message);
         if (!ircChannel.getChannelName().equals(activeChannel.getChannelName())) {
             if (getHighlightChannels().contains(ircChannel.getChannelName())) {
                 readHighlight(ircChannel.getChannelName());
@@ -643,7 +644,9 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
         }
 
         for (SessionListener listener : sessionListeners) {
-            listener.onChannelMessage(serverConnectionData.getServer(), user, ircMessage);
+            if (queryIsOpen) {
+                listener.onChannelMessage(serverConnectionData.getServer(), user, ircMessage);
+            }
         }
     }
 
