@@ -160,6 +160,9 @@ public class IrcProtocolAdapter implements Runnable {
      */
     public void connect(String nick, String login, String realName) {
         setNick(nick);
+        if (login.isEmpty()) {
+            login = nick;
+        }
         write("USER " + login + " 8 * : " + realName);
     }
 
