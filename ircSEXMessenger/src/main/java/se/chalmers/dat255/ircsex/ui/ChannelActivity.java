@@ -153,7 +153,6 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         this.menu = menu;
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.channel_main, menu);
-        LinearLayout highlightButton = (LinearLayout) menu.findItem(R.id.highlightbadge).getActionView();
         updateHighlightBadge();
         return super.onCreateOptionsMenu(menu);
     }
@@ -531,6 +530,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     }
 
     private void updateHighlightBadge() {
+        LinearLayout highlightButton = (LinearLayout) menu.findItem(R.id.highlightbadge).getActionView();
         if (session.getActiveServer() != null && highlightButton.getChildAt(0) != null) {
             ChannelActivity.this.runOnUiThread(new Runnable() {
                 @Override
