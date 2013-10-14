@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -41,6 +42,7 @@ public class UserSearchActivity extends SearchActivity implements WhoisListener,
         content = session.getActiveServer().getKnownUsers();
 
         NetworkStateHandler.addListener(this);
+        NetworkStateHandler.notify(this);
     }
 
     @Override
@@ -64,21 +66,23 @@ public class UserSearchActivity extends SearchActivity implements WhoisListener,
             }
         }
         update();
+        adjustToConnectivity();
     }
 
     public void userInfo(View view) {
-        View view1 = (View) view.getParent().getParent();
-        String user = ((TextView) view1.findViewById(android.R.id.text1)).getText().toString();
+        if (NetworkStateHandler.isConnected()) {
+            View view1 = (View) view.getParent().getParent();
+            String user = ((TextView) view1.findViewById(android.R.id.text1)).getText().toString();
 
-        long time = System.currentTimeMillis();
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        whoisProgressDialog = builder.setTitle(R.string.dialog_whois_title)
-                .setView(new ProgressBar(this))
-                .create();
-        whoisProgressDialog.show();
-        session.getActiveServer().whois(user);
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            whoisProgressDialog = builder.setTitle(R.string.dialog_whois_title)
+                    .setView(new ProgressBar(this))
+                    .create();
+            whoisProgressDialog.show();
+            session.getActiveServer().whois(user);
 
-        findViewById(R.id.action_search).clearFocus();
+            findViewById(R.id.action_search).clearFocus();
+        }
     }
 
     private void showWhoisDialog(final String nick) {
@@ -156,30 +160,33 @@ public class UserSearchActivity extends SearchActivity implements WhoisListener,
     }
 
     public void queryUser(View view) {
-        view = ((LinearLayout) view).getChildAt(0);
-        String user = ((TextView) ((LinearLayout) view).getChildAt(0)).getText().toString();
-        session.removeListener(this);
-        Intent data = new Intent();
-        data.putExtra(EXTRA_CHANNEL, user);
-        setResult(RESULT_RETURN_QUERY, data);
-        finish();
-    }
-
-    @Override
-    public void onOnline() {
-        for (int i=0; i<getListView().getChildCount(); i++) {
-            LinearLayout layout = (LinearLayout) getListView().getChildAt(i);
-            layout.setClickable(true);
-            layout.findViewById(R.id.userInfoButton).setClickable(true);
+        if (NetworkStateHandler.isConnected()) {
+            view = ((LinearLayout) view).getChildAt(0);
+            String user = ((TextView) ((LinearLayout) view).getChildAt(0)).getText().toString();
+            session.removeListener(this);
+            Intent data = new Intent();
+            data.putExtra(EXTRA_CHANNEL, user);
+            setResult(RESULT_RETURN_QUERY, data);
+            finish();
         }
     }
 
     @Override
+    public void onOnline() {
+        adjustToConnectivity();
+    }
+
+    @Override
     public void onOffline() {
+        adjustToConnectivity();
+    }
+
+    private void adjustToConnectivity() {
+        boolean connectivity = NetworkStateHandler.isConnected();
         for (int i=0; i<getListView().getChildCount(); i++) {
             LinearLayout layout = (LinearLayout) getListView().getChildAt(i);
-            layout.setClickable(false);
-            layout.findViewById(R.id.userInfoButton).setClickable(false);
+            layout.setClickable(connectivity);
+            layout.findViewById(R.id.userInfoButton).setClickable(connectivity);
         }
     }
 }

@@ -486,6 +486,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
             this.users.add(user);
         }
         userArrayAdapter.notifyDataSetChanged();
+        adjustToConnectivity();
     }
 
     public void userInfo(View view) {
@@ -654,8 +655,12 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
             menu.findItem(R.id.action_join_channel).setEnabled(true);
             menu.findItem(R.id.action_leave_channel).setEnabled(true);
             drawerLayout.findViewById(R.id.channel_search_drawer_button).setEnabled(true);
-            ((LinearLayout) drawerLayout.findViewById(R.id.channel_search_drawer_button)).getChildAt(0).setEnabled(true);
-            ((TextView) ((LinearLayout) drawerLayout.findViewById(R.id.channel_search_drawer_button)).getChildAt(0)).setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_action_search, 0, 0, 0);
+            ((LinearLayout) drawerLayout.findViewById(R.id.channel_search_drawer_button))
+                    .getChildAt(0).setEnabled(true);
+            ((TextView) ((LinearLayout) drawerLayout
+                    .findViewById(R.id.channel_search_drawer_button)).getChildAt(0))
+                    .setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_action_search, 0, 0, 0);
+            adjustToConnectivity();
         }
     }
 
@@ -670,7 +675,19 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
             menu.findItem(R.id.action_join_channel).setEnabled(false);
             menu.findItem(R.id.action_leave_channel).setEnabled(false);
             drawerLayout.findViewById(R.id.channel_search_drawer_button).setEnabled(false);
-            ((TextView) ((LinearLayout) drawerLayout.findViewById(R.id.channel_search_drawer_button)).getChildAt(0)).setCompoundDrawablesWithIntrinsicBounds(android.R.drawable.ic_menu_search, 0, 0, 0);
+            ((TextView) ((LinearLayout) drawerLayout
+                    .findViewById(R.id.channel_search_drawer_button)).getChildAt(0))
+                    .setCompoundDrawablesWithIntrinsicBounds(android.R.drawable.ic_menu_search, 0, 0, 0);
+            adjustToConnectivity();
+        }
+    }
+
+    private void adjustToConnectivity() {
+        boolean connectivity = NetworkStateHandler.isConnected();
+        for (int i=0; i<rightDrawer.getChildCount(); i++) {
+            LinearLayout layout = (LinearLayout) rightDrawer.getChildAt(i);
+            layout.setClickable(connectivity);
+            layout.findViewById(R.id.userInfoButton).setClickable(connectivity);
         }
     }
 
