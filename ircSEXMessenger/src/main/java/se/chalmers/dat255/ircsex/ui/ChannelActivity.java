@@ -180,10 +180,6 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
             case R.id.action_leave_channel:
                 leaveActiveChannel();
                 break;
-//            case R.id.action_user_list:
-//                drawerLayout.openDrawer(Gravity.END);
-//                drawerOpen = true;
-//                break;
             case R.id.action_change_nick:
                 changeNick();
                 break;
@@ -346,10 +342,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         super.onActivityResult(requestCode, resultCode, data);
         switch (resultCode) {
             case NoServersActivity.RESULT_RETURN_DATA:
-                String server = data.getStringExtra(NoServersActivity.EXTRA_SERVER);
-                String port = data.getStringExtra(NoServersActivity.EXTRA_PORT);
-                String nickname = data.getStringExtra(NoServersActivity.EXTRA_NICKNAME);
-                ServerConnectionData ConnectionData = new ServerConnectionData(
+                ServerConnectionData connectionData = new ServerConnectionData(
                         data.getStringExtra(NoServersActivity.EXTRA_SERVER),
                         Integer.parseInt(data.getStringExtra(NoServersActivity.EXTRA_PORT)),
                         data.getStringExtra(NoServersActivity.EXTRA_NICKNAME),
@@ -362,8 +355,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
                         data.getStringExtra(NoServersActivity.EXTRA_SSH_USERNAME),
                         data.getStringExtra(NoServersActivity.EXTRA_SSH_PASSWORD)
                 );
-                // Maybe validate here, or maybe somewhere else? Should we even validate?
-                startServer(ConnectionData);
+                startServer(connectionData);
                 break;
             case SearchActivity.RESULT_RETURN_CHANNEL:
                 String channel = data.getStringExtra(SearchActivity.EXTRA_CHANNEL);
@@ -394,21 +386,15 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         getActionBar().setSubtitle(session.getActiveServer().getHost());
     }
 
-    /**
-     * When using the ActionBarDrawerToggle, you must call it during
-     * onPostCreate() and onConfigurationChanged()...
-     */
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        // Sync the toggle state after onRestoreInstanceState has occurred.
         mDrawerToggle.syncState();
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        // Pass any configuration change to the drawer toggles
         mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
