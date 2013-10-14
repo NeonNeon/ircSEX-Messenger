@@ -134,6 +134,10 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         }
 
         NetworkStateHandler.addListener(this);
+        if (!NetworkStateHandler.isConnected()) {
+            Intent intent = new Intent(this, NoInternetActivity.class);
+            startActivity(intent);
+        }
     }
 
     private void showConnectionDialog(String message) {
