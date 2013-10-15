@@ -8,8 +8,6 @@ import android.database.sqlite.SQLiteDatabase;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import se.chalmers.dat255.ircsex.model.database.DatabaseHelper;
-
 /**
  * Database adapter for servers table.
  *

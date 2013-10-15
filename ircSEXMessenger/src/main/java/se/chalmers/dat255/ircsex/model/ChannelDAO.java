@@ -10,8 +10,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import se.chalmers.dat255.ircsex.model.database.DatabaseHelper;
-
 /**
  * Database adapter for channels table.
  *
