@@ -76,6 +76,8 @@ public class IrcProtocolAdapter implements Runnable {
 
         String[] parts = reply.split(BLANK, 3);
 
+        handlePing(parts);
+
         switch (parts[1]) {
             case IrcProtocolStrings.PRIVMSG:
                 handlePrivmsg(parts);
@@ -110,6 +112,12 @@ public class IrcProtocolAdapter implements Runnable {
         handleReplyOld(reply);
     }
 
+    private void handlePing(String[] parts) {
+        if (parts[0].equals(IrcProtocolStrings.PING)) {
+            write(IrcProtocolStrings.PONG + BLANK + parts[1]);
+        }
+    }
+
     private void handlePrivmsg(String[] parts) {
         String nick = parts[0].substring(1, parts[0].indexOf(BANG));
         String channel = parts[2].substring(0, parts[2].indexOf(BLANK));
@@ -124,13 +132,7 @@ public class IrcProtocolAdapter implements Runnable {
     private void handleReplyOld(String reply) {
         //TODO - handle more cases
         int index;
-        if (reply.startsWith("PING ")) {
-            write("PONG " + reply.substring(5));
-        }
-        else if (reply.contains("MODE")) { // TODO: This is hardcoded.
-            //listener.serverRegistered();
-        }
-        else if (reply.contains(" 353")) {
+        if (reply.contains(" 353")) {
             index = reply.indexOf("=");
             String channel = reply.substring(index + 2, reply.indexOf(" ", index + 2));
 
