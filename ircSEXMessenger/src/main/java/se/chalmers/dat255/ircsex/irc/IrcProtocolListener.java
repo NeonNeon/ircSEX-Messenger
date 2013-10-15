@@ -17,7 +17,7 @@ public interface IrcProtocolListener {
     /**
      * Called when your are registered on the server.
      */
-    public void serverRegistered();
+    public void serverRegistered(String server, String nick);
 
     /**
      * Called when a user changed nick.

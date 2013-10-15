@@ -21,6 +21,7 @@ public class IrcProtocolStrings {
     public static final String INVITE = "INVITE";
 
     // Numeric replies
+    public static final String RPL_WELCOME = "001";
     public static final String RPL_WHOISUSER = "311";
     public static final String RPL_WHOISIDLE = "317";
     public static final String RPL_WHOISCHANNELS = "319";

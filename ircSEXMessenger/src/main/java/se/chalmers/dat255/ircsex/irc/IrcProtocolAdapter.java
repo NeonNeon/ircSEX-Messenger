@@ -42,7 +42,7 @@ public class IrcProtocolAdapter implements Runnable {
 
     public void run() {
         createBuffers();
-        String line = "";
+        String line = "   ";
         do {
             Log.e("IRC", line);
             handleReply(line);
@@ -99,6 +99,12 @@ public class IrcProtocolAdapter implements Runnable {
                 listener.nickChanged(
                         parts[0].substring(1, parts[0].indexOf(BANG)),
                         parts[2].substring(parts[2].indexOf(COLON) + 1));
+                break;
+            case IrcProtocolStrings.RPL_WELCOME:
+                listener.serverRegistered(
+                        parts[0].substring(1),
+                        parts[2].substring(0, parts[2].indexOf(BLANK)));
+                break;
         }
 
         handleReplyOld(reply);
@@ -122,7 +128,7 @@ public class IrcProtocolAdapter implements Runnable {
             write("PONG " + reply.substring(5));
         }
         else if (reply.contains("MODE")) { // TODO: This is hardcoded.
-            listener.serverRegistered();
+            //listener.serverRegistered();
         }
         else if (reply.contains(" 353")) {
             index = reply.indexOf("=");
