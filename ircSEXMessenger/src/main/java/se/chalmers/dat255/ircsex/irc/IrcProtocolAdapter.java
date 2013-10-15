@@ -110,15 +110,25 @@ public class IrcProtocolAdapter implements Runnable {
                         parts[2].substring(parts[2].lastIndexOf(COLON) + 1));
                 break;
             case IrcProtocolStrings.RPL_WHOISIDLE:
-                String[] data = parts[2].split(BLANK, 4);
+                String[] idleData = parts[2].split(BLANK, 4);
                 listener.whoisIdleTime(
-                        data[1],
-                        Integer.parseInt(data[2]));
+                        idleData[1],
+                        Integer.parseInt(idleData[2]));
                 break;
             case IrcProtocolStrings.RPL_WHOISCHANNELS:
                 listener.whoisChannels(
                         parts[2].split(BLANK, 3)[1],
                         Arrays.asList(parts[2].substring(parts[2].lastIndexOf(COLON) + 1).split(BLANK)));
+                break;
+            case IrcProtocolStrings.RPL_LIST:
+                String[] clrData = parts[2].split(BLANK,5);
+                listener.channelListResponse(clrData[1], clrData[4], clrData[2]);
+                break;
+            case IrcProtocolStrings.RPL_NAMREPLY:
+                int colonIndex = parts[2].indexOf(COLON);
+                listener.usersInChannel(
+                        parts[2].substring(parts[2].indexOf(HASHTAG), colonIndex - 1),
+                        Arrays.asList(parts[2].substring(colonIndex + 1).split(BLANK)));
                 break;
         }
 
@@ -145,27 +155,9 @@ public class IrcProtocolAdapter implements Runnable {
     private void handleReplyOld(String reply) {
         //TODO - handle more cases
         int index;
-        if (reply.contains(" 353")) {
-            index = reply.indexOf("=");
-            String channel = reply.substring(index + 2, reply.indexOf(" ", index + 2));
-
-            index = reply.indexOf(':', 1);
-
-            listener.usersInChannel(channel, Arrays.asList(reply.substring(index + 1).split(" ")));
-        }
-        else if (reply.contains("322 ")) {
-            if ((index = reply.indexOf("#")) != -1) {
-                String channel = reply.substring(index, reply.indexOf(":", 1) - 1);
-                String topic = reply.substring(reply.indexOf("] ") + 2);
-                String users = channel.substring(channel.indexOf(" ") + 1);
-                channel = channel.substring(0, channel.indexOf(" "));
-                listener.channelListResponse(channel, topic, users);
-            }
-        }
-
         // Numeric replies - should be after everything else
         // Should maybe be implemented safer.
-        else if (reply.contains("433")) {
+        if (reply.contains("433")) {
             listener.nickChangeError();
         }
     }
