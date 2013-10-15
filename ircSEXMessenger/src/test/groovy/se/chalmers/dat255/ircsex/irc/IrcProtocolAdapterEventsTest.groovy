@@ -7,7 +7,7 @@ import spock.lang.Specification
  */
 class IrcProtocolAdapterEventsTest extends Specification {
     IrcProtocolListener subscriber = Mock()
-    IrcProtocolAdapter ipa = new IrcProtocolAdapter(new NormalTaste("irc.chalmers.it", 80), subscriber)
+    IrcProtocolAdapter ipa = new IrcProtocolAdapter(new NormalFlavor("irc.chalmers.it", 80), subscriber)
 
     def setup() {
     }

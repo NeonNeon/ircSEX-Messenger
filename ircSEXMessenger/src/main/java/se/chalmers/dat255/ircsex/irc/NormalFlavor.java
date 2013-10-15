@@ -10,7 +10,7 @@ import java.net.Socket;
 /**
  * Created by oed on 10/9/13.
  */
-public class NormalTaste implements Taste {
+public class NormalFlavor implements Flavor {
 
     private String host;
     private int port;
@@ -18,7 +18,7 @@ public class NormalTaste implements Taste {
 
     private Socket socket;
 
-    public NormalTaste(String host, int port) {
+    public NormalFlavor(String host, int port) {
         this.host = host;
         this.port = port;
         socketCreated = false;

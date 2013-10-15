@@ -10,18 +10,18 @@ public class Brewery {
     public static IrcProtocolAdapter getNormalIPA(String host,
                                                   int port,
                                                   IrcProtocolListener listener) {
-        return getIPAWithTaste(new NormalTaste(host, port), listener);
+        return getIPAWithTaste(new NormalFlavor(host, port), listener);
     }
 
     public static IrcProtocolAdapter getSSHIPA(String address, String user,
                                                String pass, String ircHost, int ircPort,
                                                IrcProtocolListener listener) {
-        return getIPAWithTaste(new SSHTaste(address, user, pass, ircHost, ircPort, NormalTaste.class), listener);
+        return getIPAWithTaste(new SSHFlavor(address, user, pass, ircHost, ircPort, NormalFlavor.class), listener);
     }
 
-    private static IrcProtocolAdapter getIPAWithTaste(Taste taste,
+    private static IrcProtocolAdapter getIPAWithTaste(Flavor flavor,
                                                       IrcProtocolListener listener) {
-        return new IrcProtocolAdapter(taste, listener);
+        return new IrcProtocolAdapter(flavor, listener);
     }
 
     public static IrcProtocolAdapter getIPA(ServerConnectionData data,

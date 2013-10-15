@@ -7,8 +7,6 @@ import net.schmizz.sshj.transport.verification.HostKeyVerifier;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
@@ -18,7 +16,7 @@ import java.security.PublicKey;
 /**
  * Created by oed on 10/10/13.
  */
-public class SSHTaste implements Taste, HostKeyVerifier {
+public class SSHFlavor implements Flavor, HostKeyVerifier {
 
     private static final String LOCALHOST = "localhost";
     private static final int LOCALPORT = 1337;
@@ -27,7 +25,7 @@ public class SSHTaste implements Taste, HostKeyVerifier {
     private String sshPass;
     private String ircHost;
     private int ircPort;
-    private Taste socketTaste;
+    private Flavor socketFlavor;
     private boolean tunnelCreated;
 
     private SSHClient ssh;
@@ -44,16 +42,16 @@ public class SSHTaste implements Taste, HostKeyVerifier {
      * @param sshPass - the password for the ssh user
      * @param ircPort - the ircPort to use for the irc server
      */
-    public SSHTaste(String sshAddress, String sshUser, String sshPass,
-                    String ircHost, int ircPort,
-                    Class<? extends Taste> socketTaste) {
+    public SSHFlavor(String sshAddress, String sshUser, String sshPass,
+                     String ircHost, int ircPort,
+                     Class<? extends Flavor> socketFlavor) {
         this.sshAddress = sshAddress;
         this.sshUser = sshUser;
         this.sshPass = sshPass;
         this.ircHost = ircHost;
         this.ircPort = ircPort;
         try {
-            this.socketTaste = socketTaste.getConstructor(String.class, int.class)
+            this.socketFlavor = socketFlavor.getConstructor(String.class, int.class)
                     .newInstance(LOCALHOST, LOCALPORT);
         } catch (InstantiationException e) {
             e.printStackTrace();
@@ -70,18 +68,18 @@ public class SSHTaste implements Taste, HostKeyVerifier {
     @Override
     public BufferedReader getInput() throws IOException {
         checkTunnel();
-        return socketTaste.getInput();
+        return socketFlavor.getInput();
     }
 
     @Override
     public BufferedWriter getOutput() throws IOException {
         checkTunnel();
-        return socketTaste.getOutput();
+        return socketFlavor.getOutput();
     }
 
     @Override
     public void close() throws IOException {
-        socketTaste.close();
+        socketFlavor.close();
         ssh.close();
     }
 

@@ -5,9 +5,6 @@ import android.util.Log;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.Socket;
 import java.util.Arrays;
 
 /**
@@ -23,7 +20,7 @@ public class IrcProtocolAdapter implements Runnable {
     private static final String BANG = "!";
 
     private boolean running = true;
-    private Taste taste;
+    private Flavor flavor;
     private BufferedReader input;
     private BufferedWriter output;
 
@@ -32,11 +29,11 @@ public class IrcProtocolAdapter implements Runnable {
     /**
      * Creates a socket connection to the specified server.
      *
-     * @param taste - the taste of the IPA
+     * @param flavor - the flavor of the IPA
      * @param listener - the listener to use
      */
-    public IrcProtocolAdapter(Taste taste, IrcProtocolListener listener) {
-        this.taste = taste;
+    public IrcProtocolAdapter(Flavor flavor, IrcProtocolListener listener) {
+        this.flavor = flavor;
         this.listener = listener;
     }
 
@@ -58,8 +55,8 @@ public class IrcProtocolAdapter implements Runnable {
 
     private void createBuffers() {
         try {
-            output = taste.getOutput();
-            input = taste.getInput();
+            output = flavor.getOutput();
+            input = flavor.getInput();
         } catch (IOException e) {
             e.printStackTrace();
             listener.serverDisconnected();
@@ -212,7 +209,7 @@ public class IrcProtocolAdapter implements Runnable {
     public void disconnect(String message) {
         write(IrcProtocolStrings.QUIT + BLANK + COLON + message);
         try {
-            taste.close();
+            flavor.close();
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -307,7 +304,7 @@ public class IrcProtocolAdapter implements Runnable {
     }
 
     private synchronized void write(String string) {
-        System.out.print(string);
+        System.out.println(string);
         try {
             output.write(string + "\r\n");
             output.flush();
@@ -317,5 +314,3 @@ public class IrcProtocolAdapter implements Runnable {
         }
     }
 }
-
-
