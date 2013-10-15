@@ -4,14 +4,12 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import se.chalmers.dat255.ircsex.model.database.ContextManager;
 import se.chalmers.dat255.ircsex.model.database.DatabaseHelper;
 
 /**
@@ -27,7 +25,7 @@ public class HighlightDAO {
      * Creates an object of HighlightDAO.
      */
     public HighlightDAO() {
-        dbHelper = new DatabaseHelper(ContextManager.CHANNEL_CONTEXT);
+        dbHelper = new DatabaseHelper(Session.context);
     }
 
     /**

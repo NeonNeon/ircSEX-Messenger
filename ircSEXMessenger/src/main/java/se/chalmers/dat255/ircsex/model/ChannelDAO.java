@@ -10,7 +10,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import se.chalmers.dat255.ircsex.model.database.ContextManager;
 import se.chalmers.dat255.ircsex.model.database.DatabaseHelper;
 
 /**
@@ -30,7 +29,7 @@ public class ChannelDAO {
      * Creates an object of ChannelDAO.
      */
     public ChannelDAO() {
-        dbHelper = new DatabaseHelper(ContextManager.CHANNEL_CONTEXT);
+        dbHelper = new DatabaseHelper(Session.context);
     }
 
     /**

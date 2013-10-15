@@ -10,8 +10,6 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
-import se.chalmers.dat255.ircsex.model.database.ContextManager;
-
 /**
  * Created by Oskar on 2013-10-02.
  */
@@ -32,7 +30,7 @@ public class NetworkStateHandler extends BroadcastReceiver {
             started = true;
 
             ConnectivityManager cm =
-                    (ConnectivityManager) ContextManager.SERVER_CONTEXT.getSystemService(Context.CONNECTIVITY_SERVICE);
+                    (ConnectivityManager) Session.context.getSystemService(Context.CONNECTIVITY_SERVICE);
             internet = cm.getActiveNetworkInfo() != null &&
                     cm.getActiveNetworkInfo().isConnectedOrConnecting();
 
