@@ -130,9 +130,10 @@ public class IrcProtocolAdapter implements Runnable {
                         parts[2].substring(parts[2].indexOf(HASHTAG), colonIndex - 1),
                         Arrays.asList(parts[2].substring(colonIndex + 1).split(BLANK)));
                 break;
+            case IrcProtocolStrings.ERR_NICKNAMEINUSE:
+                listener.nickChangeError();
+                break;
         }
-
-        handleReplyOld(reply);
     }
 
     private void handlePing(String[] parts) {
@@ -149,16 +150,6 @@ public class IrcProtocolAdapter implements Runnable {
             listener.channelMessageReceived(channel, nick, msg);
         } else {
             listener.queryMessageReceived(nick, msg);
-        }
-    }
-
-    private void handleReplyOld(String reply) {
-        //TODO - handle more cases
-        int index;
-        // Numeric replies - should be after everything else
-        // Should maybe be implemented safer.
-        if (reply.contains("433")) {
-            listener.nickChangeError();
         }
     }
 
