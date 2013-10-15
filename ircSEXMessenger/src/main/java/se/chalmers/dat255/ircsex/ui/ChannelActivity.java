@@ -169,10 +169,6 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         }
         // Handle action buttons
         switch(item.getItemId()) {
-            case R.id.action_add_server:
-                DialogFragment serverConnectDialogFragment = new ServerConnectDialogFragment();
-                serverConnectDialogFragment.show(getSupportFragmentManager(), "serverconnect");
-                break;
             case R.id.action_join_channel:
                 DialogFragment joinChannelDialogFragment = new JoinChannelDialogFragment();
                 joinChannelDialogFragment.show(getSupportFragmentManager(), "joinchannel");
@@ -640,7 +636,6 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
             menu.findItem(R.id.search_messages).setEnabled(true);
             menu.findItem(R.id.search_messages).setIcon(R.drawable.ic_action_search);
             menu.findItem(R.id.action_invite_user).setEnabled(true);
-            menu.findItem(R.id.action_add_server).setEnabled(true);
             menu.findItem(R.id.action_change_nick).setEnabled(true);
             menu.findItem(R.id.action_join_channel).setEnabled(true);
             menu.findItem(R.id.action_leave_channel).setEnabled(true);
@@ -660,7 +655,6 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
             menu.findItem(R.id.search_messages).setEnabled(false);
             menu.findItem(R.id.search_messages).setIcon(android.R.drawable.ic_menu_search);
             menu.findItem(R.id.action_invite_user).setEnabled(false);
-            menu.findItem(R.id.action_add_server).setEnabled(false);
             menu.findItem(R.id.action_change_nick).setEnabled(false);
             menu.findItem(R.id.action_join_channel).setEnabled(false);
             menu.findItem(R.id.action_leave_channel).setEnabled(false);
