@@ -4,8 +4,6 @@ import android.content.Context;
 
 import java.util.Map;
 
-import se.chalmers.dat255.ircsex.model.database.ContextManager;
-
 /**
  * This class represents an IRC session. It lists and handles servers.
  *
@@ -21,12 +19,13 @@ public class Session {
 
     private final ServerDAO datasource;
 
+    public static Context context;
+
     /**
      * Creates an Session object.
      */
     private Session(Context context) {
-        ContextManager.CHANNEL_CONTEXT = context;
-        ContextManager.SERVER_CONTEXT = context;
+        this.context = context;
 
         datasource = new ServerDAO();
         datasource.open();
