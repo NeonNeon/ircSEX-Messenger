@@ -7,7 +7,7 @@ import java.io.IOException;
 /**
  * Created by oed on 10/9/13.
  */
-public interface Taste {
+public interface Flavor {
 
     public BufferedReader getInput() throws IOException;
 

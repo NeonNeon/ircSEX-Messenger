@@ -5,9 +5,6 @@ import android.util.Log;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.Socket;
 import java.util.Arrays;
 
 /**
@@ -17,8 +14,13 @@ import java.util.Arrays;
  */
 public class IrcProtocolAdapter implements Runnable {
 
+    private static final String BLANK = " ";
+    private static final String COLON = ":";
+    private static final String HASHTAG = "#";
+    private static final String BANG = "!";
+
     private boolean running = true;
-    private Taste taste;
+    private Flavor flavor;
     private BufferedReader input;
     private BufferedWriter output;
 
@@ -27,17 +29,17 @@ public class IrcProtocolAdapter implements Runnable {
     /**
      * Creates a socket connection to the specified server.
      *
-     * @param taste - the taste of the IPA
+     * @param flavor - the flavor of the IPA
      * @param listener - the listener to use
      */
-    public IrcProtocolAdapter(Taste taste, IrcProtocolListener listener) {
-        this.taste = taste;
+    public IrcProtocolAdapter(Flavor flavor, IrcProtocolListener listener) {
+        this.flavor = flavor;
         this.listener = listener;
     }
 
     public void run() {
         createBuffers();
-        String line = "";
+        String line = "   ";
         do {
             Log.e("IRC", line);
             handleReply(line);
@@ -53,8 +55,8 @@ public class IrcProtocolAdapter implements Runnable {
 
     private void createBuffers() {
         try {
-            output = taste.getOutput();
-            input = taste.getInput();
+            output = flavor.getOutput();
+            input = flavor.getInput();
         } catch (IOException e) {
             e.printStackTrace();
             listener.serverDisconnected();
@@ -67,87 +69,87 @@ public class IrcProtocolAdapter implements Runnable {
      * a message or a channel message.
      */
     private void handleReply(String reply) {
-        //TODO - handle more cases
         System.out.println(reply);
-        int index;
-        if ((index = reply.indexOf("PRIVMSG")) != -1) {
-            String nick = reply.substring(1, reply.indexOf('!'));
-            int msgIndex = reply.indexOf(':', 1);
-            String channel = reply.substring(index + 8, msgIndex - 1);
-            String message = reply.substring(msgIndex + 1);
 
-            if (channel.contains("#")) {
-                listener.channelMessageReceived(channel, nick, message);
-            }
-            else {
-                listener.queryMessageReceived(nick, message);
-            }
-        }
-        else if (reply.startsWith("PING ")) {
-            write("PONG " + reply.substring(5));
-        }
-        else if ((index = reply.indexOf("JOIN ")) != -1) {
-            listener.userJoined(reply.substring(reply.indexOf('#')),
-                    reply.substring(1, reply.indexOf('!')));
-        }
-        else if ((index = reply.indexOf("PART")) != -1) {
-            listener.userParted(reply.substring(index + 5),
-                    reply.substring(1, reply.indexOf('!')));
-        }
-        else if ((index = reply.indexOf("QUIT")) != -1) {
-            String message = reply.substring(index + 6);
-            String user = reply.substring(1, reply.indexOf('!'));
-            listener.userQuit(user, message);
-        }
-        else if ((index = reply.indexOf("NICK ")) != -1) {
-            listener.nickChanged(reply.substring(reply.indexOf(':') + 1, reply.indexOf('!')),
-                    reply.substring(index + 6));
-        }
-        else if (reply.contains("MODE")) { // TODO: This is hardcoded.
-            listener.serverRegistered();
-        }
-        else if (reply.contains(" 353")) {
-            index = reply.indexOf("=");
-            String channel = reply.substring(index + 2, reply.indexOf(" ", index + 2));
+        String[] parts = reply.split(BLANK, 3);
 
-            index = reply.indexOf(':', 1);
+        handlePing(parts);
 
-            listener.usersInChannel(channel, Arrays.asList(reply.substring(index + 1).split(" ")));
+        switch (parts[1]) {
+            case IrcProtocolStrings.PRIVMSG:
+                handlePrivmsg(parts);
+                break;
+            case IrcProtocolStrings.JOIN:
+                listener.userJoined(
+                        parts[2].substring(parts[2].indexOf(COLON) + 1),
+                        parts[0].substring(1, parts[0].indexOf(BANG)));
+                break;
+            case IrcProtocolStrings.PART:
+                listener.userParted(
+                        parts[2],
+                        parts[0].substring(1, parts[0].indexOf(BANG)));
+                break;
+            case IrcProtocolStrings.QUIT:
+                listener.userQuit(
+                        parts[0].substring(1, parts[0].indexOf(BANG)),
+                        parts[2].substring(parts[2].indexOf(COLON) + 1));
+                break;
+            case IrcProtocolStrings.NICK:
+                listener.nickChanged(
+                        parts[0].substring(1, parts[0].indexOf(BANG)),
+                        parts[2].substring(parts[2].indexOf(COLON) + 1));
+                break;
+            case IrcProtocolStrings.RPL_WELCOME:
+                listener.serverRegistered(
+                        parts[0].substring(1),
+                        parts[2].substring(0, parts[2].indexOf(BLANK)));
+                break;
+            case IrcProtocolStrings.RPL_WHOISUSER:
+                listener.whoisRealname(
+                        parts[2].split(BLANK, 3)[1],
+                        parts[2].substring(parts[2].lastIndexOf(COLON) + 1));
+                break;
+            case IrcProtocolStrings.RPL_WHOISIDLE:
+                String[] idleData = parts[2].split(BLANK, 4);
+                listener.whoisIdleTime(
+                        idleData[1],
+                        Integer.parseInt(idleData[2]));
+                break;
+            case IrcProtocolStrings.RPL_WHOISCHANNELS:
+                listener.whoisChannels(
+                        parts[2].split(BLANK, 3)[1],
+                        Arrays.asList(parts[2].substring(parts[2].lastIndexOf(COLON) + 1).split(BLANK)));
+                break;
+            case IrcProtocolStrings.RPL_LIST:
+                String[] clrData = parts[2].split(BLANK,5);
+                listener.channelListResponse(clrData[1], clrData[4], clrData[2]);
+                break;
+            case IrcProtocolStrings.RPL_NAMREPLY:
+                int colonIndex = parts[2].indexOf(COLON);
+                listener.usersInChannel(
+                        parts[2].substring(parts[2].indexOf(HASHTAG), colonIndex - 1),
+                        Arrays.asList(parts[2].substring(colonIndex + 1).split(BLANK)));
+                break;
+            case IrcProtocolStrings.ERR_NICKNAMEINUSE:
+                listener.nickChangeError();
+                break;
         }
-        else if ((index = reply.indexOf("311 ")) != -1) {
-            int index2 = reply.indexOf(' ', index + 5) + 1;
-            String nick = reply.substring(index2, reply.indexOf(' ', index2));
-            String realname = reply.substring(reply.lastIndexOf(':') + 1);
-            listener.whoisRealname(nick, realname);
-        }
-        else if ((index = reply.indexOf("319 ")) != -1) {
-            int index2 = reply.indexOf(' ', index + 5) + 1;
-            String nick = reply.substring(index2, reply.indexOf(' ', index2));
-            String channels = reply.substring(reply.lastIndexOf(':') + 1);
-            listener.whoisChannels(nick, Arrays.asList(channels.split(" ")));
-        }
-        else if ((index = reply.indexOf("317 ")) != -1) {
-            int index2 = reply.indexOf(' ', index + 5) + 1;
-            int index3 = reply.indexOf(' ', index2);
-            String nick = reply.substring(index2, index3);
-            int idleTime = Integer.parseInt(reply.substring(index3 + 1, reply.indexOf(' ', index3 + 1)));
-            System.out.println(nick+"|"+idleTime);
-            listener.whoisIdleTime(nick, idleTime);
-        }
-        else if (reply.contains("322 ")) {
-            if ((index = reply.indexOf("#")) != -1) {
-                String channel = reply.substring(index, reply.indexOf(":", 1) - 1);
-                String topic = reply.substring(reply.indexOf("] ") + 2);
-                String users = channel.substring(channel.indexOf(" ") + 1);
-                channel = channel.substring(0, channel.indexOf(" "));
-                listener.channelListResponse(channel, topic, users);
-            }
-        }
+    }
 
-        // Numeric replies - should be after everything else
-        // Should maybe be implemented safer.
-        else if (reply.contains("433")) {
-            listener.nickChangeError();
+    private void handlePing(String[] parts) {
+        if (parts[0].equals(IrcProtocolStrings.PING)) {
+            write(IrcProtocolStrings.PONG + BLANK + parts[1]);
+        }
+    }
+
+    private void handlePrivmsg(String[] parts) {
+        String nick = parts[0].substring(1, parts[0].indexOf(BANG));
+        String channel = parts[2].substring(0, parts[2].indexOf(BLANK));
+        String msg = parts[2].substring(parts[2].indexOf(COLON) + 1);
+        if (channel.contains(HASHTAG)) {
+            listener.channelMessageReceived(channel, nick, msg);
+        } else {
+            listener.queryMessageReceived(nick, msg);
         }
     }
 
@@ -163,7 +165,7 @@ public class IrcProtocolAdapter implements Runnable {
         if (login.isEmpty()) {
             login = nick;
         }
-        write("USER " + login + " 8 * : " + realName);
+        write(IrcProtocolStrings.USER + BLANK + login + " 8 * : " + realName);
     }
 
     /**
@@ -185,9 +187,9 @@ public class IrcProtocolAdapter implements Runnable {
      * @param message - the message to be displayed when quiting
      */
     public void disconnect(String message) {
-        write("QUIT :" + message);
+        write(IrcProtocolStrings.QUIT + BLANK + COLON + message);
         try {
-            taste.close();
+            flavor.close();
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -201,7 +203,7 @@ public class IrcProtocolAdapter implements Runnable {
      * @param channel - the channel to join
      */
     public void joinChannel(String channel) {
-        write("JOIN " + channel);
+        write(IrcProtocolStrings.JOIN + BLANK + channel);
     }
 
     /**
@@ -210,7 +212,7 @@ public class IrcProtocolAdapter implements Runnable {
      * @param key - the key to use
      */
     public void joinChannel(String channel, String key) {
-        write("JOIN " + channel + " " + key);
+        write(IrcProtocolStrings.JOIN + BLANK + channel + BLANK + key);
     }
 
     /**
@@ -218,7 +220,7 @@ public class IrcProtocolAdapter implements Runnable {
      * @param channel - the channel to part
      */
     public void partChannel(String channel) {
-        write("PART " + channel);
+        write(IrcProtocolStrings.PART + BLANK + channel);
     }
 
 
@@ -228,7 +230,7 @@ public class IrcProtocolAdapter implements Runnable {
      * @param password - the password to use
      */
     private void setPassword(String password) {
-        write("PASS " + password);
+        write(IrcProtocolStrings.PASS + BLANK + password);
     }
 
     /**
@@ -237,7 +239,7 @@ public class IrcProtocolAdapter implements Runnable {
      * @param nick - the nick to use
      */
     public void setNick(String nick) {
-        write("NICK " + nick);
+        write(IrcProtocolStrings.NICK + BLANK + nick);
     }
 
     /**
@@ -246,7 +248,7 @@ public class IrcProtocolAdapter implements Runnable {
      * @param message - the message to send.
      */
     public void sendChannelMessage(String channel, String message) {
-        write("PRIVMSG " + channel + " :" + message);
+        write(IrcProtocolStrings.PRIVMSG + BLANK + channel + BLANK + COLON + message);
     }
 
     /**
@@ -254,14 +256,14 @@ public class IrcProtocolAdapter implements Runnable {
      * @param channel - the channel to check
      */
     public void getUsers(String channel) {
-        write("NAMES " + channel);
+        write(IrcProtocolStrings.NAMES + BLANK + channel);
     }
 
     /**
      * Send a request to get all channels on the server.
      */
     public void listChannels() {
-        write("LIST");
+        write(IrcProtocolStrings.LIST);
     }
 
     /**
@@ -269,7 +271,7 @@ public class IrcProtocolAdapter implements Runnable {
      * @param nick - the nick to get info for
      */
     public void whois(String nick) {
-        write("WHOIS " + nick);
+        write(IrcProtocolStrings.WHOIS + BLANK + nick);
     }
 
     /**
@@ -278,7 +280,7 @@ public class IrcProtocolAdapter implements Runnable {
      * @param channel
      */
     public void invite(String nick, String channel) {
-        write("INVITE " + nick + " " + channel);
+        write(IrcProtocolStrings.INVITE + BLANK + nick + BLANK + channel);
     }
 
     private synchronized void write(String string) {
@@ -292,5 +294,3 @@ public class IrcProtocolAdapter implements Runnable {
         }
     }
 }
-
-
