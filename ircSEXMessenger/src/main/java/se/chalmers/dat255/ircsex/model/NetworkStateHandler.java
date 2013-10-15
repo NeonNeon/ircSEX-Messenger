@@ -29,10 +29,7 @@ public class NetworkStateHandler extends BroadcastReceiver {
             }
             started = true;
 
-            ConnectivityManager cm =
-                    (ConnectivityManager) Session.context.getSystemService(Context.CONNECTIVITY_SERVICE);
-            internet = cm.getActiveNetworkInfo() != null &&
-                    cm.getActiveNetworkInfo().isConnectedOrConnecting();
+            checkConnectivity();
 
             if (internet) {
                 listener.onOnline();
@@ -42,6 +39,15 @@ public class NetworkStateHandler extends BroadcastReceiver {
         }
     }
 
+    public static void checkConnectivity() {
+        ConnectivityManager cm =
+                (ConnectivityManager) Session.context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        boolean internet = cm.getActiveNetworkInfo() != null &&
+                cm.getActiveNetworkInfo().isConnectedOrConnecting();
+
+        new NetworkStateHandler().notifyListeners(internet);
+    }
+
     @Override
     public void onReceive(final Context context, final Intent intent) {
         if (intent.getExtras() != null) {
@@ -49,13 +55,19 @@ public class NetworkStateHandler extends BroadcastReceiver {
             final NetworkInfo ni = connectivityManager.getActiveNetworkInfo();
 
             if (ni != null && ni.isConnectedOrConnecting()) {
-                if (!internet) {
-                    listener.onOnline();
-                }
+                notifyListeners(true);
             } else if (intent.getBooleanExtra(ConnectivityManager.EXTRA_NO_CONNECTIVITY, Boolean.FALSE)) {
-                if (internet) {
-                    listener.onOffline();
-                }
+                notifyListeners(false);
+            }
+        }
+    }
+
+    private void notifyListeners(boolean internet) {
+        if (this.internet != internet) {
+            if (internet) {
+                listener.onOnline();
+            } else {
+                listener.onOffline();
             }
         }
     }
