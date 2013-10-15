@@ -61,10 +61,16 @@ public class NetworkStateHandler extends BroadcastReceiver {
     }
 
     public static boolean isConnected() {
+        if (!started) {
+            start();
+        }
         return internet;
     }
 
     public static void addListener(ConnectionListener listener) {
+        if (!started) {
+            start();
+        }
         if (listeners == null) {
             listeners = new ArrayList<ConnectionListener>();
         }
@@ -80,6 +86,9 @@ public class NetworkStateHandler extends BroadcastReceiver {
     }
 
     public static void notify(ConnectionListener listener) {
+        if (!started) {
+            start();
+        }
         if (internet) {
             listener.onOnline();
         } else {
