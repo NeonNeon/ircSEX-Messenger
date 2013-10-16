@@ -11,7 +11,6 @@ import java.util.concurrent.ConcurrentMap;
 import se.chalmers.dat255.ircsex.irc.Brewery;
 import se.chalmers.dat255.ircsex.irc.IrcProtocolAdapter;
 import se.chalmers.dat255.ircsex.irc.IrcProtocolListener;
-import se.chalmers.dat255.ircsex.irc.NormalFlavor;
 
 /**
  * This class lists and handles a server, including the protocol adapter and channels.
@@ -23,9 +22,9 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
     private final IrcUser user;
     private IrcChannel activeChannel;
 
-    private final ChannelDAO datasource;
-    private final ServerDAO serverDatasource;
-    private final HighlightDAO highlightDatasource;
+    private final ChannelDAO channelDAO;
+    private final ServerDAO serverDAO;
+    private final HighlightDAO highlightDAO;
 
     private final ArrayList<SearchlistChannelItem> channels;
     private final ConcurrentMap<String, IrcChannel> connectedChannels;
@@ -55,17 +54,17 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
         sessionListeners = new ArrayList<SessionListener>();
         whoisListeners = new ArrayList<WhoisListener>();
 
-        serverDatasource = new ServerDAO();
-        serverDatasource.open();
-        datasource = new ChannelDAO();
-        datasource.open();
-        highlightDatasource = new HighlightDAO();
-        highlightDatasource.open();
+        serverDAO = new ServerDAO();
+        serverDAO.open();
+        channelDAO = new ChannelDAO();
+        channelDAO.open();
+        highlightDAO = new HighlightDAO();
+        highlightDAO.open();
 
         channels = new ArrayList<SearchlistChannelItem>();
         connectedChannels = new ConcurrentHashMap<String, IrcChannel>();
 
-        highlightsWords = highlightDatasource.getHighlights();
+        highlightsWords = highlightDAO.getHighlights();
         if (highlightsWords.size() == 0) {
             addHighlight(user.getNick());
         }
@@ -77,7 +76,7 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
     }
 
     private void restoreChannels() {
-        for (String channel : datasource.getIrcChannelsByServer(serverConnectionData.getServer())) {
+        for (String channel : channelDAO.getIrcChannelsByServer(serverConnectionData.getServer())) {
             if (channel.contains("#")) {
                 joinChannel(channel);
             } else {
@@ -147,6 +146,7 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
         if (channel.contains("#")) {
             if (NetworkStateHandler.isConnected()) {
                 protocol.partChannel(channel);
+                channelDAO.removeChannel(channel);
             }
         } else {
             userParted(channel, user.getNick());
@@ -161,6 +161,7 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
     public void quitServer(String quitMessage) {
         if (NetworkStateHandler.isConnected()) {
             protocol.disconnect(quitMessage);
+            serverDAO.removeServer(getHost());
         }
     }
 
@@ -268,7 +269,7 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
      */
     public void addHighlight(String str) {
         highlightsWords.add(str);
-        highlightDatasource.addHighlight(str);
+        highlightDAO.addHighlight(str);
     }
 
     public List<String> getHighlightWords() {
@@ -281,7 +282,7 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
      */
     public void removeHighlight(String str) {
         highlightsWords.remove(str);
-        highlightDatasource.removeHighlight(str);
+        highlightDAO.removeHighlight(str);
     }
 
     /**
@@ -465,7 +466,7 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
             user.changeNick(newNick);
             removeHighlight(oldNick);
             addHighlight(newNick);
-            serverDatasource.updateNickname(serverConnectionData.getServer(), newNick);
+            serverDAO.updateNickname(serverConnectionData.getServer(), newNick);
         }
         for (IrcChannel channel : connectedChannels.values()) {
             channel.nickChanged(oldNick, newNick);
@@ -503,7 +504,7 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
                 channel.userJoined(new IrcUser(channelName, IrcUser.NO_STATUS));
             }
             connectedChannels.put(channelName, channel);
-            datasource.addChannel(serverConnectionData.getServer(), channelName);
+            channelDAO.addChannel(serverConnectionData.getServer(), channelName);
             for (SessionListener listener : sessionListeners) {
                 listener.onServerJoin(serverConnectionData.getServer(), channelName);
             }
@@ -528,7 +529,7 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
     public void userParted(String channelName, String nick) {
         if (user.isNamed(nick)) {
             connectedChannels.remove(channelName);
-            datasource.removeChannel(channelName);
+            channelDAO.removeChannel(channelName);
             for (SessionListener listener : sessionListeners) {
                 listener.onServerPart(serverConnectionData.getServer(), channelName);
             }
