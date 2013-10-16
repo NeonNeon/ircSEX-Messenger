@@ -76,7 +76,7 @@ public class ChannelSearchActivity extends SearchActivity {
 
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
-        if (NetworkStateHandler.isConnected()) {
+        if (NetworkStateHandler.getInstance().isConnected()) {
             super.onListItemClick(l, v, position, id);
             String text = ((TextView) v.findViewById(android.R.id.text1)).getText().toString();
             Intent data = new Intent();

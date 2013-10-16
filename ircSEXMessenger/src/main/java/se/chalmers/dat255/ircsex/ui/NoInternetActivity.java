@@ -17,11 +17,13 @@ import se.chalmers.dat255.ircsex.model.NetworkStateHandler;
 public class NoInternetActivity extends Activity implements NetworkStateHandler.ConnectionListener {
 
     private int image = -1;
+    private NetworkStateHandler networkStateHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        NetworkStateHandler.addListener(this);
+        networkStateHandler = NetworkStateHandler.getInstance();
+        networkStateHandler.addListener(this);
         setContentView(R.layout.activity_no_internet_connection);
         setImage();
     }
@@ -29,7 +31,7 @@ public class NoInternetActivity extends Activity implements NetworkStateHandler.
     @Override
     protected void onStop() {
         super.onStop();
-        NetworkStateHandler.removeListener(this);
+        networkStateHandler.removeListener(this);
     }
 
     private void setImage() {
@@ -45,7 +47,7 @@ public class NoInternetActivity extends Activity implements NetworkStateHandler.
     }
 
     public void retry(View view) {
-        NetworkStateHandler.notify(this);
+        networkStateHandler.notify(this);
     }
 
     @Override
