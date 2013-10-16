@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
-import java.net.Socket;
 import java.security.PublicKey;
 import java.util.Random;
 
@@ -121,7 +120,6 @@ public class SSHFlavor implements Flavor, HostKeyVerifier {
 
     @Override
     public boolean verify(String hostname, int port, PublicKey key) {
-        // TODO - verify for real
         return true;
     }
 }
