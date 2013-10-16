@@ -12,6 +12,7 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.security.PublicKey;
+import java.util.Random;
 
 /**
  * Created by oed on 10/10/13.
@@ -19,7 +20,9 @@ import java.security.PublicKey;
 public class SSHFlavor implements Flavor, HostKeyVerifier {
 
     private static final String LOCALHOST = "localhost";
-    private static final int LOCALPORT = 1337;
+    private static final int MIN_PORT = 49152;
+    private static final int MAX_PORT = 65535;
+    private final int LOCALPORT = getLocalPort();
     private String sshAddress;
     private String sshUser;
     private String sshPass;
@@ -30,9 +33,6 @@ public class SSHFlavor implements Flavor, HostKeyVerifier {
 
     private SSHClient ssh;
     private ServerSocket serverSocket;
-    private Socket socket;
-    private BufferedReader input;
-    private BufferedWriter output;
 
     /**
      * Create a taste that uses ssh.
@@ -85,14 +85,9 @@ public class SSHFlavor implements Flavor, HostKeyVerifier {
 
     private void checkTunnel() throws IOException {
         if (!tunnelCreated) {
-            createSocket();
+            createTunnel();
             tunnelCreated = true;
         }
-    }
-
-    private void createSocket() throws IOException {
-        createTunnel();
-        socket = new Socket(LOCALHOST, LOCALPORT);
     }
 
     private void createTunnel() throws IOException {
@@ -118,6 +113,10 @@ public class SSHFlavor implements Flavor, HostKeyVerifier {
                 }
             }
         }).start();
+    }
+
+    private static int getLocalPort() {
+        return new Random().nextInt(MAX_PORT - MIN_PORT) + MIN_PORT;
     }
 
     @Override
