@@ -69,10 +69,7 @@ public class IrcProtocolAdapter implements Runnable {
      * a message or a channel message.
      */
     private void handleReply(String reply) {
-        System.out.println(reply);
-
         String[] parts = reply.split(BLANK, 3);
-
         handlePing(parts);
 
         switch (parts[1]) {
@@ -118,7 +115,8 @@ public class IrcProtocolAdapter implements Runnable {
             case IrcProtocolStrings.RPL_WHOISCHANNELS:
                 listener.whoisChannels(
                         parts[2].split(BLANK, 3)[1],
-                        Arrays.asList(parts[2].substring(parts[2].lastIndexOf(COLON) + 1).split(BLANK)));
+                        Arrays.asList(parts[2].substring(
+                                parts[2].lastIndexOf(COLON) + 1).split(BLANK)));
                 break;
             case IrcProtocolStrings.RPL_LIST:
                 String[] clrData = parts[2].split(BLANK,5);
