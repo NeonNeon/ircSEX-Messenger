@@ -29,6 +29,7 @@ public class UserSearchActivity extends SearchActivity implements WhoisListener,
 
     private ArrayList<String> result;
     private Session session;
+    private NetworkStateHandler networkStateHandler;
 
     private View whois;
     private AlertDialog whoisProgressDialog;
@@ -41,8 +42,9 @@ public class UserSearchActivity extends SearchActivity implements WhoisListener,
         session = Session.getInstance(this, this);
         content = session.getActiveServer().getKnownUsers();
 
-        NetworkStateHandler.addListener(this);
-        NetworkStateHandler.notify(this);
+        networkStateHandler = NetworkStateHandler.getInstance();
+        networkStateHandler.addListener(this);
+        networkStateHandler.notify(this);
     }
 
     @Override
@@ -69,7 +71,7 @@ public class UserSearchActivity extends SearchActivity implements WhoisListener,
     }
 
     public void userInfo(View view) {
-        if (NetworkStateHandler.isConnected()) {
+        if (networkStateHandler.isConnected()) {
             View view1 = (View) view.getParent().getParent();
             String user = ((TextView) view1.findViewById(android.R.id.text1)).getText().toString();
 
@@ -159,7 +161,7 @@ public class UserSearchActivity extends SearchActivity implements WhoisListener,
     }
 
     public void queryUser(View view) {
-        if (NetworkStateHandler.isConnected()) {
+        if (networkStateHandler.isConnected()) {
             view = ((LinearLayout) view).getChildAt(0);
             String user = ((TextView) ((LinearLayout) view).getChildAt(0)).getText().toString();
             session.removeListener(this);
@@ -181,7 +183,7 @@ public class UserSearchActivity extends SearchActivity implements WhoisListener,
     }
 
     private void adjustToConnectivity() {
-        boolean connectivity = NetworkStateHandler.isConnected();
+        boolean connectivity = networkStateHandler.isConnected();
         for (int i=0; i<getListView().getChildCount(); i++) {
             LinearLayout layout = (LinearLayout) getListView().getChildAt(i);
             layout.setClickable(connectivity);

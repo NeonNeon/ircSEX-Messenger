@@ -3,6 +3,7 @@ package se.chalmers.dat255.ircsex.model;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
@@ -15,44 +16,44 @@ import java.util.List;
  */
 public class NetworkStateHandler extends BroadcastReceiver {
 
-    private static boolean started;
-    private static boolean internet;
+    private static NetworkStateHandler instance;
+
+    private boolean internet;
     private ConnectionListener listener;
-    private static List<ConnectionListener> listeners;
+    private List<ConnectionListener> listeners;
 
-    public NetworkStateHandler() {
+    private NetworkStateHandler() {
         listener = new ConnectionListenerImpl();
+        listeners = new ArrayList<ConnectionListener>();
 
-        if (!started) {
-            if (listeners == null) {
-                listeners = new ArrayList<ConnectionListener>();
-            }
-            started = true;
+        Session.context.getApplicationContext().registerReceiver(this, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 
-            checkConnectivity();
-
-            if (internet) {
-                listener.onOnline();
-            } else {
-                listener.onOffline();
-            }
-        }
+        checkConnectivity();
     }
 
-    public static void checkConnectivity() {
-        ConnectivityManager cm =
-                (ConnectivityManager) Session.context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        boolean internet = cm.getActiveNetworkInfo() != null &&
-                cm.getActiveNetworkInfo().isConnectedOrConnecting();
+    public synchronized static NetworkStateHandler getInstance() {
+        if (instance == null) {
+            instance = new NetworkStateHandler();
+        }
+        return instance;
+    }
 
-        new NetworkStateHandler().notifyListeners(internet);
+    public void checkConnectivity() {
+        if (Session.context != null) {
+            ConnectivityManager cm =
+                    (ConnectivityManager) Session.context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            boolean internet = cm.getActiveNetworkInfo() != null &&
+                    cm.getActiveNetworkInfo().isConnectedOrConnecting();
+
+            notifyListeners(internet);
+        }
     }
 
     @Override
     public void onReceive(final Context context, final Intent intent) {
         if (intent.getExtras() != null) {
-            final ConnectivityManager connectivityManager = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
-            final NetworkInfo ni = connectivityManager.getActiveNetworkInfo();
+            ConnectivityManager connectivityManager = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo ni = connectivityManager.getActiveNetworkInfo();
 
             if (ni != null && ni.isConnectedOrConnecting()) {
                 notifyListeners(true);
@@ -72,35 +73,19 @@ public class NetworkStateHandler extends BroadcastReceiver {
         }
     }
 
-    public static boolean isConnected() {
-        if (!started) {
-            start();
-        }
+    public boolean isConnected() {
         return internet;
     }
 
-    public static void addListener(ConnectionListener listener) {
-        if (!started) {
-            start();
-        }
-        if (listeners == null) {
-            listeners = new ArrayList<ConnectionListener>();
-        }
+    public void addListener(ConnectionListener listener) {
         listeners.add(listener);
     }
 
-    public static void removeListener(ConnectionListener listener) {
+    public void removeListener(ConnectionListener listener) {
         listeners.remove(listener);
     }
 
-    public static void start() {
-        new NetworkStateHandler();
-    }
-
-    public static void notify(ConnectionListener listener) {
-        if (!started) {
-            start();
-        }
+    public void notify(ConnectionListener listener) {
         if (internet) {
             listener.onOnline();
         } else {

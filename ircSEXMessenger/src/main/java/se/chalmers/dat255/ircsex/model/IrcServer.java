@@ -41,6 +41,7 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
     private List<WhoisListener> whoisListeners;
 
     private boolean reconnecting;
+    private NetworkStateHandler networkStateHandler;
 
     /**
      * Creates an IrcServer.
@@ -72,8 +73,9 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
         highlights = new ArrayList<IrcHighlight>();
         lastMessages = new ArrayList<IrcHighlight>();
 
-        NetworkStateHandler.addListener(this);
-        NetworkStateHandler.start();
+        networkStateHandler = NetworkStateHandler.getInstance();
+        networkStateHandler.addListener(this);
+        networkStateHandler.notify(this);
     }
 
     private void restoreChannels() {
@@ -121,7 +123,7 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
      * @param channel - Name of channel to join
      */
     public void joinChannel(String channel) {
-        if (NetworkStateHandler.isConnected()) {
+        if (networkStateHandler.isConnected()) {
             protocol.joinChannel(channel);
         }
     }
@@ -133,7 +135,7 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
      * @param key - Channel password
      */
     public void joinChannel(String channel, String key) {
-        if (NetworkStateHandler.isConnected()) {
+        if (networkStateHandler.isConnected()) {
             protocol.joinChannel(channel, key);
         }
     }
@@ -145,7 +147,7 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
      */
     public void partChannel(String channel) {
         if (channel.contains("#")) {
-            if (NetworkStateHandler.isConnected()) {
+            if (networkStateHandler.isConnected()) {
                 protocol.partChannel(channel);
             }
         } else {
@@ -159,7 +161,7 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
      * @param quitMessage - Message to be shown to other users.
      */
     public void quitServer(String quitMessage) {
-        if (NetworkStateHandler.isConnected()) {
+        if (networkStateHandler.isConnected()) {
             protocol.disconnect(quitMessage);
         }
     }
@@ -170,7 +172,7 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
      * @param newNick - New nickname
      */
     public void changeNick(String newNick) {
-        if (NetworkStateHandler.isConnected()) {
+        if (networkStateHandler.isConnected()) {
             protocol.setNick(newNick);
         }
     }
@@ -209,7 +211,7 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
      * @param message Message to send
      */
     public void sendMessage(String channel, String message) {
-        if (NetworkStateHandler.isConnected()) {
+        if (networkStateHandler.isConnected()) {
             protocol.sendChannelMessage(channel, message);
             connectedChannels.get(channel).newChatMessage(user.getNick(), message);
             ChatIrcMessage ircMessage = new ChatIrcMessage(user, message);
@@ -225,7 +227,7 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
      * @param user Username to lookup
      */
     public void whois(String user) {
-        if (NetworkStateHandler.isConnected()) {
+        if (networkStateHandler.isConnected()) {
             user = IrcUser.extractUserName(user);
             protocol.whois(user);
         }
@@ -238,7 +240,7 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
      * @param channel Channel to which the user will be invited
      */
     public void inviteUser(String user, IrcChannel channel) {
-        if (NetworkStateHandler.isConnected()) {
+        if (networkStateHandler.isConnected()) {
             protocol.invite(user, channel.getChannelName());
         }
     }
@@ -409,7 +411,7 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
     }
 
     public void listChannels() {
-        if (NetworkStateHandler.isConnected()) {
+        if (networkStateHandler.isConnected()) {
             channels.clear();
             protocol.listChannels();
         }
@@ -430,7 +432,7 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
 
     @Override
     public void serverConnected() {
-        if (NetworkStateHandler.isConnected()) {
+        if (networkStateHandler.isConnected()) {
             if (reconnecting) {
                 protocol.disconnect("");
                 reconnecting = false;
@@ -591,7 +593,7 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
 
     @Override
     public void serverDisconnected() {
-        if (NetworkStateHandler.isConnected()) {
+        if (networkStateHandler.isConnected()) {
             // TODO - should use Brewery
             protocol = new IrcProtocolAdapter(new NormalTaste(serverConnectionData.getServer(), serverConnectionData.getPort()), this);
         }

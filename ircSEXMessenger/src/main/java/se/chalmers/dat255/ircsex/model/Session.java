@@ -80,7 +80,7 @@ public class Session {
         IrcServer ircServer = new IrcServer(data);
         servers.put(data.getServer(), ircServer);
         ircServer.addSessionListener(sessionListener);
-        NetworkStateHandler.notify(ircServer);
+        NetworkStateHandler.getInstance().notify(ircServer);
         datasource.addServer(data);
     }
 

@@ -44,7 +44,7 @@ public class ChatFragment extends Fragment implements NetworkStateHandler.Connec
     public ChatFragment(ChatMessageSendListener messageSendListener, IrcChannel channel) {
         this.messageSendListener = messageSendListener;
         this.channel = channel;
-        NetworkStateHandler.addListener(this);
+        NetworkStateHandler.getInstance().addListener(this);
     }
 
     public void bringUpToSpeed(ChatMessageSendListener messageSendListener, IrcChannel channel) {

@@ -80,6 +80,8 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     private int selected = -1;
     private Menu menu;
 
+    private NetworkStateHandler networkStateHandler;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -133,8 +135,9 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
             startNoServersActivity();
         }
 
-        NetworkStateHandler.addListener(this);
-        if (!NetworkStateHandler.isConnected()) {
+        networkStateHandler = NetworkStateHandler.getInstance();
+        networkStateHandler.addListener(this);
+        if (!networkStateHandler.isConnected()) {
             Intent intent = new Intent(this, NoInternetActivity.class);
             startActivity(intent);
         }
@@ -667,7 +670,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     }
 
     private void adjustToConnectivity() {
-        boolean connectivity = NetworkStateHandler.isConnected();
+        boolean connectivity = networkStateHandler.isConnected();
         for (int i=0; i<rightDrawer.getChildCount(); i++) {
             LinearLayout layout = (LinearLayout) rightDrawer.getChildAt(i);
             layout.setClickable(connectivity);
