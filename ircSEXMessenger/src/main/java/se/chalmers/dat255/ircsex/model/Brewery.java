@@ -1,6 +1,10 @@
-package se.chalmers.dat255.ircsex.irc;
+package se.chalmers.dat255.ircsex.model;
 
-import se.chalmers.dat255.ircsex.model.ServerConnectionData;
+import se.chalmers.dat255.ircsex.irc.Flavor;
+import se.chalmers.dat255.ircsex.irc.IrcProtocolAdapter;
+import se.chalmers.dat255.ircsex.irc.IrcProtocolListener;
+import se.chalmers.dat255.ircsex.irc.NormalFlavor;
+import se.chalmers.dat255.ircsex.irc.SSHFlavor;
 
 /**
  * Created by oed on 10/10/13.
