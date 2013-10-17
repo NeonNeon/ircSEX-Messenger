@@ -650,7 +650,7 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
     @Override
     public void nickChangeError(String message) {
         for (SessionListener listener : sessionListeners) {
-            listener.nickChangeError();
+            listener.nickChangeError(message);
         }
     }
 
