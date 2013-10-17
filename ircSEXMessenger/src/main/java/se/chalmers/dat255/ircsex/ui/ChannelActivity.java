@@ -249,7 +249,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         String newNick = nickEditText.getText().toString();
-                        Log.e("IRCDEBUG", "Change nickname to " + newNick);
+                        Log.d("IRCDEBUG", "Change nickname to " + newNick);
                         session.changeNick(newNick);
                     }
                 })
@@ -400,12 +400,12 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
 
     @Override
     public void onConnectionEstablished(String host) {
-        Log.e("IRCDEBUG", "Opened connection " + host);
+        Log.d("IRCDEBUG", "Opened connection " + host);
     }
 
     @Override
     public void onRegistrationCompleted(final String host) {
-        Log.e("IRCDEBUG", "Registration completed");
+        Log.d("IRCDEBUG", "Registration completed");
         serverConnectProgressDialog.dismiss();
         session.setActiveServer(host);
         ChannelActivity.this.runOnUiThread(new Runnable() {
@@ -428,7 +428,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
 
     @Override
     public void onServerJoin(final String host, final String channelName) {
-        Log.e("IRCDEBUG", "Joined channel " + channelName);
+        Log.d("IRCDEBUG", "Joined channel " + channelName);
         ChannelActivity.this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -509,7 +509,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
                     } else {
                         fragment.addMessage(message);
                     }
-                    Log.e("IRCDEBUG", "onChannelMessage to: " + fragment.toString());
+                    Log.d("IRCDEBUG", "onChannelMessage to: " + fragment.toString());
                 }
             }
         });
