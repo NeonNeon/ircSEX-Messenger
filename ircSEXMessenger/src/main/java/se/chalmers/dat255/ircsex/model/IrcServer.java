@@ -93,7 +93,6 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
      */
     public void startProtocolAdapter() {
         protocol = Brewery.getIPA(serverConnectionData, this);
-       // protocol = Brewery.getSSHIPA("levelinver.se", "ircsex", "l", "localhost", 4444, this);
         new Thread(protocol).start();
     }
 
