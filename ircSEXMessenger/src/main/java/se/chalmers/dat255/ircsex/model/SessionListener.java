@@ -99,4 +99,9 @@ public interface SessionListener extends WhoisListener {
      * @param message
      */
     public void onSentMessage(String host, String channel, ChatIrcMessage message);
+
+    /**
+     * Is called if there was an error when trying to change nickname.
+     */
+    public void nickChangeError();
 }
