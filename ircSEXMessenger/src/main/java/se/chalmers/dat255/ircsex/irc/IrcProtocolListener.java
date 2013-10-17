@@ -110,4 +110,9 @@ public interface IrcProtocolListener {
      */
     public void serverDisconnected();
 
+    /**
+     * Server connection failed.
+     * Try to connect again, server might not exist.
+     */
+    public void serverConnectionFail();
 }
