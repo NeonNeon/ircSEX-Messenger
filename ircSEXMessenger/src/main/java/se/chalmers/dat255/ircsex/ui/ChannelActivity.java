@@ -566,7 +566,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
 
     @Override
     public void queryError(String message) {
-
+        showToast(message);
     }
 
     @Override

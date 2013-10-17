@@ -673,7 +673,11 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
 
     @Override
     public void queryError(String message, String user) {
-
+        for (SessionListener listener : sessionListeners) {
+            listener.queryError(message + " " + user);
+        }
+        partChannel(user);
+        //TODO: ^doesn't work :(
     }
 
     @Override

@@ -60,7 +60,7 @@
     <string name="hint_password">Password</string>
 
     <!-- Error strings -->
-    <string name="ERR_NOSUCHNICK">No such nickname</string>
+    <string name="ERR_NOSUCHNICK">No user named</string>
     <string name="ERR_NOSUCHSERVER">No such server</string>
     <string name="ERR_TOOMANYCHANNELS">Too many channels</string>
     <string name="ERR_ERRONEUSNICKNAME">Invalid characters</string>
