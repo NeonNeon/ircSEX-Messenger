@@ -31,6 +31,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -559,6 +560,16 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
                 if (channel.equals(channelName)) {
                     fragment.addSentMessage(message);
                 }
+            }
+        });
+    }
+
+    @Override
+    public void nickChangeError() {
+        ChannelActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(ChannelActivity.this, "Error while changing nickname", Toast.LENGTH_LONG).show();
             }
         });
     }
