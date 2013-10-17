@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.TimeUnit;
 
 import se.chalmers.dat255.ircsex.irc.IrcProtocolAdapter;
 import se.chalmers.dat255.ircsex.irc.IrcProtocolListener;
@@ -606,6 +607,11 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
     @Override
     public void serverDisconnected() {
         if (networkStateHandler.isConnected() && connectionAttempts++ < 10) {
+            try{
+                TimeUnit.MILLISECONDS.sleep(100);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
             startProtocolAdapter();
             Log.d("IRCDEBUG", "Connection attempt "+connectionAttempts+" failed");
         }else if(connectionAttempts >= 10){
