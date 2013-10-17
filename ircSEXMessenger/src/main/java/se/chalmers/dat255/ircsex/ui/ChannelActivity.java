@@ -592,6 +592,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
                 Toast.makeText(ChannelActivity.this, "Could not connect to server", Toast.LENGTH_LONG).show();
             }
         });
+        serverConnectProgressDialog.dismiss();
         startNoServersActivity();
     }
 
