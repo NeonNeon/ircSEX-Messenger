@@ -576,7 +576,9 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
 
     @Override
     public void channelJoinError(String message) {
-
+        showToast(message);
+        DialogFragment joinChannelDialogFragment = new JoinChannelDialogFragment();
+        joinChannelDialogFragment.show(getSupportFragmentManager(), "joinchannel");
     }
 
     @Override

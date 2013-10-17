@@ -687,7 +687,9 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
 
     @Override
     public void channelJoinError(String message) {
-
+        for (SessionListener listener : sessionListeners) {
+            listener.channelJoinError(message);
+        }
     }
 
     @Override
