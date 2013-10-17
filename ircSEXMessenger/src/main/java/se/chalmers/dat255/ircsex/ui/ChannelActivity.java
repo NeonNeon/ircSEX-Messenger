@@ -584,6 +584,17 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         });
     }
 
+    @Override
+    public void serverConnectionError() {
+        ChannelActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(ChannelActivity.this, "Could not connect to server", Toast.LENGTH_LONG).show();
+            }
+        });
+        startNoServersActivity();
+    }
+
 
     @Override
     public void onNickChange(String host, String channel, IrcMessage ircMessage) {
