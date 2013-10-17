@@ -68,5 +68,5 @@
     <string name="ERR_USERONCHANNEL">User already in channel</string>
     <string name="ERR_CHANNELISFULL">Channel is full</string>
     <string name="ERR_INVITEONLYCHAN">Channel is invite-only</string>
-    <string name="ERR_BANNEDFROMCHAN">You're banned from the channel</string>
+    <string name="ERR_BANNEDFROMCHAN">You\'re banned from the channel</string>
 </resources>
