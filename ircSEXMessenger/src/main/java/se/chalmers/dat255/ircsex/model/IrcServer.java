@@ -1,5 +1,7 @@
 package se.chalmers.dat255.ircsex.model;
 
+import android.util.Log;
+
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -41,6 +43,7 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
 
     private boolean reconnecting;
     private NetworkStateHandler networkStateHandler;
+    private int connectionAttempts = 0;
 
     /**
      * Creates an IrcServer.
@@ -602,8 +605,25 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
 
     @Override
     public void serverDisconnected() {
-        if (networkStateHandler.isConnected()) {
+        if (networkStateHandler.isConnected() && connectionAttempts++ < 10) {
             startProtocolAdapter();
+            Log.d("IRCDEBUG", "Connection attempt "+connectionAttempts+" failed");
+        }else if(connectionAttempts >= 10){
+            //10 attempts equal failure something
+            serverConnectionFail();
+            Log.e("IRCERROR", "Could not connect to server after 10 attempts");
+            connectionAttempts = 0;
+        }
+    }
+
+    /**
+     * Launched if for some reason the connection to
+     * the irc server fails and a buffer returns null.
+     */
+    @Override
+    public void serverConnectionFail() {
+        for (SessionListener listener : sessionListeners) {
+            listener.serverConnectionError();
         }
     }
 
@@ -645,6 +665,12 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
     @Override
     public void queryMessageReceived(String user, String message) {
         user = IrcUser.extractUserName(user);
+
+        try {
+            se.chalmers.dat255.ircsex.util.Encoding.checkEncoding(message);
+        } catch (UnsupportedEncodingException e) {
+            encodingError();
+        }
         boolean queryIsOpen = connectedChannels.containsKey(user);
         if (!queryIsOpen) {
             queryUser(user);
