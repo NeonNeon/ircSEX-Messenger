@@ -100,14 +100,39 @@ public interface IrcProtocolListener {
     // ERRORS
 
     /**
-     * Something went wrong when you tried to change nick.
-     */
-    public void nickChangeError();
-
-    /**
      * The server was disconnected.
      * To reconnect get a new IPA.
      */
     public void serverDisconnected();
+
+    /**
+     * Something went wrong while sending a query.
+     * @param message Error message
+     */
+    public void queryError(String message);
+
+    /**
+     * Something went wrong while logging in.
+     * @param message Error message
+     */
+    public void loginError(String message);
+
+    /**
+     * Something went wrong while joining a channel.
+     * @param message Error message
+     */
+    public void channelJoinError(String message);
+
+    /**
+     * Something went wrong when you tried to change nick.
+     * @param message Error message
+     */
+    public void nickChangeError(String message);
+
+    /**
+     * Something went wrong while inviting a user.
+     * @param message Error message
+     */
+    public void inviteError(String message);
 
 }

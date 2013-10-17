@@ -587,13 +587,6 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
     }
 
     @Override
-    public void nickChangeError() {
-        for (SessionListener listener : sessionListeners) {
-            listener.nickChangeError();
-        }
-    }
-
-    @Override
     public void serverDisconnected() {
         if (networkStateHandler.isConnected()) {
             startProtocolAdapter();
@@ -652,6 +645,33 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
                 listener.onChannelMessage(serverConnectionData.getServer(), user, ircMessage);
             }
         }
+    }
+
+    @Override
+    public void nickChangeError(String message) {
+        for (SessionListener listener : sessionListeners) {
+            listener.nickChangeError();
+        }
+    }
+
+    @Override
+    public void queryError(String message) {
+
+    }
+
+    @Override
+    public void loginError(String message) {
+
+    }
+
+    @Override
+    public void channelJoinError(String message) {
+
+    }
+
+    @Override
+    public void inviteError(String message) {
+
     }
 
     @Override

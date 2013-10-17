@@ -7,6 +7,9 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.Arrays;
 
+import se.chalmers.dat255.ircsex.R;
+import se.chalmers.dat255.ircsex.model.Session;
+
 /**
  * This class is used to easily communicate with the IRC protocol.
  *
@@ -129,7 +132,7 @@ public class IrcProtocolAdapter implements Runnable {
                         Arrays.asList(parts[2].substring(colonIndex + 1).split(BLANK)));
                 break;
             case IrcProtocolStrings.ERR_NICKNAMEINUSE:
-                listener.nickChangeError();
+                listener.nickChangeError(Session.context.getString(R.string.ERR_NICKNAMEINUSE));
                 break;
         }
     }
