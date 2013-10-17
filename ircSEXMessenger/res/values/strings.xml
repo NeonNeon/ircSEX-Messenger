@@ -58,4 +58,15 @@
     </string-array>
     <string name="hint_username">Username</string>
     <string name="hint_password">Password</string>
+
+    <!-- Error strings -->
+    <string name="ERR_NOSUCHNICK">No such nickname</string>
+    <string name="ERR_NOSUCHSERVER">No such server</string>
+    <string name="ERR_TOOMANYCHANNELS">Too many channels</string>
+    <string name="ERR_ERRONEUSNICKNAME">Invalid characters</string>
+    <string name="ERR_NICKNAMEINUSE">Nickname already in use</string>
+    <string name="ERR_USERONCHANNEL">User already in channel</string>
+    <string name="ERR_CHANNELISFULL">Channel is full</string>
+    <string name="ERR_INVITEONLYCHAN">Channel is invite-only</string>
+    <string name="ERR_BANNEDFROMCHAN">You're banned from the channel</string>
 </resources>
