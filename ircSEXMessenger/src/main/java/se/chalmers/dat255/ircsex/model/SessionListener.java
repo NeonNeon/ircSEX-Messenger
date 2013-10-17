@@ -109,4 +109,10 @@ public interface SessionListener extends WhoisListener {
      * Is called if an message with invalid encoding is received
      */
     public void encodingError();
+
+
+    /**
+     * Called on failure to connect to the server
+     */
+    public void serverConnectionError();
 }
