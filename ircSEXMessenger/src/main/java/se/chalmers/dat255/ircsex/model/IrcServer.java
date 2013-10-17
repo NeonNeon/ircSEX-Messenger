@@ -694,7 +694,9 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
 
     @Override
     public void inviteError(String message) {
-
+        for (SessionListener listener : sessionListeners) {
+            listener.inviteError(message);
+        }
     }
 
     @Override

@@ -588,7 +588,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
 
     @Override
     public void inviteError(String message) {
-
+        showToast(message);
     }
 
     private void showToast(final String message) {
