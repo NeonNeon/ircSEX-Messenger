@@ -575,6 +575,17 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     }
 
     @Override
+    public void encodingError() {
+        ChannelActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(ChannelActivity.this, "Invalid encoding in incoming message", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+
+    @Override
     public void onNickChange(String host, String channel, IrcMessage ircMessage) {
         if (channel.equals(channelName)) {
             addInfoMessage(ircMessage);
