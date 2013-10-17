@@ -53,6 +53,10 @@ public class IrcProtocolAdapter implements Runnable {
             } catch (IOException e) {
                 e.printStackTrace();
                 listener.serverDisconnected();
+            } catch (NullPointerException e){
+                Log.e("IRCERROR", "NullPointerException in Run");
+                e.printStackTrace();
+                break;
             }
         } while(running && line != null);
     }
@@ -295,6 +299,9 @@ public class IrcProtocolAdapter implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
             listener.serverDisconnected();
+        } catch (NullPointerException e){
+            Log.e("IRCERROR", "NullPointerException in IPA.write()");
+            e.printStackTrace();
         }
     }
 }
