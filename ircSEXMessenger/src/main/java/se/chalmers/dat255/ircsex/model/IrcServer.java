@@ -1,5 +1,7 @@
 package se.chalmers.dat255.ircsex.model;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -20,6 +22,8 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
 
     private final IrcUser user;
     private IrcChannel activeChannel;
+    private boolean firstConnect;
+    private boolean connected;
 
     private final ChannelDAO channelDAO;
     private final ServerDAO serverDAO;
@@ -38,7 +42,6 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
     private List<SessionListener> sessionListeners;
     private List<WhoisListener> whoisListeners;
 
-    private boolean reconnecting;
     private NetworkStateHandler networkStateHandler;
 
     /**
@@ -433,27 +436,28 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
     @Override
     public void serverConnected() {
         if (networkStateHandler.isConnected()) {
-            if (reconnecting) {
-                protocol.disconnect("");
-                reconnecting = false;
-                startProtocolAdapter();
-            } else {
-                if(serverConnectionData.getPassword().equals("")) {
-                    protocol.connect(user.getNick(), serverConnectionData.getLogin(),
-                            serverConnectionData.getRealname());
-                } else {
-                    protocol.connect(user.getNick(), serverConnectionData.getLogin(),
-                            serverConnectionData.getRealname(), serverConnectionData.getPassword());
-                }
-                for (SessionListener listener : sessionListeners) {
-                    listener.onConnectionEstablished(serverConnectionData.getServer());
-                }
+            connect();
+            for (SessionListener listener : sessionListeners) {
+                listener.onConnectionEstablished(serverConnectionData.getServer());
             }
+        }
+    }
+
+    private void connect() {
+        if(serverConnectionData.getPassword().equals("")) {
+            protocol.connect(user.getNick(), serverConnectionData.getLogin(),
+                    serverConnectionData.getRealname());
+        } else {
+            protocol.connect(user.getNick(), serverConnectionData.getLogin(),
+                    serverConnectionData.getRealname(), serverConnectionData.getPassword());
         }
     }
 
     @Override
     public void serverRegistered(String server, String nick) {
+        connected = true;
+        firstConnect = true;
+
         for (SessionListener listener : sessionListeners) {
             listener.onRegistrationCompleted(serverConnectionData.getServer());
         }
@@ -467,7 +471,9 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
             user.changeNick(newNick);
             removeHighlight(oldNick);
             addHighlight(newNick);
+            serverConnectionData.setNickname(newNick);
             serverDAO.updateNickname(serverConnectionData.getServer(), newNick);
+            serverConnectionData.setNickname(newNick);
         }
         for (IrcChannel channel : connectedChannels.values()) {
             channel.nickChanged(oldNick, newNick);
@@ -649,8 +655,19 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
 
     @Override
     public void nickChangeError(String message) {
-        for (SessionListener listener : sessionListeners) {
-            listener.nickChangeError(message);
+        if (connected) {
+            for (SessionListener listener : sessionListeners) {
+                listener.nickChangeError(message);
+            }
+        } else if (firstConnect) {
+            String nick = user.getNick() + "_";
+            serverConnectionData.setNickname(nick);
+            user.changeNick(nick);
+            connect();
+        } else {
+            for (SessionListener listener : sessionListeners) {
+                listener.loginError(message);
+            }
         }
     }
 
@@ -681,5 +698,6 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
 
     @Override
     public void onOffline() {
+        connected = false;
     }
 }
