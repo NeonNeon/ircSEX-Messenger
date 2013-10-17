@@ -77,4 +77,8 @@ public class ServerConnectionData {
         return sshPassword;
     }
 
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
 }
