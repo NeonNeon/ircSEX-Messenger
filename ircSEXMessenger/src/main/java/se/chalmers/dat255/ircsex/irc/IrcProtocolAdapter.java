@@ -131,8 +131,33 @@ public class IrcProtocolAdapter implements Runnable {
                         parts[2].substring(parts[2].indexOf(HASHTAG), colonIndex - 1),
                         Arrays.asList(parts[2].substring(colonIndex + 1).split(BLANK)));
                 break;
+
+            case IrcProtocolStrings.ERR_NOSUCHNICK:
+                listener.queryError(Session.context.getString(R.string.ERR_NOSUCHNICK));
+                break;
+            case IrcProtocolStrings.ERR_NOSUCHSERVER:
+                listener.loginError(Session.context.getString(R.string.ERR_NOSUCHSERVER));
+                break;
+            case IrcProtocolStrings.ERR_TOOMANYCHANNELS:
+                listener.channelJoinError(Session.context.getString(R.string.ERR_TOOMANYCHANNELS));
+                break;
+            case IrcProtocolStrings.ERR_ERRONEUSNICKNAME:
+                listener.nickChangeError(Session.context.getString(R.string.ERR_ERRONEUSNICKNAME));
+                break;
             case IrcProtocolStrings.ERR_NICKNAMEINUSE:
                 listener.nickChangeError(Session.context.getString(R.string.ERR_NICKNAMEINUSE));
+                break;
+            case IrcProtocolStrings.ERR_USERONCHANNEL:
+                listener.inviteError(Session.context.getString(R.string.ERR_USERONCHANNEL));
+                break;
+            case IrcProtocolStrings.ERR_CHANNELISFULL:
+                listener.channelJoinError(Session.context.getString(R.string.ERR_CHANNELISFULL));
+                break;
+            case IrcProtocolStrings.ERR_INVITEONLYCHAN:
+                listener.channelJoinError(Session.context.getString(R.string.ERR_INVITEONLYCHAN));
+                break;
+            case IrcProtocolStrings.ERR_BANNEDFROMCHAN:
+                listener.channelJoinError(Session.context.getString(R.string.ERR_BANNEDFROMCHAN));
                 break;
         }
     }
