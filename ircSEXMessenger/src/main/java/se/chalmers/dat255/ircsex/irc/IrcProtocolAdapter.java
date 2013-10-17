@@ -41,7 +41,7 @@ public class IrcProtocolAdapter implements Runnable {
         createBuffers();
         String line = "   ";
         do {
-            Log.e("IRC", line);
+            Log.d("IRC", line);
             handleReply(line);
             try {
                 line = input.readLine();
