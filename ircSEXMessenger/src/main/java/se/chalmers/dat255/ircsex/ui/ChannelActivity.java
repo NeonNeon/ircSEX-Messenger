@@ -592,6 +592,8 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
                 Toast.makeText(ChannelActivity.this, "Could not connect to server", Toast.LENGTH_LONG).show();
             }
         });
+        Log.e("IRCERROR", session.getActiveServer().getHost());
+        session.removeServer(session.getActiveServer().getHost());
         serverConnectProgressDialog.dismiss();
         startNoServersActivity();
     }
