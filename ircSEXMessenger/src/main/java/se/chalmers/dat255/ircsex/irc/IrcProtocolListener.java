@@ -109,7 +109,7 @@ public interface IrcProtocolListener {
      * Something went wrong while sending a query.
      * @param message Error message
      */
-    public void queryError(String message);
+    public void queryError(String message, String user);
 
     /**
      * Something went wrong while logging in.

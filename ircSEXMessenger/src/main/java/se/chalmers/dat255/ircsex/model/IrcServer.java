@@ -672,7 +672,7 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
     }
 
     @Override
-    public void queryError(String message) {
+    public void queryError(String message, String user) {
 
     }
 

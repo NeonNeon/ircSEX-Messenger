@@ -133,7 +133,8 @@ public class IrcProtocolAdapter implements Runnable {
                 break;
 
             case IrcProtocolStrings.ERR_NOSUCHNICK:
-                listener.queryError(Session.context.getString(R.string.ERR_NOSUCHNICK));
+                String user = parts[2].split(" ")[1];
+                listener.queryError(Session.context.getString(R.string.ERR_NOSUCHNICK), user);
                 break;
             case IrcProtocolStrings.ERR_NOSUCHSERVER:
                 listener.loginError(Session.context.getString(R.string.ERR_NOSUCHSERVER));
