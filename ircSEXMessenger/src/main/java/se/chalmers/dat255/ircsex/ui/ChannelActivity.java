@@ -274,15 +274,18 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     }
 
     private void leaveActiveChannel() {
+        if (ircChannelSelector.getSize() == 1) {
+            return;
+        }
         String channelName = session.getActiveChannel().getChannelName();
         session.partChannel(session.getActiveServer().getHost(), channelName);
         int newPosition = ircChannelSelector.removeChannel(selected);
         if (ircChannelSelector.isIndexHeading(newPosition)) {
-            newPosition = ircChannelSelector.removeServer(newPosition);
-            session.removeServer(session.getActiveServer().getHost());
-            if (ircChannelSelector.isEmpty()) {
-                return;
-            }
+            FragmentManager fragmentManager = getFragmentManager();
+            fragmentManager.beginTransaction().remove(fragment).commitAllowingStateLoss();
+            setTitle(mDrawerTitle);
+            getActionBar().setSubtitle(null);
+            return;
         }
         selectItem(newPosition);
     }
