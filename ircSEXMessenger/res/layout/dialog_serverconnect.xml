@@ -45,8 +45,7 @@
         android:layout_marginRight="4dp"
         android:layout_marginBottom="4dp"
         android:hint="@string/hint_username"
-        android:inputType="textVisiblePassword"
-        android:text="banned" />
+        android:inputType="textVisiblePassword"/>
     <EditText
         android:id="@+id/dialog_serverconnect_password"
         android:layout_width="match_parent"
@@ -61,7 +60,7 @@
     <CheckBox
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="Connect through ssh tunnel"
+        android:text="Connect through SSH tunnel"
         android:id="@+id/dialog_ssh_checkBox"
         android:onClick="SshCheckBoxClicked" />
 
