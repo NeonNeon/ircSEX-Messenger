@@ -44,7 +44,7 @@ public class IrcProtocolAdapter implements Runnable {
     public void run() {
         createBuffers();
         String line = "   ";
-        do {
+        while(running && line != null) {
             Log.d("IRC", line);
             handleReply(line);
             try {
@@ -53,12 +53,9 @@ public class IrcProtocolAdapter implements Runnable {
             } catch (IOException e) {
                 e.printStackTrace();
                 listener.serverDisconnected();
-            } catch (NullPointerException e){
-                Log.e("IRCERROR", "NullPointerException in Run");
-                e.printStackTrace();
-                break;
+                running = false;
             }
-        } while(running && line != null);
+        }
     }
 
     private void createBuffers() {
@@ -68,6 +65,8 @@ public class IrcProtocolAdapter implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
             listener.serverDisconnected();
+            running = false;
+            return;
         }
         listener.serverConnected();
     }
@@ -299,9 +298,6 @@ public class IrcProtocolAdapter implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
             listener.serverDisconnected();
-        } catch (NullPointerException e){
-            Log.e("IRCERROR", "NullPointerException in IPA.write()");
-            e.printStackTrace();
         }
     }
 }
