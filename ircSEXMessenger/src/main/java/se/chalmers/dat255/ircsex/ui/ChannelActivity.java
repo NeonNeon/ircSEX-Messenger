@@ -707,6 +707,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
             menu.findItem(R.id.action_change_nick).setEnabled(true);
             menu.findItem(R.id.action_join_channel).setEnabled(true);
             menu.findItem(R.id.action_leave_channel).setEnabled(true);
+            menu.findItem(R.id.action_disconnect).setEnabled(true);
             drawerLayout.findViewById(R.id.channel_search_drawer_button).setEnabled(true);
             ((LinearLayout) drawerLayout.findViewById(R.id.channel_search_drawer_button))
                     .getChildAt(0).setEnabled(true);
@@ -726,6 +727,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
             menu.findItem(R.id.action_change_nick).setEnabled(false);
             menu.findItem(R.id.action_join_channel).setEnabled(false);
             menu.findItem(R.id.action_leave_channel).setEnabled(false);
+            menu.findItem(R.id.action_disconnect).setEnabled(false);
             drawerLayout.findViewById(R.id.channel_search_drawer_button).setEnabled(false);
             ((TextView) ((LinearLayout) drawerLayout
                     .findViewById(R.id.channel_search_drawer_button)).getChildAt(0))
