@@ -418,18 +418,17 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     }
 
     @Override
-    public void onDisconnect(String host) {
-
-    }
-
-    @Override
-    public void onServerDisconnect(String host, String message) {
-        if (ircChannelSelector.isEmpty()) {
-            startNoServersActivity();
-        }
-        else {
-            ircChannelSelector.removeServer(ircChannelSelector.indexOf(host));
-        }
+    public void onServerDisconnect(final String host) {
+        ChannelActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (ircChannelSelector.isEmpty()) {
+                    startNoServersActivity();
+                } else {
+                    ircChannelSelector.removeServer(ircChannelSelector.indexOf(host));
+                }
+            }
+        });
     }
 
     @Override

@@ -22,7 +22,7 @@ public class IrcProtocolAdapter implements Runnable {
     private static final String HASHTAG = "#";
     private static final String BANG = "!";
 
-    private boolean running = true;
+    private volatile boolean running = true;
     private Flavor flavor;
     private BufferedReader input;
     private BufferedWriter output;
@@ -50,7 +50,9 @@ public class IrcProtocolAdapter implements Runnable {
                 line = input.readLine();
             } catch (IOException e) {
                 e.printStackTrace();
-                listener.serverDisconnected();
+                if (!running) {
+                    listener.serverDisconnected();
+                }
                 running = false;
             }
         }
@@ -205,15 +207,14 @@ public class IrcProtocolAdapter implements Runnable {
      * @param message - the message to be displayed when quiting
      */
     public void disconnect(String message) {
+        running = false;
         write(IrcProtocolStrings.QUIT + BLANK + COLON + message);
         try {
             flavor.close();
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            running = false;
         }
-
+        listener.serverDisconnected();
     }
 
     /**

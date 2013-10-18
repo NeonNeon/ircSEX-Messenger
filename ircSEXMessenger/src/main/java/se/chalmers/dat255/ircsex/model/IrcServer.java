@@ -172,9 +172,6 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
             disconnecting = true;
             protocol.disconnect(quitMessage);
             serverDAO.removeServer(getHost());
-            for (SessionListener listener : sessionListeners) {
-                listener.onServerDisconnect(serverConnectionData.getServer(), quitMessage);
-            }
         }
     }
 
@@ -607,23 +604,24 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
     @Override
     public void serverDisconnected() {
         if (!disconnecting) {
-            if (networkStateHandler.isConnected()) {
+            if (networkStateHandler.isConnected() && connectionAttempts++ < 10) {
+                try{
+                    TimeUnit.MILLISECONDS.sleep(100);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
                 startProtocolAdapter();
+                Log.d("IRCDEBUG", "Connection attempt "+connectionAttempts+" failed");
+            } else if(connectionAttempts >= 10){
+                //10 attempts equal failure something
+                serverConnectionFail();
+                Log.e("IRCERROR", "Could not connect to server after 10 attempts");
+                connectionAttempts = 0;
             }
-        }
-        if (networkStateHandler.isConnected() && connectionAttempts++ < 10) {
-            try{
-                TimeUnit.MILLISECONDS.sleep(100);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
+        } else {
+            for (SessionListener listener : sessionListeners) {
+                listener.onServerDisconnect(serverConnectionData.getServer());
             }
-            startProtocolAdapter();
-            Log.d("IRCDEBUG", "Connection attempt "+connectionAttempts+" failed");
-        } else if(connectionAttempts >= 10){
-            //10 attempts equal failure something
-            serverConnectionFail();
-            Log.e("IRCERROR", "Could not connect to server after 10 attempts");
-            connectionAttempts = 0;
         }
     }
 

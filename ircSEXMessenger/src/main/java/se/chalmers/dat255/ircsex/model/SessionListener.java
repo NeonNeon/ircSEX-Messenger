@@ -19,18 +19,10 @@ public interface SessionListener extends WhoisListener {
     public void onRegistrationCompleted(String host);
 
     /**
-     * User disconnected the server.
-     *
-     * @param host server adress
-     */
-    public void onDisconnect(String host);
-
-    /**
      *
      * @param host
-     * @param message
      */
-    public void onServerDisconnect(String host, String message);
+    public void onServerDisconnect(String host);
 
     /**
      * The user joined a channel.
