@@ -134,9 +134,13 @@ public class ChatFragment extends Fragment implements NetworkStateHandler.Connec
 
     public void scrollWhenNoBacklog() {
         Log.d("IRCDEBUG", "Last visible: " + messageList.getLastVisiblePosition() + " Count: " + messageArrayAdapter.getCount());
-        if (messageList.getLastVisiblePosition() == messageArrayAdapter.getCount()-2) {
+        if (hasBacklog()) {
             scrollToBottom();
         }
+    }
+
+    private boolean hasBacklog() {
+        return messageList.getLastVisiblePosition() == messageArrayAdapter.getCount()-2;
     }
 
     private void scrollToBottom() {

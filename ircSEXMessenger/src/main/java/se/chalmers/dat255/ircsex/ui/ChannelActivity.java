@@ -185,7 +185,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
             case R.id.action_invite_user:
                 inviteUser();
                 break;
-            case R.id.action_search:
+            case R.id.action_settings:
                 Intent intent = new Intent(this, SettingsActivity.class);
                 startActivity(intent);
                 break;

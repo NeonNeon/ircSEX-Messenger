@@ -104,7 +104,7 @@ public class MessageArrayAdapter extends ArrayAdapter<ChannelItem> {
         else {
             wrapper.setBackground(createNinePatchDrawable(channelItem));
         }
-        if (animate) {
+        if (animate && !channelItem.getIrcMessage().isRead()) {
             rowView.startAnimation(animation);
             animate = false;
         }
