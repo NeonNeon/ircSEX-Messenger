@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.TimeUnit;
 
 import se.chalmers.dat255.ircsex.irc.IrcProtocolAdapter;
 import se.chalmers.dat255.ircsex.irc.IrcProtocolListener;
@@ -47,6 +48,7 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
 
     private boolean disconnecting;
     private NetworkStateHandler networkStateHandler;
+    private int connectionAttempts = 0;
 
     /**
      * Creates an IrcServer.
@@ -99,7 +101,6 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
      */
     public void startProtocolAdapter() {
         protocol = Brewery.getIPA(serverConnectionData, this);
-       // protocol = Brewery.getSSHIPA("levelinver.se", "ircsex", "l", "localhost", 4444, this);
         new Thread(protocol).start();
     }
 
@@ -464,14 +465,16 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
 
     @Override
     public void serverRegistered(String server, String nick) {
+        serverDAO.addServer(serverConnectionData);
+
+        restoreChannels();
+
         connected = true;
         firstConnect = true;
 
         for (SessionListener listener : sessionListeners) {
             listener.onRegistrationCompleted(serverConnectionData.getServer());
         }
-
-        restoreChannels();
     }
 
     @Override
@@ -607,6 +610,30 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
             if (networkStateHandler.isConnected()) {
                 startProtocolAdapter();
             }
+        }
+        if (networkStateHandler.isConnected() && connectionAttempts++ < 10) {
+            try{
+                TimeUnit.MILLISECONDS.sleep(100);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+            startProtocolAdapter();
+            Log.d("IRCDEBUG", "Connection attempt "+connectionAttempts+" failed");
+        } else if(connectionAttempts >= 10){
+            //10 attempts equal failure something
+            serverConnectionFail();
+            Log.e("IRCERROR", "Could not connect to server after 10 attempts");
+            connectionAttempts = 0;
+        }
+    }
+
+    /**
+     * Launched if for some reason the connection to
+     * the irc server fails and a buffer returns null.
+     */
+    public void serverConnectionFail() {
+        for (SessionListener listener : sessionListeners) {
+            listener.serverConnectionError();
         }
     }
 

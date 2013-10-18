@@ -197,4 +197,8 @@ public class IrcChannelSelector {
     public boolean isIndexHeading(int position) {
         return connections.get(position).getViewType() == IrcConnectionItemAdapter.RowType.HEADER_ITEM.ordinal();
     }
+
+    public boolean isEmpty() {
+        return connections.isEmpty();
+    }
 }
