@@ -81,7 +81,6 @@ public class Session {
         servers.put(data.getServer(), ircServer);
         ircServer.addSessionListener(sessionListener);
         NetworkStateHandler.getInstance().notify(ircServer);
-        datasource.addServer(data);
     }
 
     /**
@@ -152,5 +151,9 @@ public class Session {
 
     public boolean containsServers() {
         return servers.size() > 0;
+    }
+
+    public void reset() {
+        servers.clear();
     }
 }

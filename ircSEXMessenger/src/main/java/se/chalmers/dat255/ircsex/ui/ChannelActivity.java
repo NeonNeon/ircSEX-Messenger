@@ -592,9 +592,11 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
                 Toast.makeText(ChannelActivity.this, "Could not connect to server", Toast.LENGTH_LONG).show();
             }
         });
+
         // Session doesn't exist yet so it's not possible to remove the server this way.
         //Log.e("IRCERROR", session.getActiveServer().getHost());
         //session.removeServer(session.getActiveServer().getHost());
+        session.reset();
         serverConnectProgressDialog.dismiss();
         startNoServersActivity();
     }

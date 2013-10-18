@@ -458,11 +458,13 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
 
     @Override
     public void serverRegistered(String server, String nick) {
+        serverDAO.addServer(serverConnectionData);
+
+        restoreChannels();
+
         for (SessionListener listener : sessionListeners) {
             listener.onRegistrationCompleted(serverConnectionData.getServer());
         }
-
-        restoreChannels();
     }
 
     @Override
