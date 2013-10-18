@@ -280,8 +280,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         if (ircChannelSelector.isIndexHeading(newPosition)) {
             newPosition = ircChannelSelector.removeServer(newPosition);
             session.removeServer(session.getActiveServer().getHost());
-            if (newPosition == IrcChannelSelector.NO_SERVERS_CONNECTED) {
-                startNoServersActivity();
+            if (ircChannelSelector.isEmpty()) {
                 return;
             }
         }
@@ -419,14 +418,17 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     }
 
     @Override
-    public void onDisconnect(String host) {
-
-    }
-
-    @Override
-    public void onServerDisconnect(String host, String message) {
-        ircChannelSelector.removeServer(ircChannelSelector.indexOf(host));
-        startNoServersActivity();
+    public void onServerDisconnect(final String host) {
+        ChannelActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (ircChannelSelector.isEmpty()) {
+                    startNoServersActivity();
+                } else {
+                    ircChannelSelector.removeServer(ircChannelSelector.indexOf(host));
+                }
+            }
+        });
     }
 
     @Override
@@ -568,14 +570,63 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     }
 
     @Override
-    public void nickChangeError() {
+    public void queryError(String message) {
+        showToast(message);
+    }
+
+    @Override
+    public void loginError(String message) {
+
+    }
+
+    @Override
+    public void channelJoinError(String message) {
+        showToast(message);
+        DialogFragment joinChannelDialogFragment = new JoinChannelDialogFragment();
+        joinChannelDialogFragment.show(getSupportFragmentManager(), "joinchannel");
+    }
+
+    @Override
+    public void nickChangeError(String message) {
+        showToast(message);
+    }
+
+    @Override
+    public void inviteError(String message) {
+        showToast(message);
+    }
+
+    /**
+     * Displays an toast
+     *
+     * @param message Text to show in the toast
+     */
+    private void showToast(final String message) {
         ChannelActivity.this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(ChannelActivity.this, "Error while changing nickname", Toast.LENGTH_LONG).show();
+                Toast.makeText(ChannelActivity.this, message, Toast.LENGTH_LONG).show();
             }
         });
     }
+
+    /**
+     * Launches a toast showing the connection error,
+     * then resets the session and sends the user back
+     * to the "New Connection" screen.
+     */
+    @Override
+    public void serverConnectionError() {
+        showToast("Could not connect to server");
+
+        // Session doesn't exist yet so it's not possible to remove the server this way.
+        //Log.e("IRCERROR", session.getActiveServer().getHost());
+        //session.removeServer(session.getActiveServer().getHost());
+        session.reset();
+        serverConnectProgressDialog.dismiss();
+        startNoServersActivity();
+    }
+
 
     @Override
     public void onNickChange(String host, String channel, IrcMessage ircMessage) {
@@ -656,6 +707,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
             menu.findItem(R.id.action_change_nick).setEnabled(true);
             menu.findItem(R.id.action_join_channel).setEnabled(true);
             menu.findItem(R.id.action_leave_channel).setEnabled(true);
+            menu.findItem(R.id.action_disconnect).setEnabled(true);
             drawerLayout.findViewById(R.id.channel_search_drawer_button).setEnabled(true);
             ((LinearLayout) drawerLayout.findViewById(R.id.channel_search_drawer_button))
                     .getChildAt(0).setEnabled(true);
@@ -675,6 +727,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
             menu.findItem(R.id.action_change_nick).setEnabled(false);
             menu.findItem(R.id.action_join_channel).setEnabled(false);
             menu.findItem(R.id.action_leave_channel).setEnabled(false);
+            menu.findItem(R.id.action_disconnect).setEnabled(false);
             drawerLayout.findViewById(R.id.channel_search_drawer_button).setEnabled(false);
             ((TextView) ((LinearLayout) drawerLayout
                     .findViewById(R.id.channel_search_drawer_button)).getChildAt(0))

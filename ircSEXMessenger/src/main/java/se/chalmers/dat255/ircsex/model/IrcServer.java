@@ -1,15 +1,22 @@
 package se.chalmers.dat255.ircsex.model;
 
+import android.content.Context;
+import android.util.Log;
+
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.TimeUnit;
 
 import se.chalmers.dat255.ircsex.irc.IrcProtocolAdapter;
 import se.chalmers.dat255.ircsex.irc.IrcProtocolListener;
+import se.chalmers.dat255.ircsex.irc.IrcProtocolStrings;
 
 /**
  * This class lists and handles a server, including the protocol adapter and channels.
@@ -20,12 +27,14 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
 
     private final IrcUser user;
     private IrcChannel activeChannel;
+    private boolean firstConnect;
+    private boolean connected;
 
     private final ChannelDAO channelDAO;
     private final ServerDAO serverDAO;
     private final HighlightDAO highlightDAO;
 
-    private final ArrayList<SearchlistChannelItem> channels;
+    private final List<SearchlistChannelItem> channels;
     private final ConcurrentMap<String, IrcChannel> connectedChannels;
     private final ServerConnectionData serverConnectionData;
 
@@ -38,9 +47,9 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
     private List<SessionListener> sessionListeners;
     private List<WhoisListener> whoisListeners;
 
-    private boolean reconnecting;
     private boolean disconnecting;
     private NetworkStateHandler networkStateHandler;
+    private int connectionAttempts = 0;
 
     /**
      * Creates an IrcServer.
@@ -62,7 +71,7 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
         highlightDAO = new HighlightDAO();
         highlightDAO.open();
 
-        channels = new ArrayList<SearchlistChannelItem>();
+        channels = Collections.synchronizedList(new ArrayList<SearchlistChannelItem>());
         connectedChannels = new ConcurrentHashMap<String, IrcChannel>();
 
         highlightsWords = highlightDAO.getHighlights();
@@ -93,7 +102,6 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
      */
     public void startProtocolAdapter() {
         protocol = Brewery.getIPA(serverConnectionData, this);
-       // protocol = Brewery.getSSHIPA("levelinver.se", "ircsex", "l", "localhost", 4444, this);
         new Thread(protocol).start();
     }
 
@@ -165,9 +173,6 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
             disconnecting = true;
             protocol.disconnect(quitMessage);
             serverDAO.removeServer(getHost());
-            for (SessionListener listener : sessionListeners) {
-                listener.onServerDisconnect(serverConnectionData.getServer(), quitMessage);
-            }
         }
     }
 
@@ -411,8 +416,9 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
         return users;
     }
 
-    public ArrayList<SearchlistChannelItem> getChannels() {
-        return channels;
+    public List<SearchlistChannelItem> getChannels() {
+        List<SearchlistChannelItem> channels = new ArrayList<>(this.channels);
+        return Collections.synchronizedList(channels);
     }
 
     public void listChannels() {
@@ -438,34 +444,36 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
     @Override
     public void serverConnected() {
         if (networkStateHandler.isConnected()) {
-            if (reconnecting) {
-                protocol.disconnect("");
-                reconnecting = false;
-                startProtocolAdapter();
-            } else {
-                if(serverConnectionData.getPassword().equals("")) {
-                    protocol.connect(user.getNick(), serverConnectionData.getLogin(),
-                            serverConnectionData.getRealname());
-                    disconnecting = false;
-                } else {
-                    protocol.connect(user.getNick(), serverConnectionData.getLogin(),
-                            serverConnectionData.getRealname(), serverConnectionData.getPassword());
-                    disconnecting = false;
-                }
-                for (SessionListener listener : sessionListeners) {
-                    listener.onConnectionEstablished(serverConnectionData.getServer());
-                }
+            connect();
+            disconnecting = false;
+            for (SessionListener listener : sessionListeners) {
+                listener.onConnectionEstablished(serverConnectionData.getServer());
             }
+        }
+    }
+
+    private void connect() {
+        if(serverConnectionData.getPassword().equals("")) {
+            protocol.connect(user.getNick(), serverConnectionData.getLogin(),
+                    serverConnectionData.getRealname());
+        } else {
+            protocol.connect(user.getNick(), serverConnectionData.getLogin(),
+                    serverConnectionData.getRealname(), serverConnectionData.getPassword());
         }
     }
 
     @Override
     public void serverRegistered(String server, String nick) {
+        serverDAO.addServer(serverConnectionData);
+
+        restoreChannels();
+
+        connected = true;
+        firstConnect = true;
+
         for (SessionListener listener : sessionListeners) {
             listener.onRegistrationCompleted(serverConnectionData.getServer());
         }
-
-        restoreChannels();
     }
 
     @Override
@@ -474,7 +482,9 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
             user.changeNick(newNick);
             removeHighlight(oldNick);
             addHighlight(newNick);
+            serverConnectionData.setNickname(newNick);
             serverDAO.updateNickname(serverConnectionData.getServer(), newNick);
+            serverConnectionData.setNickname(newNick);
         }
         for (IrcChannel channel : connectedChannels.values()) {
             channel.nickChanged(oldNick, newNick);
@@ -594,18 +604,36 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
     }
 
     @Override
-    public void nickChangeError() {
-        for (SessionListener listener : sessionListeners) {
-            listener.nickChangeError();
+    public void serverDisconnected() {
+        if (!disconnecting) {
+            if (networkStateHandler.isConnected() && connectionAttempts++ < 10) {
+                try{
+                    TimeUnit.MILLISECONDS.sleep(100);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+                startProtocolAdapter();
+                Log.d("IRCDEBUG", "Connection attempt "+connectionAttempts+" failed");
+            } else if(connectionAttempts >= 10){
+                //10 attempts equal failure something
+                serverConnectionFail();
+                Log.e("IRCERROR", "Could not connect to server after 10 attempts");
+                connectionAttempts = 0;
+            }
+        } else {
+            for (SessionListener listener : sessionListeners) {
+                listener.onServerDisconnect(serverConnectionData.getServer());
+            }
         }
     }
 
-    @Override
-    public void serverDisconnected() {
-        if (!disconnecting) {
-            if (networkStateHandler.isConnected()) {
-                startProtocolAdapter();
-            }
+    /**
+     * Launched if for some reason the connection to
+     * the irc server fails and a buffer returns null.
+     */
+    public void serverConnectionFail() {
+        for (SessionListener listener : sessionListeners) {
+            listener.serverConnectionError();
         }
     }
 
@@ -663,11 +691,87 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
     }
 
     @Override
+    public void ircError(String errorCode, String message) {
+        String toastMessage = getStringByStringIdentifier("ERR_" + errorCode);
+        switch (errorCode) {
+            case IrcProtocolStrings.ERR_NOSUCHNICK:
+                String user = message.split(" ")[1];
+                queryError(toastMessage, user);
+                break;
+            case IrcProtocolStrings.ERR_NOSUCHSERVER:
+            case IrcProtocolStrings.ERR_PASSWDMISMATCH:
+                loginError(toastMessage);
+                break;
+            case IrcProtocolStrings.ERR_ERRONEUSNICKNAME:
+            case IrcProtocolStrings.ERR_NICKNAMEINUSE:
+                nickChangeError(toastMessage);
+                break;
+            case IrcProtocolStrings.ERR_USERONCHANNEL:
+                inviteError(toastMessage);
+                break;
+            case IrcProtocolStrings.ERR_TOOMANYCHANNELS:
+            case IrcProtocolStrings.ERR_CHANNELISFULL:
+            case IrcProtocolStrings.ERR_INVITEONLYCHAN:
+            case IrcProtocolStrings.ERR_BANNEDFROMCHAN:
+                String channel = message.split(" ")[1];
+                channelJoinError(toastMessage, channel);
+                break;
+        }
+    }
+    private String getStringByStringIdentifier(String name) {
+        Context context = ContextHandler.CONTEXT;
+        return context.getString(
+                context.getResources().getIdentifier(name, "string", context.getPackageName()));
+    }
+
+    private void nickChangeError(String message) {
+        if (connected) {
+            for (SessionListener listener : sessionListeners) {
+                listener.nickChangeError(message);
+            }
+        } else if (firstConnect) {
+            String nick = user.getNick() + "_";
+            serverConnectionData.setNickname(nick);
+            user.changeNick(nick);
+            connect();
+        } else {
+            loginError(message);
+        }
+    }
+
+    private void queryError(String message, String user) {
+        for (SessionListener listener : sessionListeners) {
+            listener.queryError(message + " " + user);
+        }
+    }
+
+    private void loginError(String message) {
+        protocol.disconnect("");
+        for (SessionListener listener : sessionListeners) {
+            listener.loginError(message);
+        }
+    }
+
+    private void channelJoinError(String message, String channel) {
+        for (SessionListener listener : sessionListeners) {
+            message = String.format(message, channel);
+            listener.channelJoinError(message);
+        }
+    }
+
+    private void inviteError(String message) {
+        for (SessionListener listener : sessionListeners) {
+            listener.inviteError(message);
+        }
+    }
+
+    @Override
     public void onOnline() {
         startProtocolAdapter();
     }
 
     @Override
     public void onOffline() {
+        connected = false;
     }
 }

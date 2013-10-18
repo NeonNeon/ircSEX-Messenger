@@ -43,8 +43,8 @@ public class NormalFlavor implements Flavor {
 
     private void checkSocket() throws IOException {
         if (!socketCreated) {
-            createSocket();
             socketCreated = true;
+            createSocket();
         }
     }
 

@@ -10,8 +10,10 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 import se.chalmers.dat255.ircsex.R;
 import se.chalmers.dat255.ircsex.model.NetworkStateHandler;
@@ -33,7 +35,7 @@ public class ChannelSearchActivity extends SearchActivity {
 
         session = Session.getInstance(this, null);
         session.getActiveServer().listChannels();
-        channels = new ArrayList<SearchlistChannelItem>();
+        channels = Collections.synchronizedList(new ArrayList<SearchlistChannelItem>());
 
         search("");
     }

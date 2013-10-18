@@ -7,6 +7,9 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.Arrays;
 
+import se.chalmers.dat255.ircsex.R;
+import se.chalmers.dat255.ircsex.model.Session;
+
 /**
  * This class is used to easily communicate with the IRC protocol.
  *
@@ -19,7 +22,7 @@ public class IrcProtocolAdapter implements Runnable {
     private static final String HASHTAG = "#";
     private static final String BANG = "!";
 
-    private boolean running = true;
+    private volatile boolean running = true;
     private Flavor flavor;
     private BufferedReader input;
     private BufferedWriter output;
@@ -39,18 +42,20 @@ public class IrcProtocolAdapter implements Runnable {
 
     public void run() {
         createBuffers();
-        String line = "   ";
-        do {
+        String line = "";
+        while(running && line != null) {
             Log.d("IRC", line);
             handleReply(line);
             try {
                 line = input.readLine();
-                // TODO: Resolve nullpointerexception
             } catch (IOException e) {
                 e.printStackTrace();
-                listener.serverDisconnected();
+                if (!running) {
+                    listener.serverDisconnected();
+                }
+                running = false;
             }
-        } while(running && line != null);
+        }
     }
 
     private void createBuffers() {
@@ -60,8 +65,16 @@ public class IrcProtocolAdapter implements Runnable {
         } catch (IOException e) {
             Log.e("IRCDEBUG", "IO", e);
             listener.serverDisconnected();
+            running = false;
+            return;
         }
-        listener.serverConnected();
+        if (output == null || input == null) {
+            listener.serverDisconnected();
+            running = false;
+        }
+        else {
+            listener.serverConnected();
+        }
     }
 
     /**
@@ -70,6 +83,8 @@ public class IrcProtocolAdapter implements Runnable {
      */
     private void handleReply(String reply) {
         String[] parts = reply.split(BLANK, 3);
+        // Too few parts means that reply is not a valid IRC string.
+        if (parts.length < 2) return;
         handlePing(parts);
 
         switch (parts[1]) {
@@ -128,8 +143,13 @@ public class IrcProtocolAdapter implements Runnable {
                         parts[2].substring(parts[2].indexOf(HASHTAG), colonIndex - 1),
                         Arrays.asList(parts[2].substring(colonIndex + 1).split(BLANK)));
                 break;
-            case IrcProtocolStrings.ERR_NICKNAMEINUSE:
-                listener.nickChangeError();
+            default:
+                try {
+                    int errorCode = Integer.parseInt(parts[1]);
+                    if (errorCode >= 400 && errorCode <= 599) {
+                        listener.ircError(parts[1], parts[2]);
+                    }
+                } catch (NumberFormatException e) {}
                 break;
         }
     }
@@ -187,15 +207,14 @@ public class IrcProtocolAdapter implements Runnable {
      * @param message - the message to be displayed when quiting
      */
     public void disconnect(String message) {
+        running = false;
         write(IrcProtocolStrings.QUIT + BLANK + COLON + message);
         try {
             flavor.close();
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            running = false;
         }
-
+        listener.serverDisconnected();
     }
 
     /**

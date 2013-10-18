@@ -26,7 +26,7 @@ public class NetworkStateHandler extends BroadcastReceiver {
         listener = new ConnectionListenerImpl();
         listeners = new ArrayList<ConnectionListener>();
 
-        Session.context.getApplicationContext().registerReceiver(this, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+        ContextHandler.CONTEXT.getApplicationContext().registerReceiver(this, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 
         checkConnectivity();
     }
@@ -39,9 +39,9 @@ public class NetworkStateHandler extends BroadcastReceiver {
     }
 
     public void checkConnectivity() {
-        if (Session.context != null) {
+        if (ContextHandler.CONTEXT != null) {
             ConnectivityManager cm =
-                    (ConnectivityManager) Session.context.getSystemService(Context.CONNECTIVITY_SERVICE);
+                    (ConnectivityManager) ContextHandler.CONTEXT.getSystemService(Context.CONNECTIVITY_SERVICE);
             boolean internet = cm.getActiveNetworkInfo() != null &&
                     cm.getActiveNetworkInfo().isConnectedOrConnecting();
 

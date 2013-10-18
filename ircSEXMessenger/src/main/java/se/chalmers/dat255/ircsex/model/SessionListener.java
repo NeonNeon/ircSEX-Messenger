@@ -19,18 +19,10 @@ public interface SessionListener extends WhoisListener {
     public void onRegistrationCompleted(String host);
 
     /**
-     * User disconnected the server.
-     *
-     * @param host server adress
-     */
-    public void onDisconnect(String host);
-
-    /**
      *
      * @param host
-     * @param message
      */
-    public void onServerDisconnect(String host, String message);
+    public void onServerDisconnect(String host);
 
     /**
      * The user joined a channel.
@@ -101,7 +93,37 @@ public interface SessionListener extends WhoisListener {
     public void onSentMessage(String host, String channel, ChatIrcMessage message);
 
     /**
-     * Is called if there was an error when trying to change nickname.
+     * Something went wrong while sending a query.
+     * @param message Error message
      */
-    public void nickChangeError();
+    public void queryError(String message);
+
+    /**
+     * Something went wrong while logging in.
+     * @param message Error message
+     */
+    public void loginError(String message);
+
+    /**
+     * Something went wrong while joining a channel.
+     * @param message Error message
+     */
+    public void channelJoinError(String message);
+
+    /**
+     * Something went wrong when you tried to change nick.
+     * @param message Error message
+     */
+    public void nickChangeError(String message);
+
+    /**
+     * Something went wrong while inviting a user.
+     * @param message Error message
+     */
+    public void inviteError(String message);
+
+    /**
+     * Called on failure to connect to the server
+     */
+    public void serverConnectionError();
 }

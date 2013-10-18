@@ -60,4 +60,16 @@
     <string name="hint_username">Username</string>
     <string name="hint_password">Password</string>
     <string name="pref_nickname">Nickname</string>
+
+    <!-- Error strings -->
+    <string name="ERR_401">No user named</string>
+    <string name="ERR_402">No such server</string>
+    <string name="ERR_405">Too many channels</string>
+    <string name="ERR_432">Invalid characters</string>
+    <string name="ERR_433">Nickname already in use</string>
+    <string name="ERR_443">User already in channel</string>
+    <string name="ERR_464">Incorrect password</string>
+    <string name="ERR_471">Channel %s is full</string>
+    <string name="ERR_473">Channel %s is invite-only</string>
+    <string name="ERR_474">You\'re banned from the channel %s</string>
 </resources>
