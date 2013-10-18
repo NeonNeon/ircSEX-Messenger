@@ -711,9 +711,7 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
             user.changeNick(nick);
             connect();
         } else {
-            for (SessionListener listener : sessionListeners) {
-                listener.loginError(message);
-            }
+            loginError(message);
         }
     }
 
@@ -724,7 +722,10 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
     }
 
     private void loginError(String message) {
-
+        protocol.disconnect("");
+        for (SessionListener listener : sessionListeners) {
+            listener.loginError(message);
+        }
     }
 
     private void channelJoinError(String message, String channel) {

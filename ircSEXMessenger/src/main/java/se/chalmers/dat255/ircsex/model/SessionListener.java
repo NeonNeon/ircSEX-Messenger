@@ -129,7 +129,7 @@ public interface SessionListener extends WhoisListener {
      * @param message Error message
      */
     public void inviteError(String message);
-    
+
     /**
      * Is called if an message with invalid encoding is received
      */
