@@ -22,7 +22,7 @@ public class IrcProtocolAdapter implements Runnable {
     private static final String HASHTAG = "#";
     private static final String BANG = "!";
 
-    private volatile boolean running = true;
+    private volatile boolean running;
     private Flavor flavor;
     private BufferedReader input;
     private BufferedWriter output;
@@ -41,6 +41,7 @@ public class IrcProtocolAdapter implements Runnable {
     }
 
     public void run() {
+        running = true;
         createBuffers();
         String line = "";
         while(running && line != null) {
@@ -67,13 +68,14 @@ public class IrcProtocolAdapter implements Runnable {
             listener.serverDisconnected();
             running = false;
             return;
-        }
-        if (output == null || input == null) {
-            listener.serverDisconnected();
-            running = false;
-        }
-        else {
-            listener.serverConnected();
+        } finally {
+            if (output == null || input == null) {
+                listener.serverDisconnected();
+                running = false;
+            }
+            else {
+                listener.serverConnected();
+            }
         }
     }
 
@@ -307,8 +309,7 @@ public class IrcProtocolAdapter implements Runnable {
         try {
             output.write(string + "\r\n");
             output.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException|NullPointerException e) {
             listener.serverDisconnected();
         }
     }

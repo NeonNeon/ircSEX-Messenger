@@ -60,24 +60,26 @@ public class ServerDAO {
      * @param data
      */
     public void addServer(ServerConnectionData data) {
-        ContentValues values = new ContentValues();
-        values.put(DatabaseHelper.SERVER_HOST, data.getServer());
-        values.put(DatabaseHelper.SERVER_PORT, data.getPort());
-        values.put(DatabaseHelper.SERVER_LOGIN, data.getLogin());
-        values.put(DatabaseHelper.SERVER_NICK, data.getNickname());
-        values.put(DatabaseHelper.SERVER_REALNAME, data.getRealname());
-        values.put(DatabaseHelper.SERVER_PASSWORD, data.getPassword());
-        values.put(DatabaseHelper.SERVER_USE_SSL, data.isUsingSsl());
-        values.put(DatabaseHelper.SERVER_USE_SSH, data.isUsingSsh());
-        values.put(DatabaseHelper.SERVER_SSH_HOSTNAME, data.getSshHostname());
-        values.put(DatabaseHelper.SERVER_SSH_USERNAME, data.getSshUsername());
-        values.put(DatabaseHelper.SERVER_SSH_PASSWORD, data.getSshPassword());
-        long insertId = database.insert(DatabaseHelper.TABLE_SERVERS, null, values);
-        Cursor cursor = database.query(DatabaseHelper.TABLE_SERVERS,
-                allColumns, DatabaseHelper.SERVER_ID + " = " + insertId, null,
-                null, null, null);
-        cursor.moveToFirst();
-        cursor.close();
+        if (!getAllIrcServers().keySet().contains(data.getServer())) {
+            ContentValues values = new ContentValues();
+            values.put(DatabaseHelper.SERVER_HOST, data.getServer());
+            values.put(DatabaseHelper.SERVER_PORT, data.getPort());
+            values.put(DatabaseHelper.SERVER_LOGIN, data.getLogin());
+            values.put(DatabaseHelper.SERVER_NICK, data.getNickname());
+            values.put(DatabaseHelper.SERVER_REALNAME, data.getRealname());
+            values.put(DatabaseHelper.SERVER_PASSWORD, data.getPassword());
+            values.put(DatabaseHelper.SERVER_USE_SSL, data.isUsingSsl());
+            values.put(DatabaseHelper.SERVER_USE_SSH, data.isUsingSsh());
+            values.put(DatabaseHelper.SERVER_SSH_HOSTNAME, data.getSshHostname());
+            values.put(DatabaseHelper.SERVER_SSH_USERNAME, data.getSshUsername());
+            values.put(DatabaseHelper.SERVER_SSH_PASSWORD, data.getSshPassword());
+            long insertId = database.insert(DatabaseHelper.TABLE_SERVERS, null, values);
+            Cursor cursor = database.query(DatabaseHelper.TABLE_SERVERS,
+                    allColumns, DatabaseHelper.SERVER_ID + " = " + insertId, null,
+                    null, null, null);
+            cursor.moveToFirst();
+            cursor.close();
+        }
     }
 
     /**
