@@ -100,19 +100,17 @@ public interface IrcProtocolListener {
     // ERRORS
 
     /**
-     * Something went wrong when you tried to change nick.
-     */
-    public void nickChangeError();
-
-    /**
      * The server was disconnected.
      * To reconnect get a new IPA.
      */
     public void serverDisconnected();
 
     /**
-     * Server connection failed.
-     * Try to connect again, server might not exist.
+     * Something went wrong.
+     *
+     * @param errorCode Protocol error code
+     * @param message Protocol error message
      */
-    public void serverConnectionFail();
+    public void ircError(String errorCode, String message);
+
 }

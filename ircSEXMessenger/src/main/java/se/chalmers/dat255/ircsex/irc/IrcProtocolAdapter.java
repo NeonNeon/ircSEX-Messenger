@@ -11,6 +11,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import se.chalmers.dat255.ircsex.R;
+import se.chalmers.dat255.ircsex.model.Session;
+
 /**
  * This class is used to easily communicate with the IRC protocol.
  *
@@ -136,8 +139,13 @@ public class IrcProtocolAdapter implements Runnable {
                         parts[2].substring(parts[2].indexOf(HASHTAG), colonIndex - 1),
                         Arrays.asList(parts[2].substring(colonIndex + 1).split(BLANK)));
                 break;
-            case IrcProtocolStrings.ERR_NICKNAMEINUSE:
-                listener.nickChangeError();
+            default:
+                try {
+                    int errorCode = Integer.parseInt(parts[1]);
+                    if (errorCode >= 400 && errorCode <= 599) {
+                        listener.ircError(parts[1], parts[2]);
+                    }
+                } catch (NumberFormatException e) {}
                 break;
         }
     }

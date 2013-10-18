@@ -565,11 +565,37 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     }
 
     @Override
-    public void nickChangeError() {
+    public void queryError(String message) {
+        showToast(message);
+    }
+
+    @Override
+    public void loginError(String message) {
+
+    }
+
+    @Override
+    public void channelJoinError(String message) {
+        showToast(message);
+        DialogFragment joinChannelDialogFragment = new JoinChannelDialogFragment();
+        joinChannelDialogFragment.show(getSupportFragmentManager(), "joinchannel");
+    }
+
+    @Override
+    public void nickChangeError(String message) {
+        showToast(message);
+    }
+
+    @Override
+    public void inviteError(String message) {
+        showToast(message);
+    }
+
+    private void showToast(final String message) {
         ChannelActivity.this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(ChannelActivity.this, "Error while changing nickname", Toast.LENGTH_LONG).show();
+                Toast.makeText(ChannelActivity.this, message, Toast.LENGTH_LONG).show();
             }
         });
     }
