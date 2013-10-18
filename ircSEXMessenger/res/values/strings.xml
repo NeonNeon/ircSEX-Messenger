@@ -39,6 +39,7 @@
     <string name="pref_show_join_leave">Join and leave messages</string>
     <string name="pref_show_join_leave_summ">Display a message when someone joins or leaves the channel</string>
     <string name="action_settings">Settings</string>
+    <string name="action_disconnect">Disconnect</string>
     <string name="pref_highlight">Highlights</string>
     <string name="pref_highlight_summ">Enter words to highlight, separated by semicolon</string>
     <string name="pref_appearance_settings">Appearance</string>

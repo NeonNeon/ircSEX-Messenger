@@ -39,6 +39,7 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
     private List<WhoisListener> whoisListeners;
 
     private boolean reconnecting;
+    private boolean disconnecting;
     private NetworkStateHandler networkStateHandler;
 
     /**
@@ -161,8 +162,12 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
      */
     public void quitServer(String quitMessage) {
         if (networkStateHandler.isConnected()) {
+            disconnecting = true;
             protocol.disconnect(quitMessage);
             serverDAO.removeServer(getHost());
+            for (SessionListener listener : sessionListeners) {
+                listener.onServerDisconnect(serverConnectionData.getServer(), quitMessage);
+            }
         }
     }
 
@@ -441,9 +446,11 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
                 if(serverConnectionData.getPassword().equals("")) {
                     protocol.connect(user.getNick(), serverConnectionData.getLogin(),
                             serverConnectionData.getRealname());
+                    disconnecting = false;
                 } else {
                     protocol.connect(user.getNick(), serverConnectionData.getLogin(),
                             serverConnectionData.getRealname(), serverConnectionData.getPassword());
+                    disconnecting = false;
                 }
                 for (SessionListener listener : sessionListeners) {
                     listener.onConnectionEstablished(serverConnectionData.getServer());
@@ -595,8 +602,10 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
 
     @Override
     public void serverDisconnected() {
-        if (networkStateHandler.isConnected()) {
-            startProtocolAdapter();
+        if (!disconnecting) {
+            if (networkStateHandler.isConnected()) {
+                startProtocolAdapter();
+            }
         }
     }
 
