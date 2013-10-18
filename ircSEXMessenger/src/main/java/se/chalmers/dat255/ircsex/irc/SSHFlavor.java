@@ -52,13 +52,7 @@ public class SSHFlavor implements Flavor, HostKeyVerifier {
         try {
             this.socketFlavor = socketFlavor.getConstructor(String.class, int.class)
                     .newInstance(LOCALHOST, LOCALPORT);
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
             e.printStackTrace();
         }
         tunnelCreated = false;
