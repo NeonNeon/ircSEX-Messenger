@@ -1,9 +1,9 @@
 package se.chalmers.dat255.ircsex.model;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.util.Log;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -692,36 +692,41 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
 
     @Override
     public void ircError(String errorCode, String message) {
-        String toastMessage = getStringByStringIdentifier("ERR_" + errorCode);
-        switch (errorCode) {
-            case IrcProtocolStrings.ERR_NOSUCHNICK:
-                String user = message.split(" ")[1];
-                queryError(toastMessage, user);
-                break;
-            case IrcProtocolStrings.ERR_NOSUCHSERVER:
-            case IrcProtocolStrings.ERR_PASSWDMISMATCH:
-                loginError(toastMessage);
-                break;
-            case IrcProtocolStrings.ERR_ERRONEUSNICKNAME:
-            case IrcProtocolStrings.ERR_NICKNAMEINUSE:
-                nickChangeError(toastMessage);
-                break;
-            case IrcProtocolStrings.ERR_USERONCHANNEL:
-                inviteError(toastMessage);
-                break;
-            case IrcProtocolStrings.ERR_TOOMANYCHANNELS:
-            case IrcProtocolStrings.ERR_CHANNELISFULL:
-            case IrcProtocolStrings.ERR_INVITEONLYCHAN:
-            case IrcProtocolStrings.ERR_BANNEDFROMCHAN:
-                String channel = message.split(" ")[1];
-                channelJoinError(toastMessage, channel);
-                break;
+        String toastMessage = null;
+        try {
+            toastMessage = getStringByStringIdentifier("ERR_" + errorCode);
+        } catch (Resources.NotFoundException e) {
+            toastMessage = message;
+        } finally {
+            switch (errorCode) {
+                case IrcProtocolStrings.ERR_NOSUCHNICK:
+                    String user = message.split(" ")[1];
+                    queryError(toastMessage, user);
+                    break;
+                case IrcProtocolStrings.ERR_NOSUCHSERVER:
+                case IrcProtocolStrings.ERR_PASSWDMISMATCH:
+                    loginError(toastMessage);
+                    break;
+                case IrcProtocolStrings.ERR_ERRONEUSNICKNAME:
+                case IrcProtocolStrings.ERR_NICKNAMEINUSE:
+                    nickChangeError(toastMessage);
+                    break;
+                case IrcProtocolStrings.ERR_USERONCHANNEL:
+                    inviteError(toastMessage);
+                    break;
+                case IrcProtocolStrings.ERR_TOOMANYCHANNELS:
+                case IrcProtocolStrings.ERR_CHANNELISFULL:
+                case IrcProtocolStrings.ERR_INVITEONLYCHAN:
+                case IrcProtocolStrings.ERR_BANNEDFROMCHAN:
+                    String channel = message.split(" ")[1];
+                    channelJoinError(toastMessage, channel);
+                    break;
+            }
         }
     }
-    private String getStringByStringIdentifier(String name) {
+    private String getStringByStringIdentifier(String name) throws Resources.NotFoundException {
         Context context = ContextHandler.CONTEXT;
-        return context.getString(
-                context.getResources().getIdentifier(name, "string", context.getPackageName()));
+        return context.getString(context.getResources().getIdentifier(name, "string", context.getPackageName()));
     }
 
     private void nickChangeError(String message) {
