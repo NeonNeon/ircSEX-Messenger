@@ -710,8 +710,6 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
         for (SessionListener listener : sessionListeners) {
             listener.queryError(message + " " + user);
         }
-        partChannel(user);
-        //TODO: ^doesn't work :(
     }
 
     public void loginError(String message) {
