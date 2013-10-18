@@ -185,6 +185,9 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
             case R.id.action_invite_user:
                 inviteUser();
                 break;
+            case R.id.action_disconnect:
+                session.getActiveServer().quitServer("");
+                break;
             case R.id.action_settings:
                 Intent intent = new Intent(this, SettingsActivity.class);
                 startActivity(intent);
@@ -422,7 +425,8 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
 
     @Override
     public void onServerDisconnect(String host, String message) {
-
+        ircChannelSelector.removeServer(ircChannelSelector.indexOf(host));
+        startNoServersActivity();
     }
 
     @Override
