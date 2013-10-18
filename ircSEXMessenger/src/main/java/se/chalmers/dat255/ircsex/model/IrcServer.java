@@ -45,6 +45,7 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
     private List<SessionListener> sessionListeners;
     private List<WhoisListener> whoisListeners;
 
+    private boolean disconnecting;
     private NetworkStateHandler networkStateHandler;
 
     /**
@@ -167,8 +168,12 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
      */
     public void quitServer(String quitMessage) {
         if (networkStateHandler.isConnected()) {
+            disconnecting = true;
             protocol.disconnect(quitMessage);
             serverDAO.removeServer(getHost());
+            for (SessionListener listener : sessionListeners) {
+                listener.onServerDisconnect(serverConnectionData.getServer(), quitMessage);
+            }
         }
     }
 
@@ -440,6 +445,7 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
     public void serverConnected() {
         if (networkStateHandler.isConnected()) {
             connect();
+            disconnecting = false;
             for (SessionListener listener : sessionListeners) {
                 listener.onConnectionEstablished(serverConnectionData.getServer());
             }
@@ -595,28 +601,18 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
         channels.add(new SearchlistChannelItem(name, userCount, topic));
     }
 
-    public void encodingError() {
-        for (SessionListener listener : sessionListeners) {
-            listener.encodingError();
-        }
-    }
-
     @Override
     public void serverDisconnected() {
-        if (networkStateHandler.isConnected()) {
-            startProtocolAdapter();
+        if (!disconnecting) {
+            if (networkStateHandler.isConnected()) {
+                startProtocolAdapter();
+            }
         }
     }
 
     @Override
     public void channelMessageReceived(String channel, String user, String message) {
         user = IrcUser.extractUserName(user);
-
-        try {
-            se.chalmers.dat255.ircsex.util.Encoding.checkEncoding(message);
-        } catch (UnsupportedEncodingException e) {
-            encodingError();
-        }
         IrcChannel ircChannel = connectedChannels.get(channel);
         ChatIrcMessage ircMessage;
         if (!ircChannel.getChannelName().equals(activeChannel.getChannelName()) && checkHighlight(ircChannel, message)) {

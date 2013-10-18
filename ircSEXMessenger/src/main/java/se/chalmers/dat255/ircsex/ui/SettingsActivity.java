@@ -14,6 +14,7 @@ public class SettingsActivity extends Activity {
     public static final String PREF_SHOW_JOIN_LEAVE = "pref_show_join_leave";
     public static final String PREF_MESSAGE_FONT_SIZE = "pref_message_font_size";
     public static final String PREF_HIGHLIGHT = "pref_highlight";
+    public static final String PREF_NICKNAME = "pref_nickname";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

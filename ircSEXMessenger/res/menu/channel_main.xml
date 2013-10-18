@@ -9,7 +9,9 @@
         android:title="@string/action_change_nick"/>
     <item android:id="@+id/action_invite_user"
         android:title="@string/action_invite_user"/>
-    <item android:id="@+id/action_search"
+    <item android:id="@+id/action_disconnect"
+          android:title="@string/action_disconnect" />
+    <item android:id="@+id/action_settings"
         android:title="@string/action_settings" />
     <item android:id="@+id/search_messages"
         android:title="@string/search_messages"
