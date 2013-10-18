@@ -46,7 +46,6 @@ import se.chalmers.dat255.ircsex.model.ServerConnectionData;
 import se.chalmers.dat255.ircsex.model.Session;
 import se.chalmers.dat255.ircsex.model.SessionListener;
 import se.chalmers.dat255.ircsex.ui.dialog.JoinChannelDialogFragment;
-import se.chalmers.dat255.ircsex.ui.dialog.ServerConnectDialogFragment;
 import se.chalmers.dat255.ircsex.ui.search.ChannelSearchActivity;
 import se.chalmers.dat255.ircsex.ui.search.MessageSearchActivity;
 import se.chalmers.dat255.ircsex.ui.search.SearchActivity;
@@ -186,7 +185,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
             case R.id.action_invite_user:
                 inviteUser();
                 break;
-            case R.id.action_search:
+            case R.id.action_settings:
                 Intent intent = new Intent(this, SettingsActivity.class);
                 startActivity(intent);
                 break;

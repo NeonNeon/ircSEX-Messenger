@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -82,7 +81,7 @@ public class UserSearchActivity extends SearchActivity implements WhoisListener,
             whoisProgressDialog.show();
             session.getActiveServer().whois(user);
 
-            findViewById(R.id.action_search).clearFocus();
+            findViewById(R.id.action_settings).clearFocus();
         }
     }
 
