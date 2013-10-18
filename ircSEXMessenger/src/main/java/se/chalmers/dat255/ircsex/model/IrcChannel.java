@@ -88,9 +88,9 @@ public class IrcChannel {
      * @param user - The user who left
      */
     public void userParted(String user) {
-        Log.e("IRC", user + " quit");
+        Log.d("IRC", user + " quit");
         synchronized (users) {
-            Log.e("IRC", user + " quit");
+            Log.d("IRC", user + " quit");
             user = IrcUser.extractUserName(user);
             users.remove(user);
         }

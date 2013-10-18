@@ -37,14 +37,14 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
             for (String highlight : highlightArray) {
                 highlight = highlight.trim();
                 if (!databaseHighlights.contains(highlight)) {
-                    Log.e("IRCDEBUG", "ADDED HIGHLIGHT" + highlight);
+                    Log.d("IRCDEBUG", "ADDED HIGHLIGHT" + highlight);
                     ircServer.addHighlight(highlight);
                 }
             }
             List<String> highlightsToBeRemoved = new ArrayList<String>();
             for (String highlight : databaseHighlights) {
                 if (!highlights.contains(highlight) && !highlight.equals(ircServer.getUser().getNick())) {
-                    Log.e("IRCDEBUG", "REMOVED HIGHLIGHT" + highlight);
+                    Log.d("IRCDEBUG", "REMOVED HIGHLIGHT" + highlight);
                     highlightsToBeRemoved.add(highlight);
                 }
             }

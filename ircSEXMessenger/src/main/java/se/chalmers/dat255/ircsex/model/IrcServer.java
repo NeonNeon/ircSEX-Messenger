@@ -3,6 +3,7 @@ package se.chalmers.dat255.ircsex.model;
 import android.content.Context;
 import android.util.Log;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -11,7 +12,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import se.chalmers.dat255.ircsex.R;
 import se.chalmers.dat255.ircsex.irc.IrcProtocolAdapter;
 import se.chalmers.dat255.ircsex.irc.IrcProtocolListener;
 import se.chalmers.dat255.ircsex.irc.IrcProtocolStrings;
@@ -595,6 +595,12 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
         channels.add(new SearchlistChannelItem(name, userCount, topic));
     }
 
+    public void encodingError() {
+        for (SessionListener listener : sessionListeners) {
+            listener.encodingError();
+        }
+    }
+
     @Override
     public void serverDisconnected() {
         if (networkStateHandler.isConnected()) {
@@ -606,6 +612,11 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
     public void channelMessageReceived(String channel, String user, String message) {
         user = IrcUser.extractUserName(user);
 
+        try {
+            se.chalmers.dat255.ircsex.util.Encoding.checkEncoding(message);
+        } catch (UnsupportedEncodingException e) {
+            encodingError();
+        }
         IrcChannel ircChannel = connectedChannels.get(channel);
         ChatIrcMessage ircMessage;
         if (!ircChannel.getChannelName().equals(activeChannel.getChannelName()) && checkHighlight(ircChannel, message)) {
@@ -689,7 +700,7 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
                 context.getResources().getIdentifier(name, "string", context.getPackageName()));
     }
 
-    public void nickChangeError(String message) {
+    private void nickChangeError(String message) {
         if (connected) {
             for (SessionListener listener : sessionListeners) {
                 listener.nickChangeError(message);
@@ -706,24 +717,24 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
         }
     }
 
-    public void queryError(String message, String user) {
+    private void queryError(String message, String user) {
         for (SessionListener listener : sessionListeners) {
             listener.queryError(message + " " + user);
         }
     }
 
-    public void loginError(String message) {
+    private void loginError(String message) {
 
     }
 
-    public void channelJoinError(String message, String channel) {
+    private void channelJoinError(String message, String channel) {
         for (SessionListener listener : sessionListeners) {
             message = String.format(message, channel);
             listener.channelJoinError(message);
         }
     }
 
-    public void inviteError(String message) {
+    private void inviteError(String message) {
         for (SessionListener listener : sessionListeners) {
             listener.inviteError(message);
         }

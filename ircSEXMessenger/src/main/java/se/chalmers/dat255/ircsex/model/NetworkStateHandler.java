@@ -97,7 +97,7 @@ public class NetworkStateHandler extends BroadcastReceiver {
 
         @Override
         public void onOnline() {
-            Log.e("IRCDEBUG", "onOnline()");
+            Log.d("IRCDEBUG", "onOnline()");
             internet = true;
             for (ConnectionListener listener : listeners) {
                 listener.onOnline();
@@ -106,7 +106,7 @@ public class NetworkStateHandler extends BroadcastReceiver {
 
         @Override
         public void onOffline() {
-            Log.e("IRCDEBUG", "onOffline()");
+            Log.d("IRCDEBUG", "onOffline()");
             internet = false;
             for (ConnectionListener listener : listeners) {
                 listener.onOffline();

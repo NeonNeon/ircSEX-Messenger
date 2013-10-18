@@ -69,13 +69,7 @@ public class ChatFragment extends Fragment implements NetworkStateHandler.Connec
                 ChannelItem ci = channelItemClass.getConstructor(IrcMessage.class).newInstance(message);
                 backlog.add(ci);
             }
-        } catch (InvocationTargetException e) {
-            Log.e("IRCDEBUG", "Could not instantiate backlog of channel " + channel.getChannelName(), e);
-        } catch (NoSuchMethodException e) {
-            Log.e("IRCDEBUG", "Could not instantiate backlog of channel " + channel.getChannelName(), e);
-        } catch (java.lang.InstantiationException e) {
-            Log.e("IRCDEBUG", "Could not instantiate backlog of channel " + channel.getChannelName(), e);
-        } catch (IllegalAccessException e) {
+        } catch (InvocationTargetException | NoSuchMethodException | java.lang.InstantiationException | IllegalAccessException e) {
             Log.e("IRCDEBUG", "Could not instantiate backlog of channel " + channel.getChannelName(), e);
         } finally {
             messageArrayAdapter = new MessageArrayAdapter(getActivity(), backlog);
@@ -139,7 +133,7 @@ public class ChatFragment extends Fragment implements NetworkStateHandler.Connec
     }
 
     public void scrollWhenNoBacklog() {
-        Log.e("IRCDEBUG", "Last visible: " + messageList.getLastVisiblePosition() + " Count: " + messageArrayAdapter.getCount());
+        Log.d("IRCDEBUG", "Last visible: " + messageList.getLastVisiblePosition() + " Count: " + messageArrayAdapter.getCount());
         if (messageList.getLastVisiblePosition() == messageArrayAdapter.getCount()-2) {
             scrollToBottom();
         }

@@ -5,7 +5,11 @@ import android.util.Log;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import se.chalmers.dat255.ircsex.R;
 import se.chalmers.dat255.ircsex.model.Session;
@@ -44,7 +48,7 @@ public class IrcProtocolAdapter implements Runnable {
         createBuffers();
         String line = "   ";
         do {
-            Log.e("IRC", line);
+            Log.d("IRC", line);
             handleReply(line);
             try {
                 line = input.readLine();
@@ -152,12 +156,14 @@ public class IrcProtocolAdapter implements Runnable {
         String nick = parts[0].substring(1, parts[0].indexOf(BANG));
         String channel = parts[2].substring(0, parts[2].indexOf(BLANK));
         String msg = parts[2].substring(parts[2].indexOf(COLON) + 1);
+
         if (channel.contains(HASHTAG)) {
             listener.channelMessageReceived(channel, nick, msg);
         } else {
             listener.queryMessageReceived(nick, msg);
         }
     }
+
 
     /**
      * Connect to the specified server with this identity.
