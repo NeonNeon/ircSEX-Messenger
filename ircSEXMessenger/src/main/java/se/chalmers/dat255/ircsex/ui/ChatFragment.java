@@ -27,7 +27,6 @@ import se.chalmers.dat255.ircsex.model.IrcMessage;
 import se.chalmers.dat255.ircsex.model.NetworkStateHandler;
 import se.chalmers.dat255.ircsex.model.ReceivedChatBubble;
 import se.chalmers.dat255.ircsex.model.SentChatBubble;
-import se.chalmers.dat255.ircsex.ui.search.MessageArrayAdapter;
 
 public class ChatFragment extends Fragment implements NetworkStateHandler.ConnectionListener {
     private ListView messageList;

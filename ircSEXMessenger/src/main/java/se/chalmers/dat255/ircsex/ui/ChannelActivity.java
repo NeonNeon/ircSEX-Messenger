@@ -46,10 +46,6 @@ import se.chalmers.dat255.ircsex.model.ServerConnectionData;
 import se.chalmers.dat255.ircsex.model.Session;
 import se.chalmers.dat255.ircsex.model.SessionListener;
 import se.chalmers.dat255.ircsex.ui.dialog.JoinChannelDialogFragment;
-import se.chalmers.dat255.ircsex.ui.search.ChannelSearchActivity;
-import se.chalmers.dat255.ircsex.ui.search.MessageSearchActivity;
-import se.chalmers.dat255.ircsex.ui.search.SearchActivity;
-import se.chalmers.dat255.ircsex.ui.search.UserSearchActivity;
 import se.chalmers.dat255.ircsex.view.IrcChannelItem;
 import se.chalmers.dat255.ircsex.view.IrcServerHeader;
 

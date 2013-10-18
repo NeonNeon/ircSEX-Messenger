@@ -1,4 +1,4 @@
-package se.chalmers.dat255.ircsex.ui.search;
+package se.chalmers.dat255.ircsex.ui;
 
 import android.app.SearchManager;
 import android.content.Intent;
