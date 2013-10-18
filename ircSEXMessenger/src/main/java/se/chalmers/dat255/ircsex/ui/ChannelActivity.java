@@ -280,8 +280,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         if (ircChannelSelector.isIndexHeading(newPosition)) {
             newPosition = ircChannelSelector.removeServer(newPosition);
             session.removeServer(session.getActiveServer().getHost());
-            if (newPosition == IrcChannelSelector.NO_SERVERS_CONNECTED) {
-                startNoServersActivity();
+            if (ircChannelSelector.isEmpty()) {
                 return;
             }
         }
@@ -425,8 +424,12 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
 
     @Override
     public void onServerDisconnect(String host, String message) {
-        ircChannelSelector.removeServer(ircChannelSelector.indexOf(host));
-        startNoServersActivity();
+        if (ircChannelSelector.isEmpty()) {
+            startNoServersActivity();
+        }
+        else {
+            ircChannelSelector.removeServer(ircChannelSelector.indexOf(host));
+        }
     }
 
     @Override
@@ -594,6 +597,11 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         showToast(message);
     }
 
+    /**
+     * Displays an toast
+     *
+     * @param message Text to show in the toast
+     */
     private void showToast(final String message) {
         ChannelActivity.this.runOnUiThread(new Runnable() {
             @Override
@@ -602,6 +610,24 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
             }
         });
     }
+
+    /**
+     * Launches a toast showing the connection error,
+     * then resets the session and sends the user back
+     * to the "New Connection" screen.
+     */
+    @Override
+    public void serverConnectionError() {
+        showToast("Could not connect to server");
+
+        // Session doesn't exist yet so it's not possible to remove the server this way.
+        //Log.e("IRCERROR", session.getActiveServer().getHost());
+        //session.removeServer(session.getActiveServer().getHost());
+        session.reset();
+        serverConnectProgressDialog.dismiss();
+        startNoServersActivity();
+    }
+
 
     @Override
     public void onNickChange(String host, String channel, IrcMessage ircMessage) {

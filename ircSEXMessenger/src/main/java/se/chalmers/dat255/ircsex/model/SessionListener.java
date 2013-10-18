@@ -129,4 +129,9 @@ public interface SessionListener extends WhoisListener {
      * @param message Error message
      */
     public void inviteError(String message);
+
+    /**
+     * Called on failure to connect to the server
+     */
+    public void serverConnectionError();
 }
