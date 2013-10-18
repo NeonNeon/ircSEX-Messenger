@@ -104,9 +104,4 @@ public interface SessionListener extends WhoisListener {
      * Is called if there was an error when trying to change nickname.
      */
     public void nickChangeError();
-
-    /**
-     * Is called if an message with invalid encoding is received
-     */
-    public void encodingError();
 }

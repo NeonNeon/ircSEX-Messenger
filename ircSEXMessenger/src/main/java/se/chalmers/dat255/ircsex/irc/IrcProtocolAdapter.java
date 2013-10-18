@@ -5,11 +5,7 @@ import android.util.Log;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 
 /**
  * This class is used to easily communicate with the IRC protocol.
@@ -62,7 +58,7 @@ public class IrcProtocolAdapter implements Runnable {
             output = flavor.getOutput();
             input = flavor.getInput();
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e("IRCDEBUG", "IO", e);
             listener.serverDisconnected();
         }
         listener.serverConnected();

@@ -46,7 +46,6 @@ import se.chalmers.dat255.ircsex.model.ServerConnectionData;
 import se.chalmers.dat255.ircsex.model.Session;
 import se.chalmers.dat255.ircsex.model.SessionListener;
 import se.chalmers.dat255.ircsex.ui.dialog.JoinChannelDialogFragment;
-import se.chalmers.dat255.ircsex.ui.dialog.ServerConnectDialogFragment;
 import se.chalmers.dat255.ircsex.ui.search.ChannelSearchActivity;
 import se.chalmers.dat255.ircsex.ui.search.MessageSearchActivity;
 import se.chalmers.dat255.ircsex.ui.search.SearchActivity;
@@ -573,17 +572,6 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
             }
         });
     }
-
-    @Override
-    public void encodingError() {
-        ChannelActivity.this.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(ChannelActivity.this, "Invalid encoding in incoming message", Toast.LENGTH_LONG).show();
-            }
-        });
-    }
-
 
     @Override
     public void onNickChange(String host, String channel, IrcMessage ircMessage) {

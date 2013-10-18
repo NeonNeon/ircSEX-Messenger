@@ -1,6 +1,5 @@
 package se.chalmers.dat255.ircsex.model;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -594,13 +593,6 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
         }
     }
 
-
-    public void encodingError() {
-        for (SessionListener listener : sessionListeners) {
-            listener.encodingError();
-        }
-    }
-
     @Override
     public void serverDisconnected() {
         if (networkStateHandler.isConnected()) {
@@ -611,12 +603,6 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
     @Override
     public void channelMessageReceived(String channel, String user, String message) {
         user = IrcUser.extractUserName(user);
-
-        try {
-            se.chalmers.dat255.ircsex.util.Encoding.checkEncoding(message);
-        } catch (UnsupportedEncodingException e) {
-            encodingError();
-        }
         IrcChannel ircChannel = connectedChannels.get(channel);
         ChatIrcMessage ircMessage;
         if (!ircChannel.getChannelName().equals(activeChannel.getChannelName()) && checkHighlight(ircChannel, message)) {
