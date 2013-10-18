@@ -29,12 +29,12 @@
         android:gravity="right">
 
         <ImageButton
+            android:id="@+id/userInfoButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:background="@null"
             android:padding="5dp"
-            android:id="@+id/userInfoButton"
             android:src="@drawable/action_about"
             android:onClick="userInfo"/>
     </LinearLayout>

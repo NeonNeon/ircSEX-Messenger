@@ -15,7 +15,7 @@ class ByteArrayLineReader {
     String readLine() {
         if (buffer == null) {
             buffer = baos.toByteArray();
-            lines = getNumberOfLines() // TODO: Om det skrivs till strömmen innuti then satsen kommer antalet rader inte stämma. Kan detta uppstå?
+            lines = getNumberOfLines()
         }
         if (lines == 0) {
             return null

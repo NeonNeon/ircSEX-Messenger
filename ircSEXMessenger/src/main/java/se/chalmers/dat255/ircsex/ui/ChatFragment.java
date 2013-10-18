@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -23,14 +24,15 @@ import se.chalmers.dat255.ircsex.model.ChatIrcMessage;
 import se.chalmers.dat255.ircsex.model.InfoMessage;
 import se.chalmers.dat255.ircsex.model.IrcChannel;
 import se.chalmers.dat255.ircsex.model.IrcMessage;
+import se.chalmers.dat255.ircsex.model.NetworkStateHandler;
 import se.chalmers.dat255.ircsex.model.ReceivedChatBubble;
 import se.chalmers.dat255.ircsex.model.SentChatBubble;
-import se.chalmers.dat255.ircsex.ui.search.MessageArrayAdapter;
 
-public class ChatFragment extends Fragment {
+public class ChatFragment extends Fragment implements NetworkStateHandler.ConnectionListener {
     private ListView messageList;
     private MessageArrayAdapter messageArrayAdapter;
     private EditText messageEditText;
+    private ImageButton sendButton;
     private ChatMessageSendListener messageSendListener;
     private IrcChannel channel;
 
@@ -41,6 +43,7 @@ public class ChatFragment extends Fragment {
     public ChatFragment(ChatMessageSendListener messageSendListener, IrcChannel channel) {
         this.messageSendListener = messageSendListener;
         this.channel = channel;
+        NetworkStateHandler.getInstance().addListener(this);
     }
 
     public void bringUpToSpeed(ChatMessageSendListener messageSendListener, IrcChannel channel) {
@@ -65,13 +68,7 @@ public class ChatFragment extends Fragment {
                 ChannelItem ci = channelItemClass.getConstructor(IrcMessage.class).newInstance(message);
                 backlog.add(ci);
             }
-        } catch (InvocationTargetException e) {
-            Log.e("IRCDEBUG", "Could not instantiate backlog of channel " + channel.getChannelName(), e);
-        } catch (NoSuchMethodException e) {
-            Log.e("IRCDEBUG", "Could not instantiate backlog of channel " + channel.getChannelName(), e);
-        } catch (java.lang.InstantiationException e) {
-            Log.e("IRCDEBUG", "Could not instantiate backlog of channel " + channel.getChannelName(), e);
-        } catch (IllegalAccessException e) {
+        } catch (InvocationTargetException | NoSuchMethodException | java.lang.InstantiationException | IllegalAccessException e) {
             Log.e("IRCDEBUG", "Could not instantiate backlog of channel " + channel.getChannelName(), e);
         } finally {
             messageArrayAdapter = new MessageArrayAdapter(getActivity(), backlog);
@@ -84,6 +81,7 @@ public class ChatFragment extends Fragment {
         messageList = (ListView) rootView.findViewById(R.id.chat_message_list);
         messageList.setAdapter(messageArrayAdapter);
         scrollToBottom();
+        sendButton = (ImageButton) rootView.findViewById(R.id.fragment_chat_send);
         messageEditText = (EditText) rootView.findViewById(R.id.fragment_chat_message);
         messageEditText.requestFocus();
         ((EditText) rootView.findViewById(R.id.fragment_chat_message)).setOnEditorActionListener(
@@ -134,14 +132,32 @@ public class ChatFragment extends Fragment {
     }
 
     public void scrollWhenNoBacklog() {
-        Log.e("IRCDEBUG", "Last visible: " + messageList.getLastVisiblePosition() + " Count: " + messageArrayAdapter.getCount());
-        if (messageList.getLastVisiblePosition() == messageArrayAdapter.getCount()-2) {
+        Log.d("IRCDEBUG", "Last visible: " + messageList.getLastVisiblePosition() + " Count: " + messageArrayAdapter.getCount());
+        if (hasBacklog()) {
             scrollToBottom();
         }
     }
 
+    private boolean hasBacklog() {
+        return messageList.getLastVisiblePosition() == messageArrayAdapter.getCount()-2;
+    }
+
     private void scrollToBottom() {
-        messageList.setSelection(messageArrayAdapter.getCount()-1);
+        if (messageArrayAdapter != null) {
+            messageList.setSelection(messageArrayAdapter.getCount()-1);
+        }
+    }
+
+    @Override
+    public void onOnline() {
+        sendButton.setEnabled(true);
+        messageEditText.setEnabled(true);
+    }
+
+    @Override
+    public void onOffline() {
+        sendButton.setEnabled(false);
+        messageEditText.setEnabled(false);
     }
 
     public interface ChatMessageSendListener {

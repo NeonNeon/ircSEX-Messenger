@@ -31,13 +31,13 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import se.chalmers.dat255.ircsex.R;
 import se.chalmers.dat255.ircsex.model.ChatIrcMessage;
-import se.chalmers.dat255.ircsex.model.IrcChannel;
 import se.chalmers.dat255.ircsex.model.IrcHighlight;
 import se.chalmers.dat255.ircsex.model.IrcMessage;
 import se.chalmers.dat255.ircsex.model.IrcUser;
@@ -46,11 +46,6 @@ import se.chalmers.dat255.ircsex.model.ServerConnectionData;
 import se.chalmers.dat255.ircsex.model.Session;
 import se.chalmers.dat255.ircsex.model.SessionListener;
 import se.chalmers.dat255.ircsex.ui.dialog.JoinChannelDialogFragment;
-import se.chalmers.dat255.ircsex.ui.dialog.ServerConnectDialogFragment;
-import se.chalmers.dat255.ircsex.ui.search.ChannelSearchActivity;
-import se.chalmers.dat255.ircsex.ui.search.MessageSearchActivity;
-import se.chalmers.dat255.ircsex.ui.search.SearchActivity;
-import se.chalmers.dat255.ircsex.ui.search.UserSearchActivity;
 import se.chalmers.dat255.ircsex.view.IrcChannelItem;
 import se.chalmers.dat255.ircsex.view.IrcServerHeader;
 
@@ -79,7 +74,9 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     private Session session;
     private View whois;
     private int selected = -1;
-    private LinearLayout highlightButton;
+    private Menu menu;
+
+    private NetworkStateHandler networkStateHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,8 +84,6 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.activity_channel_main);
-
-        NetworkStateHandler.addListener(this);
 
         mTitle = mDrawerTitle = getTitle();
         ircChannelSelector = new IrcChannelSelector(this);
@@ -135,6 +130,13 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         } else {
             startNoServersActivity();
         }
+
+        networkStateHandler = NetworkStateHandler.getInstance();
+        networkStateHandler.addListener(this);
+        if (!networkStateHandler.isConnected()) {
+            Intent intent = new Intent(this, NoInternetActivity.class);
+            startActivity(intent);
+        }
     }
 
     private void showConnectionDialog(String message) {
@@ -151,9 +153,9 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        this.menu = menu;
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.channel_main, menu);
-        highlightButton = (LinearLayout) menu.findItem(R.id.highlightbadge).getActionView();
         updateHighlightBadge();
         return super.onCreateOptionsMenu(menu);
     }
@@ -166,10 +168,6 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         }
         // Handle action buttons
         switch(item.getItemId()) {
-            case R.id.action_add_server:
-                DialogFragment serverConnectDialogFragment = new ServerConnectDialogFragment();
-                serverConnectDialogFragment.show(getSupportFragmentManager(), "serverconnect");
-                break;
             case R.id.action_join_channel:
                 DialogFragment joinChannelDialogFragment = new JoinChannelDialogFragment();
                 joinChannelDialogFragment.show(getSupportFragmentManager(), "joinchannel");
@@ -177,17 +175,16 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
             case R.id.action_leave_channel:
                 leaveActiveChannel();
                 break;
-//            case R.id.action_user_list:
-//                drawerLayout.openDrawer(Gravity.END);
-//                drawerOpen = true;
-//                break;
             case R.id.action_change_nick:
                 changeNick();
                 break;
             case R.id.action_invite_user:
                 inviteUser();
                 break;
-            case R.id.action_search:
+            case R.id.action_disconnect:
+                session.getActiveServer().quitServer("");
+                break;
+            case R.id.action_settings:
                 Intent intent = new Intent(this, SettingsActivity.class);
                 startActivity(intent);
                 break;
@@ -250,7 +247,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         String newNick = nickEditText.getText().toString();
-                        Log.e("IRCDEBUG", "Change nickname to " + newNick);
+                        Log.d("IRCDEBUG", "Change nickname to " + newNick);
                         session.changeNick(newNick);
                     }
                 })
@@ -273,16 +270,18 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     }
 
     private void leaveActiveChannel() {
+        if (ircChannelSelector.getSize() == 1) {
+            return;
+        }
         String channelName = session.getActiveChannel().getChannelName();
         session.partChannel(session.getActiveServer().getHost(), channelName);
         int newPosition = ircChannelSelector.removeChannel(selected);
         if (ircChannelSelector.isIndexHeading(newPosition)) {
-            newPosition = ircChannelSelector.removeServer(newPosition);
-            session.removeServer(session.getActiveServer().getHost());
-            if (newPosition == IrcChannelSelector.NO_SERVERS_CONNECTED) {
-                startNoServersActivity();
-                return;
-            }
+            FragmentManager fragmentManager = getFragmentManager();
+            fragmentManager.beginTransaction().remove(fragment).commitAllowingStateLoss();
+            setTitle(mDrawerTitle);
+            getActionBar().setSubtitle(null);
+            return;
         }
         selectItem(newPosition);
     }
@@ -326,13 +325,16 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         Bundle args = new Bundle();
         fragment.setArguments(args);
         FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.channel_layout, fragment, CHAT_FRAGMENT_TAG).addToBackStack(CHAT_FRAGMENT_TAG).commit();
+        fragmentManager.beginTransaction().replace(R.id.channel_layout, fragment, CHAT_FRAGMENT_TAG)
+                .addToBackStack(CHAT_FRAGMENT_TAG).commitAllowingStateLoss();
 
         leftDrawer.setItemChecked(position, true);
         setTitle(channelName);
         drawerLayout.closeDrawer(leftDrawerContainer);
         selected = position;
-        updateUserList(session.getActiveChannel().getUsers());
+        if (session.getActiveChannel() != null) {
+            updateUserList(session.getActiveChannel().getUsers());
+        }
     }
 
     @Override
@@ -340,24 +342,20 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         super.onActivityResult(requestCode, resultCode, data);
         switch (resultCode) {
             case NoServersActivity.RESULT_RETURN_DATA:
-                String server = data.getStringExtra(NoServersActivity.EXTRA_SERVER);
-                String port = data.getStringExtra(NoServersActivity.EXTRA_PORT);
-                String nickname = data.getStringExtra(NoServersActivity.EXTRA_NICKNAME);
-                ServerConnectionData ConnectionData = new ServerConnectionData(
+                ServerConnectionData connectionData = new ServerConnectionData(
                         data.getStringExtra(NoServersActivity.EXTRA_SERVER),
                         Integer.parseInt(data.getStringExtra(NoServersActivity.EXTRA_PORT)),
                         data.getStringExtra(NoServersActivity.EXTRA_NICKNAME),
-                        "ircsex",
+                        data.getStringExtra(NoServersActivity.EXTRA_USERNAME),
                         "Realname",
-                        "password",
-                        false,
+                        data.getStringExtra(NoServersActivity.EXTRA_PASSWORD),
+                        false, // use ssl
                         data.getBooleanExtra(NoServersActivity.EXTRA_USE_SSH, false),
                         data.getStringExtra(NoServersActivity.EXTRA_SSH_HOSTNAME),
                         data.getStringExtra(NoServersActivity.EXTRA_SSH_USERNAME),
                         data.getStringExtra(NoServersActivity.EXTRA_SSH_PASSWORD)
                 );
-                // Maybe validate here, or maybe somewhere else? Should we even validate?
-                startServer(ConnectionData);
+                startServer(connectionData);
                 break;
             case SearchActivity.RESULT_RETURN_CHANNEL:
                 String channel = data.getStringExtra(SearchActivity.EXTRA_CHANNEL);
@@ -388,32 +386,26 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
         getActionBar().setSubtitle(session.getActiveServer().getHost());
     }
 
-    /**
-     * When using the ActionBarDrawerToggle, you must call it during
-     * onPostCreate() and onConfigurationChanged()...
-     */
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        // Sync the toggle state after onRestoreInstanceState has occurred.
         mDrawerToggle.syncState();
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        // Pass any configuration change to the drawer toggles
         mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
     @Override
     public void onConnectionEstablished(String host) {
-        Log.e("IRCDEBUG", "Opened connection " + host);
+        Log.d("IRCDEBUG", "Opened connection " + host);
     }
 
     @Override
     public void onRegistrationCompleted(final String host) {
-        Log.e("IRCDEBUG", "Registration completed");
+        Log.d("IRCDEBUG", "Registration completed");
         serverConnectProgressDialog.dismiss();
         session.setActiveServer(host);
         ChannelActivity.this.runOnUiThread(new Runnable() {
@@ -425,18 +417,22 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
     }
 
     @Override
-    public void onDisconnect(String host) {
-
-    }
-
-    @Override
-    public void onServerDisconnect(String host, String message) {
-
+    public void onServerDisconnect(final String host) {
+        ChannelActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (ircChannelSelector.isEmpty()) {
+                    startNoServersActivity();
+                } else {
+                    ircChannelSelector.removeServer(ircChannelSelector.indexOf(host));
+                }
+            }
+        });
     }
 
     @Override
     public void onServerJoin(final String host, final String channelName) {
-        Log.e("IRCDEBUG", "Joined channel " + channelName);
+        Log.d("IRCDEBUG", "Joined channel " + channelName);
         ChannelActivity.this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -484,6 +480,7 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
             this.users.add(user);
         }
         userArrayAdapter.notifyDataSetChanged();
+        adjustToConnectivity();
     }
 
     public void userInfo(View view) {
@@ -511,44 +508,50 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
             @Override
             public void run() {
                 if (channel.equals(channelName)) {
-                    fragment.addMessage(message);
-                    Log.e("IRCDEBUG", "onChannelMessage to: " + fragment.toString());
+                    if (message.getUser().isSelf()) {
+                        fragment.addSentMessage(message);
+                    } else {
+                        fragment.addMessage(message);
+                    }
+                    Log.d("IRCDEBUG", "onChannelMessage to: " + fragment.toString());
                 }
             }
         });
     }
 
     @Override
-    public void onHighlight(IrcChannel channel, IrcMessage message) {
+    public void onHighlightChange() {
         updateHighlightBadge();
     }
 
     private void updateHighlightBadge() {
-        if (session.getActiveServer() != null) {
+        LinearLayout highlightButton = (LinearLayout) menu.findItem(R.id.highlightbadge).getActionView();
+        if (session.getActiveServer() != null && highlightButton.getChildAt(0) != null) {
             ChannelActivity.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                    LinearLayout highlightButton = (LinearLayout) menu.findItem(R.id.highlightbadge).getActionView();
                     int highlights = session.getActiveServer().getHighlights().size();
                     int lastMessages = session.getActiveServer().getLastMessages().size();
                     if (highlights > 0) {
                         highlightButton.getChildAt(0).setBackgroundResource(R.drawable.highlightbadge_background_highlight);
                         highlightButton.setBackground(getResources().getDrawable(R.drawable.user_click));
-                        setHighlightButtonText(Integer.toString(highlights));
+                        setHighlightButtonText(Integer.toString(highlights), highlightButton);
                     } else if (lastMessages > 0) {
                         highlightButton.getChildAt(0).setBackgroundResource(R.drawable.highlightbadge_background);
                         highlightButton.setBackground(getResources().getDrawable(R.drawable.user_click));
-                        setHighlightButtonText(Integer.toString(lastMessages));
+                        setHighlightButtonText(Integer.toString(lastMessages), highlightButton);
                     } else {
                         highlightButton.getChildAt(0).setBackgroundResource(R.drawable.highlightbadge_background_disabled);
                         highlightButton.setBackground(null);
-                        setHighlightButtonText(Integer.toString(0));
+                        setHighlightButtonText(Integer.toString(0), highlightButton);
                     }
                 }
             });
         }
     }
 
-    private void setHighlightButtonText(String text) {
+    private void setHighlightButtonText(String text, LinearLayout highlightButton) {
         ((TextView) ((LinearLayout) highlightButton.getChildAt(0)).getChildAt(0))
                 .setText(text);
     }
@@ -564,6 +567,65 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
             }
         });
     }
+
+    @Override
+    public void queryError(String message) {
+        showToast(message);
+    }
+
+    @Override
+    public void loginError(String message) {
+
+    }
+
+    @Override
+    public void channelJoinError(String message) {
+        showToast(message);
+        DialogFragment joinChannelDialogFragment = new JoinChannelDialogFragment();
+        joinChannelDialogFragment.show(getSupportFragmentManager(), "joinchannel");
+    }
+
+    @Override
+    public void nickChangeError(String message) {
+        showToast(message);
+    }
+
+    @Override
+    public void inviteError(String message) {
+        showToast(message);
+    }
+
+    /**
+     * Displays an toast
+     *
+     * @param message Text to show in the toast
+     */
+    private void showToast(final String message) {
+        ChannelActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(ChannelActivity.this, message, Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    /**
+     * Launches a toast showing the connection error,
+     * then resets the session and sends the user back
+     * to the "New Connection" screen.
+     */
+    @Override
+    public void serverConnectionError() {
+        showToast("Could not connect to server");
+
+        // Session doesn't exist yet so it's not possible to remove the server this way.
+        //Log.e("IRCERROR", session.getActiveServer().getHost());
+        //session.removeServer(session.getActiveServer().getHost());
+        session.reset();
+        serverConnectProgressDialog.dismiss();
+        startNoServersActivity();
+    }
+
 
     @Override
     public void onNickChange(String host, String channel, IrcMessage ircMessage) {
@@ -637,12 +699,49 @@ public class ChannelActivity extends FragmentActivity implements SessionListener
 
     @Override
     public void onOnline() {
+        if (menu != null) {
+            menu.findItem(R.id.search_messages).setEnabled(true);
+            menu.findItem(R.id.search_messages).setIcon(R.drawable.ic_action_search);
+            menu.findItem(R.id.action_invite_user).setEnabled(true);
+            menu.findItem(R.id.action_change_nick).setEnabled(true);
+            menu.findItem(R.id.action_join_channel).setEnabled(true);
+            menu.findItem(R.id.action_leave_channel).setEnabled(true);
+            menu.findItem(R.id.action_disconnect).setEnabled(true);
+            drawerLayout.findViewById(R.id.channel_search_drawer_button).setEnabled(true);
+            ((LinearLayout) drawerLayout.findViewById(R.id.channel_search_drawer_button))
+                    .getChildAt(0).setEnabled(true);
+            ((TextView) ((LinearLayout) drawerLayout
+                    .findViewById(R.id.channel_search_drawer_button)).getChildAt(0))
+                    .setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_action_search, 0, 0, 0);
+            adjustToConnectivity();
+        }
     }
 
     @Override
     public void onOffline() {
-        Intent noInternetIntent = new Intent(this, NoInternetActivity.class);
-        startActivity(noInternetIntent);
+        if (menu != null) {
+            menu.findItem(R.id.search_messages).setEnabled(false);
+            menu.findItem(R.id.search_messages).setIcon(android.R.drawable.ic_menu_search);
+            menu.findItem(R.id.action_invite_user).setEnabled(false);
+            menu.findItem(R.id.action_change_nick).setEnabled(false);
+            menu.findItem(R.id.action_join_channel).setEnabled(false);
+            menu.findItem(R.id.action_leave_channel).setEnabled(false);
+            menu.findItem(R.id.action_disconnect).setEnabled(false);
+            drawerLayout.findViewById(R.id.channel_search_drawer_button).setEnabled(false);
+            ((TextView) ((LinearLayout) drawerLayout
+                    .findViewById(R.id.channel_search_drawer_button)).getChildAt(0))
+                    .setCompoundDrawablesWithIntrinsicBounds(android.R.drawable.ic_menu_search, 0, 0, 0);
+            adjustToConnectivity();
+        }
+    }
+
+    private void adjustToConnectivity() {
+        boolean connectivity = networkStateHandler.isConnected();
+        for (int i=0; i<rightDrawer.getChildCount(); i++) {
+            LinearLayout layout = (LinearLayout) rightDrawer.getChildAt(i);
+            layout.setClickable(connectivity);
+            layout.findViewById(R.id.userInfoButton).setClickable(connectivity);
+        }
     }
 
     private void showWhoisDialog(final String nick) {

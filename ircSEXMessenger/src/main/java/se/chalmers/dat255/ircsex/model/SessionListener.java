@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * Created by Wilhelm on 2013-09-19.
  */
-public interface SessionListener {
+public interface SessionListener extends WhoisListener {
     /**
      * Fired when the socked has been opened.
      * @param host Host to which the socket has been opened.
@@ -19,18 +19,10 @@ public interface SessionListener {
     public void onRegistrationCompleted(String host);
 
     /**
-     * User disconnected the server.
-     *
-     * @param host server adress
-     */
-    public void onDisconnect(String host);
-
-    /**
      *
      * @param host
-     * @param message
      */
-    public void onServerDisconnect(String host, String message);
+    public void onServerDisconnect(String host);
 
     /**
      * The user joined a channel.
@@ -88,11 +80,8 @@ public interface SessionListener {
 
     /**
      * Receiving a hilightnotification.
-     *
-     * @param channel
-     * @param message
      */
-    public void onHighlight(IrcChannel channel, IrcMessage message);
+    public void onHighlightChange();
 
     /**
      * Receiving message as confirmation of a sent message.
@@ -104,23 +93,37 @@ public interface SessionListener {
     public void onSentMessage(String host, String channel, ChatIrcMessage message);
 
     /**
-     * This method sends a list of connected channels as a whois request resopnse.
-     * @param nick - the nick of the requested whois
-     * @param channels - the channels the nick is connected to
+     * Something went wrong while sending a query.
+     * @param message Error message
      */
-    public void whoisChannels(String nick, List<String> channels);
+    public void queryError(String message);
 
     /**
-     * This method sends the nicks realname as a whois request resopnse.
-     * @param nick
-     * @param realname
+     * Something went wrong while logging in.
+     * @param message Error message
      */
-    public void whoisRealname(String nick, String realname);
+    public void loginError(String message);
 
     /**
-     * This method sends the nicks idletime as a whois request resopnse.
-     * @param nick
-     * @param formattedIdleTime
+     * Something went wrong while joining a channel.
+     * @param message Error message
      */
-    public void whoisIdleTime(String nick, String formattedIdleTime);
+    public void channelJoinError(String message);
+
+    /**
+     * Something went wrong when you tried to change nick.
+     * @param message Error message
+     */
+    public void nickChangeError(String message);
+
+    /**
+     * Something went wrong while inviting a user.
+     * @param message Error message
+     */
+    public void inviteError(String message);
+
+    /**
+     * Called on failure to connect to the server
+     */
+    public void serverConnectionError();
 }

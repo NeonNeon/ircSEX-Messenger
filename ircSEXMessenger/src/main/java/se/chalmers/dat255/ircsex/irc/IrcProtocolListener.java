@@ -17,7 +17,7 @@ public interface IrcProtocolListener {
     /**
      * Called when your are registered on the server.
      */
-    public void serverRegistered();
+    public void serverRegistered(String server, String nick);
 
     /**
      * Called when a user changed nick.
@@ -100,14 +100,17 @@ public interface IrcProtocolListener {
     // ERRORS
 
     /**
-     * Something went wrong when you tried to change nick.
-     */
-    public void nickChangeError();
-
-    /**
      * The server was disconnected.
      * To reconnect get a new IPA.
      */
     public void serverDisconnected();
+
+    /**
+     * Something went wrong.
+     *
+     * @param errorCode Protocol error code
+     * @param message Protocol error message
+     */
+    public void ircError(String errorCode, String message);
 
 }

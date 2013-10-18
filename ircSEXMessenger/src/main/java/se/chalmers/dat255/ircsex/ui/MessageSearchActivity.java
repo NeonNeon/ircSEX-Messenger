@@ -1,4 +1,4 @@
-package se.chalmers.dat255.ircsex.ui.search;
+package se.chalmers.dat255.ircsex.ui;
 
 import android.app.SearchManager;
 import android.content.Intent;
@@ -62,13 +62,7 @@ public class MessageSearchActivity extends SearchActivity {
                     result.add(ci);
                 }
             }
-        } catch (InvocationTargetException e) {
-            Log.e("IRCDEBUG", "Could not instantiate search results for search string: " + search, e);
-        } catch (NoSuchMethodException e) {
-            Log.e("IRCDEBUG", "Could not instantiate search results for search string: " + search, e);
-        } catch (InstantiationException e) {
-            Log.e("IRCDEBUG", "Could not instantiate search results for search string: " + search, e);
-        } catch (IllegalAccessException e) {
+        } catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e) {
             Log.e("IRCDEBUG", "Could not instantiate search results for search string: " + search, e);
         } finally {
             super.clearAdapter();

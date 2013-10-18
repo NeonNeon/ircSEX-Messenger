@@ -1,4 +1,4 @@
-package se.chalmers.dat255.ircsex.ui.search;
+package se.chalmers.dat255.ircsex.ui;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -104,7 +104,7 @@ public class MessageArrayAdapter extends ArrayAdapter<ChannelItem> {
         else {
             wrapper.setBackground(createNinePatchDrawable(channelItem));
         }
-        if (animate) {
+        if (animate && !channelItem.getIrcMessage().isRead()) {
             rowView.startAnimation(animation);
             animate = false;
         }

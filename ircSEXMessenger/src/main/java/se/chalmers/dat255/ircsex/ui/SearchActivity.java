@@ -1,4 +1,4 @@
-package se.chalmers.dat255.ircsex.ui.search;
+package se.chalmers.dat255.ircsex.ui;
 
 import android.app.ActionBar;
 import android.app.ListActivity;
@@ -72,7 +72,7 @@ public abstract class SearchActivity extends ListActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.search_channels, menu);
 
-        searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+        searchView = (SearchView) menu.findItem(R.id.action_settings).getActionView();
         // Configure the search info and add any event listeners
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -97,7 +97,7 @@ public abstract class SearchActivity extends ListActivity {
             }
         });
 
-        MenuItem searchMenuItem = menu.findItem(R.id.action_search);
+        MenuItem searchMenuItem = menu.findItem(R.id.action_settings);
         searchMenuItem.expandActionView();
 
         return super.onCreateOptionsMenu(menu);

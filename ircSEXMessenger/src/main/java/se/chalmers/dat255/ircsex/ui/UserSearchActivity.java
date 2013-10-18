@@ -1,4 +1,4 @@
-package se.chalmers.dat255.ircsex.ui.search;
+package se.chalmers.dat255.ircsex.ui;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -17,20 +17,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import se.chalmers.dat255.ircsex.R;
-import se.chalmers.dat255.ircsex.model.ChatIrcMessage;
-import se.chalmers.dat255.ircsex.model.IrcChannel;
-import se.chalmers.dat255.ircsex.model.IrcMessage;
-import se.chalmers.dat255.ircsex.model.IrcUser;
+import se.chalmers.dat255.ircsex.model.NetworkStateHandler;
 import se.chalmers.dat255.ircsex.model.Session;
-import se.chalmers.dat255.ircsex.model.SessionListener;
+import se.chalmers.dat255.ircsex.model.WhoisListener;
 
 /**
  * Created by Oskar on 2013-10-07.
  */
-public class UserSearchActivity extends SearchActivity implements SessionListener {
+public class UserSearchActivity extends SearchActivity implements WhoisListener, NetworkStateHandler.ConnectionListener {
 
     private ArrayList<String> result;
     private Session session;
+    private NetworkStateHandler networkStateHandler;
 
     private View whois;
     private AlertDialog whoisProgressDialog;
@@ -42,6 +40,10 @@ public class UserSearchActivity extends SearchActivity implements SessionListene
 
         session = Session.getInstance(this, this);
         content = session.getActiveServer().getKnownUsers();
+
+        networkStateHandler = NetworkStateHandler.getInstance();
+        networkStateHandler.addListener(this);
+        networkStateHandler.notify(this);
     }
 
     @Override
@@ -68,18 +70,19 @@ public class UserSearchActivity extends SearchActivity implements SessionListene
     }
 
     public void userInfo(View view) {
-        View view1 = (View) view.getParent().getParent();
-        String user = ((TextView) view1.findViewById(android.R.id.text1)).getText().toString();
+        if (networkStateHandler.isConnected()) {
+            View view1 = (View) view.getParent().getParent();
+            String user = ((TextView) view1.findViewById(android.R.id.text1)).getText().toString();
 
-        long time = System.currentTimeMillis();
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        whoisProgressDialog = builder.setTitle(R.string.dialog_whois_title)
-                .setView(new ProgressBar(this))
-                .create();
-        whoisProgressDialog.show();
-        session.getActiveServer().whois(user);
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            whoisProgressDialog = builder.setTitle(R.string.dialog_whois_title)
+                    .setView(new ProgressBar(this))
+                    .create();
+            whoisProgressDialog.show();
+            session.getActiveServer().whois(user);
 
-        findViewById(R.id.action_search).clearFocus();
+            findViewById(R.id.action_settings).clearFocus();
+        }
     }
 
     private void showWhoisDialog(final String nick) {
@@ -105,71 +108,6 @@ public class UserSearchActivity extends SearchActivity implements SessionListene
 
             whoisResultDialog.show();
         }
-    }
-
-    @Override
-    public void onConnectionEstablished(String host) {
-
-    }
-
-    @Override
-    public void onRegistrationCompleted(String host) {
-
-    }
-
-    @Override
-    public void onDisconnect(String host) {
-
-    }
-
-    @Override
-    public void onServerDisconnect(String host, String message) {
-
-    }
-
-    @Override
-    public void onServerJoin(String host, String channelName) {
-
-    }
-
-    @Override
-    public void onServerPart(String host, String channelName) {
-
-    }
-
-    @Override
-    public void onChannelUserChange(String host, String channel, List<IrcUser> users) {
-
-    }
-
-    @Override
-    public void onChannelUserJoin(String host, String channel, IrcMessage joinMessage) {
-
-    }
-
-    @Override
-    public void onChannelUserPart(String host, String channel, IrcMessage partMessage) {
-
-    }
-
-    @Override
-    public void onNickChange(String host, String channel, IrcMessage ircMessage) {
-
-    }
-
-    @Override
-    public void onChannelMessage(String host, String channel, ChatIrcMessage message) {
-
-    }
-
-    @Override
-    public void onHighlight(IrcChannel channel, IrcMessage message) {
-
-    }
-
-    @Override
-    public void onSentMessage(String host, String channel, ChatIrcMessage message) {
-
     }
 
     @Override
@@ -222,12 +160,33 @@ public class UserSearchActivity extends SearchActivity implements SessionListene
     }
 
     public void queryUser(View view) {
-        view = ((LinearLayout) view).getChildAt(0);
-        String user = ((TextView) ((LinearLayout) view).getChildAt(0)).getText().toString();
-        session.removeListener(this);
-        Intent data = new Intent();
-        data.putExtra(EXTRA_CHANNEL, user);
-        setResult(RESULT_RETURN_QUERY, data);
-        finish();
+        if (networkStateHandler.isConnected()) {
+            view = ((LinearLayout) view).getChildAt(0);
+            String user = ((TextView) ((LinearLayout) view).getChildAt(0)).getText().toString();
+            session.removeListener(this);
+            Intent data = new Intent();
+            data.putExtra(EXTRA_CHANNEL, user);
+            setResult(RESULT_RETURN_QUERY, data);
+            finish();
+        }
+    }
+
+    @Override
+    public void onOnline() {
+        adjustToConnectivity();
+    }
+
+    @Override
+    public void onOffline() {
+        adjustToConnectivity();
+    }
+
+    private void adjustToConnectivity() {
+        boolean connectivity = networkStateHandler.isConnected();
+        for (int i=0; i<getListView().getChildCount(); i++) {
+            LinearLayout layout = (LinearLayout) getListView().getChildAt(i);
+            layout.setClickable(connectivity);
+            layout.findViewById(R.id.userInfoButton).setClickable(connectivity);
+        }
     }
 }

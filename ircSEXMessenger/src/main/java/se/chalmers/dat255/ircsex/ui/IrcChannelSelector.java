@@ -5,7 +5,6 @@ package se.chalmers.dat255.ircsex.ui;
  */
 
 import android.content.Context;
-import android.util.Log;
 import android.widget.ArrayAdapter;
 
 import java.util.ArrayList;
@@ -196,5 +195,13 @@ public class IrcChannelSelector {
      */
     public boolean isIndexHeading(int position) {
         return connections.get(position).getViewType() == IrcConnectionItemAdapter.RowType.HEADER_ITEM.ordinal();
+    }
+
+    public boolean isEmpty() {
+        return connections.isEmpty();
+    }
+
+    public int getSize() {
+        return connections.size();
     }
 }

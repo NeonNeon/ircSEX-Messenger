@@ -13,7 +13,7 @@ class IrcProtocolAdapterTest extends Specification {
     MockIrcServer mockIrcServer
 
     def setup() {
-        ipa = new IrcProtocolAdapter(new NormalTaste("localhost", 80), subscriber)
+        ipa = new IrcProtocolAdapter(new NormalFlavor("localhost", 80), subscriber)
         mockIrcServer = new MockIrcServer()
         ipa.output = mockIrcServer.getAdapterOutputStream()
     }
@@ -82,5 +82,17 @@ class IrcProtocolAdapterTest extends Specification {
 
         then:
         mockIrcServer.readLine().equals("LIST\r\n")
+    }
+
+    def "test PING"() {
+        when:
+        def command = "PING :"
+        ipa.handleReply(command + code)
+
+        then:
+        mockIrcServer.readLine().equals("PONG :" + code + "\r\n")
+
+        where:
+        code << ["F9F15D37", "G4GF3H23"]
     }
 }

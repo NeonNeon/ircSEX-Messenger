@@ -4,8 +4,6 @@ import android.content.Context;
 
 import java.util.Map;
 
-import se.chalmers.dat255.ircsex.model.database.ContextManager;
-
 /**
  * This class represents an IRC session. It lists and handles servers.
  *
@@ -20,15 +18,12 @@ public class Session {
     private final Map<String, IrcServer> servers;
 
     private final ServerDAO datasource;
-    private final SessionListener listener;
 
     /**
      * Creates an Session object.
      */
-    private Session(Context context, SessionListener listener) {
-        ContextManager.CHANNEL_CONTEXT = context;
-        ContextManager.SERVER_CONTEXT = context;
-        this.listener = listener;
+    private Session(Context context) {
+        ContextHandler.CONTEXT = context;
 
         datasource = new ServerDAO();
         datasource.open();
@@ -36,17 +31,25 @@ public class Session {
         servers = datasource.getAllIrcServers();
     }
 
-    private void addListener(SessionListener listener) {
+    private void addListener(WhoisListener listener) {
         for (IrcServer server : servers.values()) {
             if (listener != null) {
-                server.addSessionListener(listener);
+                if (listener instanceof SessionListener) {
+                    server.addSessionListener((SessionListener) listener);
+                } else {
+                    server.addWhoisListener(listener);
+                }
             }
         }
     }
 
-    public void removeListener(SessionListener listener) {
+    public void removeListener(WhoisListener listener) {
         for (IrcServer server : servers.values()) {
-            server.removeSessionListener(listener);
+            if (listener instanceof SessionListener) {
+                server.removeSessionListener((SessionListener) listener);
+            } else {
+                server.removeWhoisListener(listener);
+            }
         }
     }
 
@@ -57,16 +60,16 @@ public class Session {
         return instance;
     }
 
-    public static Session getInstance(Context context, SessionListener listener) {
+    public static Session getInstance(Context context, WhoisListener listener) {
         if (instance == null) {
-            instance = new Session(context, listener);
+            instance = new Session(context);
         }
         instance.addListener(listener);
         return instance;
     }
 
     /**
-     * Adds a server and connects to it.
+     * Adds a server with a and connects to it.
      *
      * @param data all data used to connect
      * @param sessionListener
@@ -75,8 +78,6 @@ public class Session {
         IrcServer ircServer = new IrcServer(data);
         servers.put(data.getServer(), ircServer);
         ircServer.addSessionListener(sessionListener);
-        NetworkStateHandler.notify(ircServer);
-        datasource.addServer(data);
     }
 
     /**
@@ -147,5 +148,9 @@ public class Session {
 
     public boolean containsServers() {
         return servers.size() > 0;
+    }
+
+    public void reset() {
+        servers.clear();
     }
 }

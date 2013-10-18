@@ -1,6 +1,4 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/action_add_server"
-        android:title="@string/add_server"/>
     <item android:id="@+id/action_join_channel"
         android:title="@string/join_channel"/>
     <item android:id="@+id/action_leave_channel"
@@ -11,7 +9,9 @@
         android:title="@string/action_change_nick"/>
     <item android:id="@+id/action_invite_user"
         android:title="@string/action_invite_user"/>
-    <item android:id="@+id/action_search"
+    <item android:id="@+id/action_disconnect"
+          android:title="@string/action_disconnect" />
+    <item android:id="@+id/action_settings"
         android:title="@string/action_settings" />
     <item android:id="@+id/search_messages"
         android:title="@string/search_messages"

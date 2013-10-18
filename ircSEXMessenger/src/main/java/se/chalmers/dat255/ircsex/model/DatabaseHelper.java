@@ -1,4 +1,4 @@
-package se.chalmers.dat255.ircsex.model.database;
+package se.chalmers.dat255.ircsex.model;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

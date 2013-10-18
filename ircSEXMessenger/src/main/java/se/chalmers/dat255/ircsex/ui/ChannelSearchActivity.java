@@ -1,4 +1,4 @@
-package se.chalmers.dat255.ircsex.ui.search;
+package se.chalmers.dat255.ircsex.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,10 +9,12 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
 import se.chalmers.dat255.ircsex.R;
+import se.chalmers.dat255.ircsex.model.NetworkStateHandler;
 import se.chalmers.dat255.ircsex.model.SearchlistChannelItem;
 import se.chalmers.dat255.ircsex.model.Session;
 
@@ -31,7 +33,9 @@ public class ChannelSearchActivity extends SearchActivity {
 
         session = Session.getInstance(this, null);
         session.getActiveServer().listChannels();
-        channels = new ArrayList<SearchlistChannelItem>();
+        channels = Collections.synchronizedList(new ArrayList<SearchlistChannelItem>());
+
+        search("");
     }
 
     @Override
@@ -72,11 +76,13 @@ public class ChannelSearchActivity extends SearchActivity {
 
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
-        super.onListItemClick(l, v, position, id);
-        String text = ((TextView) v.findViewById(android.R.id.text1)).getText().toString();
-        Intent data = new Intent();
-        data.putExtra(EXTRA_CHANNEL, text);
-        setResult(RESULT_RETURN_CHANNEL, data);
-        finish();
+        if (NetworkStateHandler.getInstance().isConnected()) {
+            super.onListItemClick(l, v, position, id);
+            String text = ((TextView) v.findViewById(android.R.id.text1)).getText().toString();
+            Intent data = new Intent();
+            data.putExtra(EXTRA_CHANNEL, text);
+            setResult(RESULT_RETURN_CHANNEL, data);
+            finish();
+        }
     }
 }
