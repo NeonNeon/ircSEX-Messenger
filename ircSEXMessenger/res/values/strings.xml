@@ -68,6 +68,7 @@
     <string name="ERR_432">Invalid characters</string>
     <string name="ERR_433">Nickname already in use</string>
     <string name="ERR_443">User already in channel</string>
+    <string name="ERR_464">Incorrect password</string>
     <string name="ERR_471">Channel %s is full</string>
     <string name="ERR_473">Channel %s is invite-only</string>
     <string name="ERR_474">You\'re banned from the channel %s</string>

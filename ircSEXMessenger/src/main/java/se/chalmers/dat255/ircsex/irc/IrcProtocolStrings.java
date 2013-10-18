@@ -35,6 +35,7 @@ public class IrcProtocolStrings {
     public static final String ERR_ERRONEUSNICKNAME = "432";
     public static final String ERR_NICKNAMEINUSE = "433";
     public static final String ERR_USERONCHANNEL = "443";
+    public static final String ERR_PASSWDMISMATCH = "464";
     public static final String ERR_CHANNELISFULL = "471";
     public static final String ERR_INVITEONLYCHAN = "473";
     public static final String ERR_BANNEDFROMCHAN = "474";

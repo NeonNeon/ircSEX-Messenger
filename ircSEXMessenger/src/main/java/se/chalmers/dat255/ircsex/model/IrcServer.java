@@ -697,6 +697,7 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
                 queryError(toastMessage, user);
                 break;
             case IrcProtocolStrings.ERR_NOSUCHSERVER:
+            case IrcProtocolStrings.ERR_PASSWDMISMATCH:
                 loginError(toastMessage);
                 break;
             case IrcProtocolStrings.ERR_ERRONEUSNICKNAME:
