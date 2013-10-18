@@ -5,6 +5,9 @@
         android:key="pref_highlight"
         android:title="@string/pref_highlight"
         android:summary="@string/pref_highlight_summ" />
+    <EditTextPreference
+        android:key="pref_nickname"
+        android:title="@string/pref_nickname" />
     <CheckBoxPreference
         android:key="pref_show_join_leave"
         android:title="@string/pref_show_join_leave"

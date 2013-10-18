@@ -40,7 +40,7 @@
     <string name="pref_show_join_leave_summ">Display a message when someone joins or leaves the channel</string>
     <string name="action_settings">Settings</string>
     <string name="pref_highlight">Highlight</string>
-    <string name="pref_highlight_summ"><![CDATA[Enter words to highlight, separated by <something>]]></string>
+    <string name="pref_highlight_summ">Enter words to highlight, separated by semicolon</string>
     <string name="pref_appearance_settings">Appearance</string>
     <string name="pref_message_font_size">Message font size</string>
     <string name="pref_message_font_size_summ">Normal</string>
@@ -58,4 +58,5 @@
     </string-array>
     <string name="hint_username">Username</string>
     <string name="hint_password">Password</string>
+    <string name="pref_nickname">Nickname</string>
 </resources>
