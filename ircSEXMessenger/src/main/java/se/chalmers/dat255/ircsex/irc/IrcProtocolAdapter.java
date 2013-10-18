@@ -70,7 +70,13 @@ public class IrcProtocolAdapter implements Runnable {
             running = false;
             return;
         }
-        listener.serverConnected();
+        if (output == null || input == null) {
+            listener.serverDisconnected();
+            running = false;
+        }
+        else {
+            listener.serverConnected();
+        }
     }
 
     /**
