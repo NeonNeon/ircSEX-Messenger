@@ -19,13 +19,11 @@ public class Session {
 
     private final ServerDAO datasource;
 
-    public static Context context;
-
     /**
      * Creates an Session object.
      */
     private Session(Context context) {
-        this.context = context;
+        ContextHandler.CONTEXT = context;
 
         datasource = new ServerDAO();
         datasource.open();

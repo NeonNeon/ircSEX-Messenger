@@ -27,7 +27,7 @@ public class ChannelDAO {
      * Creates an object of ChannelDAO.
      */
     public ChannelDAO() {
-        dbHelper = new DatabaseHelper(Session.context);
+        dbHelper = new DatabaseHelper(ContextHandler.CONTEXT);
     }
 
     /**

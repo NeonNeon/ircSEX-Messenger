@@ -35,7 +35,7 @@ public class ServerDAO {
      * Creates an object of ServerDAO.
      */
     public ServerDAO() {
-        dbHelper = new DatabaseHelper(Session.context);
+        dbHelper = new DatabaseHelper(ContextHandler.CONTEXT);
     }
 
     /**

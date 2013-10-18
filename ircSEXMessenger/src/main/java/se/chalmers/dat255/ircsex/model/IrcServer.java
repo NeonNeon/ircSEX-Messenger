@@ -691,7 +691,7 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
         }
     }
     private String getStringByStringIdentifier(String name) {
-        Context context = Session.context;
+        Context context = ContextHandler.CONTEXT;
         return context.getString(
                 context.getResources().getIdentifier(name, "string", context.getPackageName()));
     }

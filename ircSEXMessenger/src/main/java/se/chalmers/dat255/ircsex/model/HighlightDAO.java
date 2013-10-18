@@ -23,7 +23,7 @@ public class HighlightDAO {
      * Creates an object of HighlightDAO.
      */
     public HighlightDAO() {
-        dbHelper = new DatabaseHelper(Session.context);
+        dbHelper = new DatabaseHelper(ContextHandler.CONTEXT);
     }
 
     /**
