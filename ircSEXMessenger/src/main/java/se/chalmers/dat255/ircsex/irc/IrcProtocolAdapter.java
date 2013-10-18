@@ -43,13 +43,12 @@ public class IrcProtocolAdapter implements Runnable {
 
     public void run() {
         createBuffers();
-        String line = "   ";
+        String line = "";
         while(running && line != null) {
             Log.d("IRC", line);
             handleReply(line);
             try {
                 line = input.readLine();
-                // TODO: Resolve nullpointerexception
             } catch (IOException e) {
                 e.printStackTrace();
                 listener.serverDisconnected();
@@ -77,6 +76,8 @@ public class IrcProtocolAdapter implements Runnable {
      */
     private void handleReply(String reply) {
         String[] parts = reply.split(BLANK, 3);
+        // Too few parts means that reply is not a valid IRC string.
+        if (parts.length < 2) return;
         handlePing(parts);
 
         switch (parts[1]) {
