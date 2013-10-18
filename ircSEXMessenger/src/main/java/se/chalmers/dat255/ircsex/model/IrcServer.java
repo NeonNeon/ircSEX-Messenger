@@ -5,6 +5,7 @@ import android.util.Log;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +34,7 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
     private final ServerDAO serverDAO;
     private final HighlightDAO highlightDAO;
 
-    private final ArrayList<SearchlistChannelItem> channels;
+    private final List<SearchlistChannelItem> channels;
     private final ConcurrentMap<String, IrcChannel> connectedChannels;
     private final ServerConnectionData serverConnectionData;
 
@@ -70,7 +71,7 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
         highlightDAO = new HighlightDAO();
         highlightDAO.open();
 
-        channels = new ArrayList<SearchlistChannelItem>();
+        channels = Collections.synchronizedList(new ArrayList<SearchlistChannelItem>());
         connectedChannels = new ConcurrentHashMap<String, IrcChannel>();
 
         highlightsWords = highlightDAO.getHighlights();
@@ -415,8 +416,9 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
         return users;
     }
 
-    public ArrayList<SearchlistChannelItem> getChannels() {
-        return channels;
+    public List<SearchlistChannelItem> getChannels() {
+        List<SearchlistChannelItem> channels = new ArrayList<>(this.channels);
+        return Collections.synchronizedList(channels);
     }
 
     public void listChannels() {
