@@ -1,5 +1,6 @@
 package se.chalmers.dat255.ircsex.model;
 
+import android.content.Context;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -10,8 +11,10 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import se.chalmers.dat255.ircsex.R;
 import se.chalmers.dat255.ircsex.irc.IrcProtocolAdapter;
 import se.chalmers.dat255.ircsex.irc.IrcProtocolListener;
+import se.chalmers.dat255.ircsex.irc.IrcProtocolStrings;
 
 /**
  * This class lists and handles a server, including the protocol adapter and channels.
@@ -654,6 +657,38 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
     }
 
     @Override
+    public void ircError(String errorCode, String message) {
+        String toastMessage = getStringByStringIdentifier("ERR_" + errorCode);
+        switch (errorCode) {
+            case IrcProtocolStrings.ERR_NOSUCHNICK:
+                String user = message.split(" ")[1];
+                queryError(toastMessage, user);
+                break;
+            case IrcProtocolStrings.ERR_NOSUCHSERVER:
+                loginError(toastMessage);
+                break;
+            case IrcProtocolStrings.ERR_ERRONEUSNICKNAME:
+            case IrcProtocolStrings.ERR_NICKNAMEINUSE:
+                nickChangeError(toastMessage);
+                break;
+            case IrcProtocolStrings.ERR_USERONCHANNEL:
+                inviteError(toastMessage);
+                break;
+            case IrcProtocolStrings.ERR_TOOMANYCHANNELS:
+            case IrcProtocolStrings.ERR_CHANNELISFULL:
+            case IrcProtocolStrings.ERR_INVITEONLYCHAN:
+            case IrcProtocolStrings.ERR_BANNEDFROMCHAN:
+                String channel = message.split(" ")[1];
+                channelJoinError(toastMessage, channel);
+                break;
+        }
+    }
+    private String getStringByStringIdentifier(String name) {
+        Context context = Session.context;
+        return context.getString(
+                context.getResources().getIdentifier(name, "string", context.getPackageName()));
+    }
+
     public void nickChangeError(String message) {
         if (connected) {
             for (SessionListener listener : sessionListeners) {
@@ -671,7 +706,6 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
         }
     }
 
-    @Override
     public void queryError(String message, String user) {
         for (SessionListener listener : sessionListeners) {
             listener.queryError(message + " " + user);
@@ -680,19 +714,17 @@ public class IrcServer implements IrcProtocolListener, NetworkStateHandler.Conne
         //TODO: ^doesn't work :(
     }
 
-    @Override
     public void loginError(String message) {
 
     }
 
-    @Override
-    public void channelJoinError(String message) {
+    public void channelJoinError(String message, String channel) {
         for (SessionListener listener : sessionListeners) {
+            message = String.format(message, channel);
             listener.channelJoinError(message);
         }
     }
 
-    @Override
     public void inviteError(String message) {
         for (SessionListener listener : sessionListeners) {
             listener.inviteError(message);

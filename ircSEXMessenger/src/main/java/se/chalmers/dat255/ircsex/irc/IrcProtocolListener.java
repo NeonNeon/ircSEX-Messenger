@@ -106,33 +106,11 @@ public interface IrcProtocolListener {
     public void serverDisconnected();
 
     /**
-     * Something went wrong while sending a query.
-     * @param message Error message
+     * Something went wrong.
+     *
+     * @param errorCode Protocol error code
+     * @param message Protocol error message
      */
-    public void queryError(String message, String user);
-
-    /**
-     * Something went wrong while logging in.
-     * @param message Error message
-     */
-    public void loginError(String message);
-
-    /**
-     * Something went wrong while joining a channel.
-     * @param message Error message
-     */
-    public void channelJoinError(String message);
-
-    /**
-     * Something went wrong when you tried to change nick.
-     * @param message Error message
-     */
-    public void nickChangeError(String message);
-
-    /**
-     * Something went wrong while inviting a user.
-     * @param message Error message
-     */
-    public void inviteError(String message);
+    public void ircError(String errorCode, String message);
 
 }
