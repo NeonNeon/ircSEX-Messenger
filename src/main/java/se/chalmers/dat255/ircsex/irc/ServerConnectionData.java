@@ -1,4 +1,4 @@
-package se.chalmers.dat255.ircsex.model;
+package se.chalmers.dat255.ircsex.irc;
 
 /**
  * Created by oed on 10/11/13.

@@ -5,6 +5,7 @@ import se.chalmers.dat255.ircsex.irc.IrcProtocolAdapter;
 import se.chalmers.dat255.ircsex.irc.IrcProtocolListener;
 import se.chalmers.dat255.ircsex.irc.NormalFlavor;
 import se.chalmers.dat255.ircsex.irc.SSHFlavor;
+import se.chalmers.dat255.ircsex.irc.ServerConnectionData;
 
 /**
  * Created by oed on 10/10/13.

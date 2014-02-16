@@ -7,9 +7,6 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.Arrays;
 
-import se.chalmers.dat255.ircsex.R;
-import se.chalmers.dat255.ircsex.model.Session;
-
 /**
  * This class is used to easily communicate with the IRC protocol.
  *
