@@ -20,9 +20,8 @@
     </repositories>
 
     <properties>
-        <platform.version> 4.1.1.4
-        </platform.version>
-        <android.plugin.version>3.6.0</android.plugin.version>
+        <platform.version>4.1.1.4</platform.version>
+        <android.plugin.version>3.7.0</android.plugin.version>
     </properties>
 
     <dependencies>
